@@ -1,0 +1,27 @@
+########################################################################
+#
+# Updated 11-20-2012
+#
+#
+########################################################################
+
+ o Notes about the model: the soil water potential seems to stop at
+   -1500 but  this should not be the case. It should be able to go down lower.
+
+ o The function to model corn has limitations. Although it is working
+   fairly well there is more work to do regarding the reproductive
+   period since only carbon is being allocated but there is no
+   consideration for pollen production or silking. 
+
+ o I should at some point get rid of the MCMCBioGro function since it
+   is very difficult to maintain now with all the changes happening to
+   BioGro
+
+
+
+
+
+
+ 
+
+
