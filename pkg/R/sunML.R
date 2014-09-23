@@ -48,6 +48,8 @@ sunML <- function(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,height
   layItotal <- rep(0,nlayers)
   layFsun <- rep(0,nlayers)
   layFshade <- rep(0,nlayers)
+  layMaxIdir <- numeric(nlayers)
+  layMaxIdiff <- numeric(nlayers)
   layHeight <- rep(0,nlayers)
   kvector <- rep(0,nlayers)
   for(i in 0:(nlayers-1)){
