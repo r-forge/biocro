@@ -897,8 +897,8 @@ struct Can_Str CanAC(double LAI,int DOY, int hr,double solarR,double Temp,
 	ans.Assim = cf * CanopyA ;
 /* CanopyTrans can apparently go crazy */
 	/* Rprintf("CanopyT %.8f \n",CanopyT); */
-	if(CanopyT > 10){
-		Rprintf("CanopyT $.5f \n", CanopyT);
+	if(CanopyT > 20){
+		Rprintf("CanopyT %.5f \n", CanopyT);
 		error("CanopyT is too high");
 	}
 	ans.Trans = cf2 * CanopyT; 

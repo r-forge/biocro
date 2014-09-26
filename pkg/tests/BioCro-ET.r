@@ -4,7 +4,7 @@
 data(weather05)
 
 ## Without water stress
-res <- BioGro(weather05,
+res <- BioGro(weather05, day1 = 90, dayn=150,
               soilControl = soilParms(wsFun="none",
                 soilDepth=20, soilLayers=50, hydrDist=TRUE))
 plot(res, plot.kind='ET')
