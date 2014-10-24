@@ -467,7 +467,16 @@ plot.BioGro <- function (x, obs = NULL, stem = TRUE, leaf = TRUE, root = TRUE,
            ylab = "Cummulative EvapoTranspiration (mm)",
            xlab = "DOY",
            key = simpleKey(text = c("transp", "evapo", "ET")), ...)
+  }else
+    if(plot.kind == "stress"){
+    ## First summarize by day
+    xyplot(x$StomatalCondCoef +
+           LeafReductionCoefs ~ tmp$doy, type="l",
+           ylab = "Stress Indeces",
+           xlab = "DOY",
+           key = simpleKey(text = c("Stomatal", "Leaf")), ...)
   }
+
 }
 
 print.BioGro <- function(x,level=1,...){

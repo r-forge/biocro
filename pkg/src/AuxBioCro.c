@@ -276,7 +276,7 @@ void sunML(double Idir, double Idiff, double LAI, int nlayers,
 		layMaxIdiff[sp5++] = maxIdiffuse;
 		layFsun[sp6++] = Fsun;
 		layFshade[sp7++] = Fshade;
-		layHeight[sp8++] = CumLAI/heightf;
+		layHeight[sp8++] = LAI/heightf - CumLAI/heightf;
 	}
 }
 
@@ -381,7 +381,7 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 
 	const double LeafWidth = 0.04; /* This assumes a leaf 4 cm wide */
 	const double kappa = 0.41;
-	const double WindSpeedHeight = 2; /* This is the height at which the wind speed was measured */
+	const double WindSpeedHeight = CanopyHeight + 0.5; /* This is the height at which the wind speed was measured */
 	const double dCoef = 0.77;
 	const double tau = 0.2;
 	const double ZetaCoef = 0.026;
@@ -897,7 +897,7 @@ struct Can_Str CanAC(double LAI,int DOY, int hr,double solarR,double Temp,
 	ans.Assim = cf * CanopyA ;
 /* CanopyTrans can apparently go crazy */
 	/* Rprintf("CanopyT %.8f \n",CanopyT); */
-	if(CanopyT > 20){
+	if(CanopyT > 1e5){
 		Rprintf("CanopyT %.5f \n", CanopyT);
 		error("CanopyT is too high");
 	}

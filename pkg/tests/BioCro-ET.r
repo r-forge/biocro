@@ -4,9 +4,9 @@
 data(weather05)
 
 ## Without water stress
-res <- BioGro(weather05, day1 = 90, dayn=150,
-              soilControl = soilParms(wsFun="none",
-                soilDepth=20, soilLayers=50, hydrDist=TRUE))
+res <- BioGro(weather05, day1 = 90, 
+              soilControl = soilParms(wsFun="thresh",
+                soilDepth=1.5, soilLayers=1, hydrDist=TRUE))
 plot(res, plot.kind='ET')
 plot(res, plot.kind="SW")
 
@@ -45,6 +45,18 @@ xyplot(CanopyTrans ~ Hour | factor(DayofYear), data = resd,
        subset = DayofYear %in% c(183, 184, 185), ylim = c(0,20))
 
 ## Days 184 and 185 produce ridiculous high values of ET, why?
+
+doy183 <- weather05[weather05$doy == 183,]
+res.c.183 <- numeric(24)
+
+for(i in 0:23){
+  solar <- doy183[doy183$hour == i, "solarR"]
+  temp <- doy183[doy183$hour == i, "DailyTemp.C"]
+  rh <- doy183[doy183$hour == i, "RH"]
+  ws <- doy183[doy183$hour == i, "WindSpeed"]
+  prcp <- doy183[doy183$hour == i, "precip"]
+  res.c.183[i] <- CanA(7, 183, i, solar, temp, rh, ws)$CanopyTrans
+}
 
 doy184 <- weather05[weather05$doy == 184,]
 res.c.184 <- numeric(24)
