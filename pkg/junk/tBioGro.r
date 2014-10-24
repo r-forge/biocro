@@ -3,40 +3,31 @@
 ## Testing the effect of different water stress models on BioCro
 data(weather05)
 
-soilP0 <- soilParms(wsFun = 'none', soilDepth=10)
+soilP0 <- soilParms(wsFun = 'none', soilDepth=2)
 ## ans0 <- BioGro(weather05, day1=120, dayn=121, soilControl = soilP0)
 ans0 <- BioGro(weather05, soilControl = soilP0)
-sum(ans0$SoilEvaporation)
-sum(ans0$CanopyTrans)
-
-xyplot(ans0$SoilEvaporation + ans0$CanopyTrans ~ ans0$ThermalT)
+plot(ans0)
+plot(ans0, plot.kind="SW")
+plot(ans0, plot.kind="ET")
+plot(ans0, plot.kind="cumET")
+plot(ans0, plot.kind="stress")
 
 soilP1 <- soilParms(wsFun = 'thresh', smthresh=0.3, soilDepth = 2)
 ans1 <- BioGro(weather05, soilControl = soilP1)
+plot(ans1)
+plot(ans1, plot.kind="SW")
+plot(ans1, plot.kind="ET")
+plot(ans1, plot.kind="cumET")
 plot(ans1, plot.kind="stress")
 
-
-## If I aggregate by day
-ctbd <- aggregate(ans0$CanopyTrans , by = list(ans0$DayofYear), FUN=sum)
-names(ctbd) <- c("day","CT")
-ctbd$CTmm <- ctbd$CT * 0.1
-xyplot(CTmm ~ day , data = ctbd, ylab="CT in mm")
-
-xyplot(ans0$LAI + ans1$LAI ~ ans0$ThermalT)
-
-xyplot(ans0$CanopyTrans + ans1$CanopyTrans ~ ThermalT, data = ans0)
-
-## Here the difference is because the leaf area index is affected
-xyplot(ans0$LeafReductionCoefs + ans1$LeafReductionCoefs ~ ThermalT, data = ans0)
-
 ## Effect of the new sunML function on Canopy level transpiration
-
-##
-data(weather05)
-
 soilP <- soilParms(soilLayers = 5, wsFun= 'logistic', hydrDist = TRUE)
-res <- BioGro(weather05, soilControl = soilP)
-plot(res, plot.kind="stress")
+ans2 <- BioGro(weather05, soilControl = soilP)
+plot(ans2)
+plot(ans2, plot.kind="SW")
+plot(ans2, plot.kind="ET")
+plot(ans2, plot.kind="cumET")
+plot(ans2, plot.kind="stress")
 
 ## png('./soilwater-new-sunML.png')
 plot(res, plot.kind='SW')
