@@ -332,7 +332,7 @@ plot.BioGro <- function (x, obs = NULL, stem = TRUE, leaf = TRUE, root = TRUE,
                          xlab=NULL,ylab=NULL,ylim=NULL,
                          pch=21, lty=1, lwd=1,
                          col=c("blue","green","red","magenta","black","purple"),
-                         x1=0.1,y1=0.8,plot.kind=c("DB","SW","ET","cumET"),...) 
+                         x1=0.1,y1=0.8,plot.kind=c("DB","SW","ET","cumET","stress"),...) 
 {
 
   if(missing(xlab)){
@@ -471,7 +471,7 @@ plot.BioGro <- function (x, obs = NULL, stem = TRUE, leaf = TRUE, root = TRUE,
     if(plot.kind == "stress"){
     ## First summarize by day
     xyplot(x$StomatalCondCoef +
-           LeafReductionCoefs ~ tmp$doy, type="l",
+           x$LeafReductionCoefs ~ x$DayofYear, type="l",
            ylab = "Stress Indeces",
            xlab = "DOY",
            key = simpleKey(text = c("Stomatal", "Leaf")), ...)
