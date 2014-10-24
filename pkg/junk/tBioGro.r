@@ -82,14 +82,16 @@ plot(res$LeafPsimVec)
 
 
 ## Transpiration for maize
-     data(weather05)
-     res <- MaizeGro(weather05, plant.day = 110, emerge.day = 120, harvest.day=300,
-                       MaizePhenoControl = MaizePhenoParms(R6 = 2300),
-                     laiControl = laiParms(lai.method='ind-leaf-Lizaso', Aex=1500))
+data(weather05)
+soilP <- soilParms(soilLayers = 1, soilDepth=1.5 , wsFun = 'linear')
+res <- MaizeGro(weather05, plant.day = 110, emerge.day = 120, harvest.day=300,
+                MaizePhenoControl = MaizePhenoParms(R6 = 2300),
+                soilControl = soilP,
+                laiControl = laiParms(lai.method='ind-leaf-Lizaso', Aex=1500))
+plot(res)
 
 res2 <- BioGro(weather05, soilControl = soilParms(wsFun='none', soilLayers=1))
-sum(res2$CanopyTrans + res2$SoilEvapo)
-max((res2$Leaf + res2$Stem))
+plot(res2)
 
 res2 <- BioGro(weather05, soilControl = soilParms(wsFun='linear', soilLayers=1, soilDepth=4))
 sum(res2$CanopyTrans + res2$SoilEvapo)

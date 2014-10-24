@@ -362,6 +362,7 @@ plot.MaizeGro <- function (x, obs = NULL, stem = TRUE, leaf = TRUE, root = TRUE,
     ylab = expression(paste("Dry Biomass (Mg ",ha^-1,")"))
   }  
 
+  sim <- x
   Ymax <- max(c(max(sim$Stem, na.rm=TRUE)), c(max(sim$Grain, na.rm=TRUE)), c(max(sim$Leaf, na.rm=TRUE))) + 2
   pchs <- rep(pch,length=5)
   ltys <- rep(lty,length=5)
