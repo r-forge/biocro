@@ -262,6 +262,8 @@ soilParms <- function(FieldC=NULL,WiltP=NULL,phi1=0.01,phi2=10,soilDepth=1,iWatC
     if(length(soilDepths) != I(soilLayers+1)) stop("soilDepths should be of length == soilLayers + 1")
   }
 
+  if(wsFun == "lwp" & soilLayers > 1) stop("At the moment it is not possible to have more than one layer when the lwp option is selected")
+  
   if(missing(FieldC)) FieldC <- -1
 
   if(missing(WiltP))  WiltP <- -1

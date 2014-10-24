@@ -421,6 +421,11 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 			LeafPsim = 0;
 		}
 
+/* The options below are needed when the water is above field capacity */
+/* In this case we should actually have some stress due to excess water */
+		if(LeafWS > 1) LeafWS = 1;
+		if(StomWS > 1) StomWS = 1;
+
 		/* Picking the dry biomass partitioning coefficients */
 		dbpS = sel_dbp_coef(REAL(DBPCOEFS), REAL(THERMALP), TTc);
 
@@ -561,9 +566,13 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 			Sp = iSp - (INTEGER(DOY)[i] - INTEGER(DOY)[0]) * REAL(SPD)[0];
 		}
 
+/* This is a good spot to include an additional stress for leaf */
+/* The model right now does not remove leaf if there is a lot of stress */
+/* The only removal of stress occurs during senescence */
+
 		LAI = Leaf * Sp ;
 
-		if(LAI > 20.0) LAI = 20.0;
+		if(LAI > 20.0) error("LAI too high");
 
 		/* New Stem*/
 		if(kStem >= 0)
@@ -682,7 +691,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 		REAL(VmaxVec)[i] = vmax1;
 		REAL(AlphaVec)[i] = alpha1;
 		REAL(SpVec)[i] = Sp;
-		REAL(MinNitroVec)[i] = MinNitro/ (24*centTimestep);
+		REAL(MinNitroVec)[i] = MinNitro / (24*centTimestep);
 		REAL(RespVec)[i] = Resp / (24*centTimestep);
 		REAL(SoilEvaporation)[i] = soilEvap;
 		REAL(LeafPsimVec)[i] = LeafPsim;
@@ -1991,6 +2000,8 @@ void BioGro(double lat, int doy[],int hr[],double solar[],double temp[],double r
 			waterCont = WaterS.awc;
 			StomWS = WaterS.rcoefPhoto ;
 			LeafWS = WaterS.rcoefSpleaf;
+
+			if(LeafWS > 1) LeafWS = 1;
 		}
 
 		/* Picking the dry biomass partitioning coefficients */

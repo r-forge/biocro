@@ -13,8 +13,8 @@ xyplot(ans0$SoilEvaporation + ans0$CanopyTrans ~ ans0$ThermalT)
 
 soilP1 <- soilParms(wsFun = 'thresh', smthresh=0.3, soilDepth = 2)
 ans1 <- BioGro(weather05, soilControl = soilP1)
-sum(ans1$SoilEvaporation)
-sum(ans1$CanopyTrans)
+plot(ans1, plot.kind="stress")
+
 
 ## If I aggregate by day
 ctbd <- aggregate(ans0$CanopyTrans , by = list(ans0$DayofYear), FUN=sum)
@@ -34,8 +34,9 @@ xyplot(ans0$LeafReductionCoefs + ans1$LeafReductionCoefs ~ ThermalT, data = ans0
 ##
 data(weather05)
 
-soilP <- soilParms(soilLayers = 1, wsFun= 'logistic', hydrDist = TRUE)
+soilP <- soilParms(soilLayers = 5, wsFun= 'logistic', hydrDist = TRUE)
 res <- BioGro(weather05, soilControl = soilP)
+plot(res, plot.kind="stress")
 
 ## png('./soilwater-new-sunML.png')
 plot(res, plot.kind='SW')
@@ -47,8 +48,21 @@ plot(res$CanopyTrans)
 ## Looking at soil water potential
 data(weather04)
 
-soilP <- soilParms(soilLayers = 1 , wsFun = 'lwp')
+soilP <- soilParms(soilLayers = 1, soilDepth=1.5 , wsFun = 'lwp')
 res <- BioGro(weather05, soilControl = soilP)
+plot(res, plot.kind="stress")
+
+soilP <- soilParms(soilLayers = 5, soilDepth=1.5 , wsFun = 'linear', hydrDist=TRUE)
+res <- BioGro(weather05, soilControl = soilP)
+plot(res, plot.kind="SW")
+plot(res, plot.kind="stress")
+
+soilP <- soilParms(soilLayers = 1, soilDepth=1.5 , wsFun = 'linear')
+res <- BioGro(weather05, soilControl = soilP)
+plot(res, plot.kind="SW")
+plot(res, plot.kind="stress")
+plot(res)
+
 
 plot(res$LeafPsimVec)
 

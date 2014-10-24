@@ -572,6 +572,11 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 			LeafPsim = 0;
 		}
 
+/* The options below are needed when the water is above field capacity */
+/* In this case we should actually have some stress due to excess water */
+		if(LeafWS > 1) LeafWS = 1;
+		if(StomWS > 1) StomWS = 1;
+
                /* Soil Carbon Pools place holder*/
 		REAL(SCpools)[0] = 1;
 		REAL(SCpools)[1] = 1;
