@@ -55,6 +55,8 @@ stomatal conductance and \texttt{theta} is the curvature parameter for
 the light response. For more information see the function
 documentation (i.e. ?c3photo).
 
+\end{document}
+
 <<C3photo,fig=TRUE,include=FALSE,echo=FALSE>>=
 Qps <- seq(0,2000,10)
 Tls <- seq(0,50,5)

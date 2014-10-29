@@ -127,38 +127,39 @@ for(i in 1:24){
 }
 @ 
 
+\end{document}
 
-<<plotCanA-Assim,fig=TRUE, echo=FALSE>>=
-pdf("./figs/CanA-Assim.pdf")
-xyplot(I(AssimSun*Leafsun) + I(AssimShade*Leafshade) ~ hour | factor(layers), type='l',
-       xlab = "Layers", ylab="Assimilation (micro mol /m2 ground /s)",
-       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(3,1))
-dev.off()
+<<echo=FALSE, print=FALSE, term=FALSE>>=
+## pdf("./figs/BioCro-CanAAssim.pdf")
+## xyplot(I(AssimSun*Leafsun) + I(AssimShade*Leafshade) ~ hour | factor(layers), type='l',
+##        xlab = "Layers", ylab="Assimilation (micro mol /m2 ground /s)",
+##        key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+## dev.off()
 @ 
-\begin{figure}[htbp!]
-  \centering
-  \includegraphics[scale=0.8]{./figs/CanA-Assim.pdf}
-  \caption{Distribution of Assimilation in the canopy. Layer 3 is the top layer.}
-  \label{fig:plotCanA-Assim}
-\end{figure}
+%% \begin{figure}[htbp!]
+%%   \centering
+%%   \includegraphics[scale=0.8]{./figs/BioCro-CanAAssim.pdf}
+%%   \caption{Distribution of Assimilation in the canopy. Layer 3 is the top layer.}
+%%   \label{fig:plotCanAAssim}
+%% \end{figure}
 
-<<plotCanALeaves,fig=TRUE, echo=FALSE>>=
-pdf("./figs/CanALeaves.pdf")
-xyplot(Leafsun + Leafshade ~ hour | factor(layers), type='l',
-       xlab = "Layers", ylab="Leaf Area (m2/m2)",
-       key=simpleKey(text=c("Sun","Shade")),
-       data = as.data.frame(tmp2), layout=c(3,1))
-dev.off()
+<<echo=FALSE, print=FALSE, term=FALSE>>=
+## pdf("./figs/BioCro-CanALeaves.pdf")
+## xyplot(Leafsun + Leafshade ~ hour | factor(layers), type='l',
+##        xlab = "Layers", ylab="Leaf Area (m2/m2)",
+##        key=simpleKey(text=c("Sun","Shade")),
+##        data = as.data.frame(tmp2), layout=c(3,1))
+## dev.off()
 @ 
-\begin{figure}[htbp!]
-  \centering
-  \includegraphics[scale=0.8]{./figs/CanALeaves.pdf}
-  \caption{Distribution of Leaves in the canopy. Layer 3 is the top layer.}
-  \label{fig:plotCanALeaves}
-\end{figure}
+%% \begin{figure}[htbp!]
+%%   \centering
+%%   \includegraphics[scale=0.8]{./figs/CanALeaves.pdf}
+%%   \caption{Distribution of Leaves in the canopy. Layer 3 is the top layer.}
+%%   \label{fig:plotCanALeaves}
+%% \end{figure}
 
 
-The light in the canopy 
+%The light in the canopy 
 
 \subsection{Parameter Estimation}
 
