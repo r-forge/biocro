@@ -100,10 +100,6 @@ apply(res$LayMat[,3:4], 2, sum)
 In this example, 1.35 m$^2$ of leaf are in the sun and 1.65 of $m^2$
 are in the shade for a total of 3 LAI.
 
-
-
-
-
 The amount of photosynthesis due to each layer is proportional to the
 amount of sun and shaded leaves in each layer.
 
@@ -133,7 +129,6 @@ for(i in 1:24){
 
 
 <<plotCanA-Assim,fig=TRUE, echo=FALSE>>=
-
 pdf("./figs/CanA-Assim.pdf")
 xyplot(I(AssimSun*Leafsun) + I(AssimShade*Leafshade) ~ hour | factor(layers), type='l',
        xlab = "Layers", ylab="Assimilation (micro mol /m2 ground /s)",
