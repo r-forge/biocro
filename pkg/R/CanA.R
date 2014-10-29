@@ -1,5 +1,5 @@
 ##
-##  BioCro/R/CanA.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2010
+##  BioCro/R/CanA.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2014
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ CanA <- function(lai,doy,hr,solar,temp,rh,windspeed,
     if(length(c(lai,doy,hr,solar,temp,rh,windspeed)) != 7)
       stop("all input should be of length 1")
 
+    if(nlayers > 50) stop("nlayers should be less than 50")
+    
     units <- match.arg(units)
 
     photoP <- photoParms()
@@ -77,7 +79,7 @@ CanA <- function(lai,doy,hr,solar,temp,rh,windspeed,
       ## This is in kg of water per m2 per hour
       res$TranEpen <- res$TranEpen * cf
       res$TranEpries <- res$TranEpries * cf
-      res$LayMat[,5:6] <- res$LayMat[,5:6] * cf
+      res$LayMat[,5:6] <- res$LayMat[,5:6] * cf ## 5 and 6 are the transpiration layers
     }
     res
   }

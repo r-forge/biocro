@@ -1,5 +1,5 @@
 ##
-##  BioCro/R/BioCro.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2012
+##  BioCro/R/BioCro.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2014
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -109,7 +109,7 @@ BioGro <- function(WetDat, day1=NULL, dayn=NULL,
 
     SENcoefs <- as.vector(unlist(seneP))
 
-    soilCoefs <- c(unlist(soilP[1:5]),mean(soilP$iWatCont),soilP$scsf, soilP$transpRes, soilP$leafPotTh, soilP$smthresh)
+    soilCoefs <- c(unlist(soilP[1:5]),mean(soilP$iWatCont),soilP$scsf, soilP$transpRes, soilP$leafPotTh, soilP$smthresh, soilP$lrt, soilP$lrf)
     wsFun <- soilP$wsFun
     soilType <- soilP$soilType
 
@@ -237,7 +237,7 @@ soilParms <- function(FieldC=NULL,WiltP=NULL,phi1=0.01,phi2=10,soilDepth=1,iWatC
                       soilType=6, soilLayers=1, soilDepths=NULL, hydrDist=0,
                       wsFun=c("linear","logistic","exp","none","lwp","thresh"),
                       scsf = 1, transpRes = 5e6, leafPotTh = -800,
-                      rfl=0.2, rsec=0.3, rsdf=0.44, smthresh=0.3){
+                      rfl=0.2, rsec=0.3, rsdf=0.44, smthresh=0.3, lrt=0.7, lrf=0){
 
   if(soilLayers < 1 || soilLayers > 50)
     stop("soilLayers must be an integer larger than 0 and smaller than 50")
@@ -279,7 +279,7 @@ soilParms <- function(FieldC=NULL,WiltP=NULL,phi1=0.01,phi2=10,soilDepth=1,iWatC
   list(FieldC=FieldC,WiltP=WiltP,phi1=phi1,phi2=phi2,soilDepth=soilDepth,iWatCont=iWatCont,
        soilType=soilType,soilLayers=soilLayers,soilDepths=soilDepths, wsFun=wsFun,
        scsf = scsf, transpRes = transpRes, leafPotTh = leafPotTh,
-       hydrDist=hydrDist, rfl=rfl, rsec=rsec, rsdf=rsdf, smthresh=smthresh)
+       hydrDist=hydrDist, rfl=rfl, rsec=rsec, rsdf=rsdf, smthresh=smthresh, lrt=lrt, lrf=lrf)
 }
 
 nitroParms <- function(iLeafN=2, kLN=0.5, Vmax.b1=0, alpha.b1=0,

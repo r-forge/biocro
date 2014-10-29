@@ -83,7 +83,10 @@ sunML <- function(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,height
     layFshade[i+1] = Fshade
     layMaxIdir[i+1] = maxIsolar
     layMaxIdiff[i+1] = maxIdiffuse
-    layHeight[nlayers-i] = CumLAI / heightf
+    layHeight[i+1] = LAI/heightf - CumLAI / heightf
+    ## Old version of the previous line
+    ## Change FEM 10/27/2014
+    ## layHeight[nlayers-i] = CumLAI / heightf
     Sun=data.frame(layIdir=layIdir,layIdiff=layIdiff,layItotal=layItotal,layFsun=layFsun,layFshade=layFshade,layHeight=layHeight, layMaxIdir=layMaxIdir, layMaxIdiff=layMaxIdiff)
   }
   return(Sun)

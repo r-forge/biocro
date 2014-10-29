@@ -107,6 +107,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	double LeafLitter_d = 0.0, StemLitter_d = 0.0;
 	double RootLitter_d = 0.0, RhizomeLitter_d = 0.0;
 	double ALitter = 0.0, BLitter = 0.0;
+	double LeafLitter2;
 	/* Maintenance respiration */
 
 	double mrc1 = REAL(MRESP)[0];
@@ -137,7 +138,9 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	double scsf = REAL(SOILCOEFS)[6]; /* stomatal conductance sensitivity factor */ /* Rprintf("scsf %.2f",scsf); */
 	double transpRes = REAL(SOILCOEFS)[7]; /* Resistance to transpiration from soil to leaf */
 	double leafPotTh = REAL(SOILCOEFS)[8]; /* Leaf water potential threshold */
-	double 	smthresh = REAL(SOILCOEFS)[9]; /* Threshold model parameter */
+	double smthresh = REAL(SOILCOEFS)[9]; /* Threshold model parameter */
+	double lrt = REAL(SOILCOEFS)[10]; /* Leaf reduction threshold */
+	double lrf = REAL(SOILCOEFS)[11]; /* Leaf reduction factor */
 
         /* Parameters for calculating leaf water potential */
 	double LeafPsim = 0.0;
@@ -537,11 +540,24 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 			Grain += kGrain * -newLeaf * 0.9;
 		}
 
-		if(TTc < SeneLeaf){
 
+		if(TTc < SeneLeaf && LeafWS == 1){
+                /* No senescence and no stress */
 			Leaf += newLeaf;
+		}
 
-		}else{
+/* I'm adding this as a way to remove leaf area if stress is severe */
+		if(LeafWS < 1){
+			if(LeafWS > lrt){
+				Leaf += newLeaf;
+			}else{
+				LeafLitter2 = Leaf * lrf * (1 - LeafWS);
+                                Leaf -= LeafLitter2;
+				LeafLitter += LeafLitter2;
+			}
+		}
+
+		if(TTc > SeneLeaf){
     
 			Leaf += newLeaf - *(sti+k); /* This means that the new value of leaf is
 						       the previous value plus the newLeaf

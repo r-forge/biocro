@@ -1,5 +1,5 @@
 /*
- *  BioCro/src/CanA.c by Fernando Ezequiel Miguez  Copyright (C) 2007-2012
+ *  BioCro/src/CanA.c by Fernando Ezequiel Miguez  Copyright (C) 2007-2014
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -214,13 +214,13 @@ layIdiff, layShade vectors. */
 	    REAL(mat1)[14 + i*16] = rh; 
 	    REAL(mat1)[15 + i*16] = WindS; 
 
-    /*Layer conductance needs to be transformed back to the correct units here*/
+/* Below the contribution of each portion (sun, shade) is considered for assimilation, transpiration and conductance */
 
 	    CanopyA += Leafsun * AssIdir + Leafshade * AssIdiff;
 	    CanopyT += Leafsun * tmp5_ET.TransR + Leafshade * tmp6_ET.TransR; 
 	    CanopyPe += Leafsun * tmp5_ET.EPenman + Leafshade * tmp6_ET.EPenman;
 	    CanopyPr += Leafsun * tmp5_ET.EPriestly + Leafshade * tmp6_ET.EPriestly;
-	    CanopyC += Leafsun * tmp5_ET.LayerCond + Leafshade * tmp6_ET.LayerCond;
+	    CanopyC += Leafsun * tmp5_ET.LayerCond + Leafshade * tmp6_ET.LayerCond;     
 
     }
  /*## These are micro mols of CO2 per m2 per sec
@@ -234,7 +234,7 @@ layIdiff, layShade vectors. */
     REAL(trans)[0] = cf2 * CanopyT ;
     REAL(epen)[0] = cf2 * CanopyPe ;
     REAL(epries)[0] = cf2 * CanopyPr ;
-    REAL(cond)[0] = CanopyC;
+    REAL(cond)[0] = CanopyC; /*Layer conductance from EvapoTrans is in mmol /m2/s */
 
     SET_VECTOR_ELT(lists,0,growth);
     SET_VECTOR_ELT(lists,1,trans);

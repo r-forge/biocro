@@ -104,7 +104,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 
 /* Variables for nitrogen */
 	double iLeafN, kLN, vmax_b1, alpha_b1, kpLN, lnb0, lnb1, lnFun_0;
-	double LeafN, LeafNR;
+	double LeafN, LeafNR = 0.0;
 	int lnFun; 
 
 /* Variables for leaf area index */

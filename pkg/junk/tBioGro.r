@@ -43,9 +43,11 @@ soilP <- soilParms(soilLayers = 1, soilDepth=1.5 , wsFun = 'lwp')
 res <- BioGro(weather05, soilControl = soilP)
 plot(res, plot.kind="stress")
 
-soilP <- soilParms(soilLayers = 5, soilDepth=1.5 , wsFun = 'linear', hydrDist=TRUE)
-res <- BioGro(weather05, soilControl = soilP)
+soilP <- soilParms(soilLayers = 5, soilDepth=1.5 , wsFun = 'linear', hydrDist=TRUE, lrt=0.6, lrf=1e-3)
+res <- BioGro(weather05, day1=120, dayn=270, soilControl = soilP)
+plot(res)
 plot(res, plot.kind="SW")
+plot(res, plot.kind="ET")
 plot(res, plot.kind="stress")
 
 soilP <- soilParms(soilLayers = 1, soilDepth=1.5 , wsFun = 'linear')

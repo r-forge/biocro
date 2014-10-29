@@ -1,5 +1,5 @@
 /*
- *  /src/AuxBioCro.c by Fernando Ezequiel Miguez  Copyright (C) 2007 - 2012
+ *  /src/AuxBioCro.c by Fernando Ezequiel Miguez  Copyright (C) 2007 - 2014
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -381,7 +381,7 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 
 	const double LeafWidth = 0.04; /* This assumes a leaf 4 cm wide */
 	const double kappa = 0.41;
-	const double WindSpeedHeight = CanopyHeight + 0.5; /* This is the height at which the wind speed was measured */
+	double WindSpeedHeight = 2; /* This is the height at which the wind speed was measured */
 	const double dCoef = 0.77;
 	const double tau = 0.2;
 	const double ZetaCoef = 0.026;
@@ -396,6 +396,7 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 	double LayerConductance, DeltaPVa, PsycParam, ga;
 	double BoundaryLayerThickness, DiffCoef,LeafboundaryLayer;
 	double d, Zeta, Zetam, ga0, ga1, ga2; 
+	double UStar, gav2;
 	double ActualVaporPressure;
 	double Ja, Ja2, Deltat;
 	double PhiN, PhiN2;
@@ -412,6 +413,12 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 
 	if(CanopyHeight < 0.1)
 		CanopyHeight = 0.1; 
+
+/* When the height at which wind was measured is lower than the canopy height */
+/* There can be problems with the calculations */
+/* This is a very crude way of solving this problem */
+	if(CanopyHeight + 1 > WindSpeedHeight)
+		WindSpeedHeight = CanopyHeight + WindSpeedHeight;
 
 	DdryA = TempToDdryA(Tair);
 
@@ -486,12 +493,15 @@ but Thornley and Johnson use it as MJ kg-1  */
 	LayerWindSpeed = WindSpeed;
 
 	tmpc4 = c4photoC(Rad,Airtemperature,RH,vmax2,alpha2,kparm,theta,beta,Rd2,b02,b12,StomataWS, 380, ws); 
+	/* tmpc4 = c4photoC(Imax,Airtemperature,RH,vmax2,alpha2,kparm,theta,beta,Rd2,b02,b12,StomataWS, 380, ws);   */
+	/*  Rprintf("Imax %.8f \n",Imax);  */
 
-	LayerConductance = tmpc4.Gs;
+	LayerConductance = tmpc4.Gs / LeafAreaIndex; /* Right now this is too small and even I have to factor in the leaf area index? */
 
         /* Convert from mmol H20/m2/s to m/s */
-	LayerConductance = LayerConductance * (1.0/41000.0);
+	LayerConductance = LayerConductance * (1.0/41000.0) ;
 	/* LayerConductance = LayerConductance * 24.39 * 1e-6; Original from WIMOVAC */ 
+        /* 1/41000 is the same as 24.39 * 1e-6 */
 
 	/* Thornley and Johnson use m s^-1 on page 418 */
 
@@ -511,6 +521,10 @@ but Thornley and Johnson use it as MJ kg-1  */
 	/* Rprintf("PsycParam %.8f \n",PsycParam); */
 
 	/* Calculation of ga */
+        /* The calculation of ga in WIMOVAC follows */
+        UStar = (WindSpeedTopCanopy * kappa) / (log((WindSpeedHeight - d) / Zeta));
+	gav2 = pow(UStar,2) / LayerWindSpeed;
+
 	/* According to thornley and Johnson pg. 416 */
 	ga0 = pow(kappa,2) * LayerWindSpeed;
 	ga1 = log((WindSpeedHeight + Zeta - d)/Zeta);
@@ -520,17 +534,27 @@ but Thornley and Johnson use it as MJ kg-1  */
 	if(ga < 0)
 		error("ga is less than zero");
 
+       /* In WIMOVAC this follows */
 	DiffCoef = (2.126 * 1e-5) + ((1.48 * 1e-7) * Airtemperature);
 	BoundaryLayerThickness = 0.004 * sqrt(LeafWidth / LayerWindSpeed);
 	LeafboundaryLayer = DiffCoef / BoundaryLayerThickness;
+        gav2 = (gav2 * LeafboundaryLayer) / (gav2 + LeafboundaryLayer); 
 
-        /* In WIMOVAC this follows */
-        /* ga = (ga * LeafboundaryLayer) / (ga + LeafboundaryLayer); */
+	/* Rprintf("Layer Conductance %.8f \n",LayerConductance);  */
+	/* Rprintf("ga %.8f \n",ga);  */
+	/* Rprintf("gav2 %.8f \n",gav2);  */
+
+/* There are two ways of calculating ga in this code
+ One method is taken from Thornley and Johnson, but this method
+   does not consider a multilayer canopy 
+ The other method is taken from the original WIMOVAC code.
+The WIMOVAC code is what I'm using at the moment. */
+
+	/* ga = gav2; */
 
 	TopValue = PhiN2 * (1 / ga + 1 / LayerConductance) - LHV * DeltaPVa;
 	BottomValue = LHV * (SlopeFS + PsycParam * (1 + ga / LayerConductance));
 	Deltat = TopValue / BottomValue;
-
 
 	/* This is the original from WIMOVAC*/
 	Deltat = 0.01;
@@ -591,6 +615,9 @@ but Thornley and Johnson use it as MJ kg-1  */
 	/* Rprintf("LayerConductance %.8f \n", LayerConductance); */
 
         /* For now */
+/* This needs to be fixed, but at the moment it seems that the way we apply
+   these equations LayerConductance is too small so that TransR is too small */
+
 	TransR = EPen;
 
 	/* This values need to be converted from Kg/m2/s to
@@ -604,7 +631,7 @@ but Thornley and Johnson use it as MJ kg-1  */
 	tmp.EPenman = EPen * 1e6 / 18; 
 	tmp.EPriestly = EPries * 1e6 / 18; 
 	tmp.Deltat = Deltat;
-	tmp.LayerCond = LayerConductance * 41000;   
+	tmp.LayerCond = LayerConductance * 41000 * LeafAreaIndex;   
 	/*    tmp.LayerCond = RH2;   */
 	/*   tmp.LayerCond = 0.7; */
 	return(tmp);

@@ -1,9 +1,85 @@
-     data(doy124)
+## Simple example
+nlay <- 50
+res <- CanA(lai=3, doy=200, hr=12,
+            solar=1500, temp=25, rh=0.7,
+            windspeed=2, nlayers=nlay)
+
+res$CanopyAssim
+
+##  2 layers = 0.00347
+##  3 layers = 0.00378
+##  4 layers = 0.00394
+## 10 layers = 0.00422
+## 20 layers = 0.00431
+## 40 layers = 0.00435
+## 50 layers = 0.00435
+
+## Example for a full day
+data(weather05)
+doy200 <- weather05[weather05$doy == 200,]
+
+lai <- 3
+nlay <- 8
+tmp2 <- NULL
+
+for(i in 1:24){
+  doy <- doy200[i,2]
+  hr  <- doy200[i,3]
+  solar <- doy200[i,4]
+  temp <- doy200[i,5]
+  rh <- 0.5
+  ws <- 4
+
+  tmp <- CanA(lai,doy,hr,solar,temp,rh,ws,nlayers=nlay,chi.l=1)$LayMat
+
+  tmp <- cbind(hour=hr, layers=1:nlay,tmp)
+  tmp2 <- rbind(tmp2,tmp)
+     
+}
+
+## xyplot(TransSun + TransShade ~ hour | factor(layers), type='l',
+##        xlab = "Layers", ylab="Transpiration",
+##        auto.key=TRUE, data = as.data.frame(tmp2))
+
+xyplot(Leafsun + Leafshade ~ hour | factor(layers), type='l',
+       xlab = "Layers", ylab="Leaf Area (m2/m2)",
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+
+xyplot(AssimSun + AssimShade ~ hour | factor(layers), type='l',
+       xlab = "Layers", ylab="Assimilation (micro mol/m2/s)",
+       auto.key=TRUE, data = as.data.frame(tmp2))
+
+xyplot(I(TransSun*Leafsun) + I(TransShade*Leafshade) ~ hour | factor(layers), type='l',
+       xlab = "Layers", ylab="Transpiration (kg/m2/hr)",
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+
+xyplot(I(AssimSun*Leafsun) + I(AssimShade*Leafshade) ~ hour | factor(layers), type='l',
+       xlab = "Layers", ylab="Assimilation (micro mol /m2 ground /s)",
+       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+
+xyplot(DeltaSun + DeltaShade ~ hour | factor(layers), type='l',
+       xlab = "Layers", ylab="Delta temperature",
+       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+
+xyplot(CondSun + CondShade ~ hour | factor(layers), type='l',
+       xlab = "Layers", ylab="Conductance (mmol/m2/s)",
+       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+
+
+
+
+
+
+
+data(doy124)
      dat2 <- NULL
      tmp2 <- matrix(ncol=5,nrow=24)
      tmp3 <- matrix(ncol=4,nrow=24)
      layers <- 10
      for(i in 1:24){
+         
         lai <- doy124[i,1]
         doy <- doy124[i,3]
         hr  <- doy124[i,4]
@@ -26,34 +102,42 @@
        dat2 <- rbind(dat2,dat1)
      }
 
-     ## Plot of Irradiance for the 10 layers
+tmp2 <- as.data.frame(tmp2)
+
+names(tmp2) <- c("CanopyAssim","CanopyTrans","TranPen","TranEpries","CanopyCond")
+
+xyplot(CanopyTrans + TranPen + TranEpries ~ 1:24, data = tmp2,
+       type='l', auto.key=TRUE)
+
+
+## Plot of Irradiance for the 10 layers
 ##png("old-sunML.png")
-     xyplot(IDir + IDiff ~ hour | factor(layer),type="o",
-      data = dat2, xlab="hour",layout=c(2,layers/2),col=c("blue","green"),lwd=1.5,
-            ylab=expression(paste("Irradiance (",mu,"mol ",m^-2," ",s^-1,")")))
+xyplot(IDir + IDiff ~ hour | factor(layer),type="o",
+     data = dat2, xlab="hour",layout=c(2,layers/2),col=c("blue","green"),lwd=1.5,
+        ylab=expression(paste("Irradiance (",mu,"mol ",m^-2," ",s^-1,")")))
 ##dev.off()
 
-     ## Plot of TempDiff for the 10 layers
-pdf("LeafTemp.pdf")
-     xyplot(DeltaSun + DeltaShade ~ hour | factor(layer),type="o",
+## Plot of TempDiff for the 10 layers
+#pdf("LeafTemp.pdf")
+xyplot(DeltaSun + DeltaShade ~ hour | factor(layer),type="o",
       data = dat2, xlab="hour",layout=c(2,layers/2),col=c("blue","green"),lwd=1.5,
             ylab="Delta temperature (Celsius)")
-dev.off()
+#dev.off()
 
 ## Plot of Leaf area (sunlit and shaded) for the 10 layers
-     xyplot(Leafsun + Leafshade ~ hour | factor(layer),type="o",
+xyplot(Leafsun + Leafshade ~ hour | factor(layer),type="o",
       data = dat2, xlab="hour",layout=c(2,layers/2),col=c("blue","green"),lwd=1.5,
             ylab=expression(paste("Leaf Area (",m^2," ",m^-2,")")))
 
 
-     ## Plot of Transpiration for the 10 layers
-     xyplot(TransSun + TransShade ~ hour | factor(layer),type="o",
-      data = dat2, xlab="hour",layout=c(2,layers/2),col=c("blue","green"),lwd=1.5,
-            ylab=expression(paste("Transpiration (mm ",H[2],"O ",m^-2," ",s^-1,")")))
+## Plot of Transpiration for the 10 layers
+xyplot(TransSun + TransShade ~ hour | factor(layer),type="o",
+     data = dat2, xlab="hour",layout=c(2,layers/2),col=c("blue","green"),lwd=1.5,
+           ylab=expression(paste("Transpiration (mm ",H[2],"O ",m^-2," ",s^-1,")")))
 
 
-     ## Plot of Assimilation for the 10 layers
-     xyplot(AssimSun + AssimShade ~ hour | factor(layer),type="o",
+## Plot of Assimilation for the 10 layers
+   xyplot(AssimSun + AssimShade ~ hour | factor(layer),type="o",
       data = dat2, xlab="hour",layout=c(2,layers/2),col=c("blue","green"),lwd=1.5,
             ylab=expression(paste("Assimilation (",mu,"mol ",m^-2," ",s^-1,")")))
 
@@ -147,6 +231,7 @@ data(weather05)
 doy200 <- weather05[weather05$doy == 200,]
 
 lai <- 5
+nlayers <- 45
 trns <- numeric(24)
 tpen <- numeric(24)
 tpries <- numeric(24)
@@ -162,12 +247,34 @@ for(i in 1:24){
   rh <- 0.5
   ws <- 4
 
-  trns[i] <- CanA(lai,doy,hr,solar,temp,rh,ws,chi.l=1)$CanopyTrans
-  tpen[i] <- CanA(lai,doy,hr,solar,temp,rh,ws,chi.l=1)$TranEpen
-  tpries[i] <- CanA(lai,doy,hr,solar,temp,rh,ws,chi.l=1)$TranEpries
+  trns[i] <- CanA(lai,doy,hr,solar,temp,rh,ws,chi.l=1, nlayers=nlayers)$CanopyTrans
+  tpen[i] <- CanA(lai,doy,hr,solar,temp,rh,ws,chi.l=1, nlayers=nlayers)$TranEpen
+  tpries[i] <- CanA(lai,doy,hr,solar,temp,rh,ws,chi.l=1, nlayers=nlayers)$TranEpries
      
 }
 
 sum(trns)
 sum(tpen)
 sum(tpries)
+
+
+
+LayerWindSpeed <- 2
+kappa <- 0.41
+WindSpeedHeight <- 2
+CanopyHeight <- 1
+ZetaCoef = 0.026;
+ZetaMCoef = 0.13;
+dCoef <- 0.77
+Zeta = ZetaCoef * CanopyHeight;
+	Zetam = ZetaMCoef * CanopyHeight;
+	d = dCoef * CanopyHeight;
+
+	ga0 = kappa^2 * LayerWindSpeed;
+	ga1 = log((WindSpeedHeight + Zeta - d)/Zeta);
+	ga2 = log((WindSpeedHeight + Zetam - d)/Zetam);
+	(ga = ga0/(ga1*ga2))
+
+## ws = 0.5, ga = 0.00923
+## ws = 1, ga = 0.0185
+## ws = 2, ga = 0.0369

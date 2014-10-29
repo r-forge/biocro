@@ -81,7 +81,7 @@ CanA(lai,doy,hr,solar,temp,rh,windspeed,
   canopy transpiration (\eqn{Mg ha^{-1}}{Mg/ha} \eqn{hr^{-1}}{per hour})
 
   CanopyCond: hourly
-  canopy conductance (units ?)
+  canopy conductance (mmol/m2/s)
 
   TranEpen: hourly
   canopy transpiration according to Penman (\eqn{kg m^{-2}}
@@ -99,18 +99,18 @@ CanA(lai,doy,hr,solar,temp,rh,windspeed,
   LayMat: hourly by Layer
   matrix containing details of the calculations by layer (each layer is
   a row).
-  col1: Direct Irradiance
-  col2: Diffuse Irradiance
-  col3: Leaf area in the sun
-  col4: Leaf area in the shade
-  col5: Transpiration of leaf area in the sun
-  col6: Transpiration of leaf area in the shade
-  col7: Assimilation of leaf area in the sun
-  col8: Assimilation of leaf area in the shade
+  col1: Direct Irradiance (micro mol/m2/s)
+  col2: Diffuse Irradiance (micro mol/m2/s)
+  col3: Leaf area in the sun (m2/m2)
+  col4: Leaf area in the shade (m2/m2)
+  col5: Transpiration of leaf area in the sun (kg/m2/h)
+  col6: Transpiration of leaf area in the shade (kg/m2/h)
+  col7: Assimilation of leaf area in the sun (micro mol/m2/s)
+  col8: Assimilation of leaf area in the shade (micro mol/m2/s)
   col9: Difference in temperature between the leaf and the air
-  (i.e. TLeaf - TAir) for leaves in sun.
+  (i.e. TLeaf - TAir) for leaves in sun (units = C).
   col10: Difference in temperature between the leaf and the air
-  (i.e. TLeaf - TAir) for leaves in shade.
+  (i.e. TLeaf - TAir) for leaves in shade (units = C).
   col11: Stomatal conductance for leaves in the sun
   col12: Stomatal conductance for leaves in the shade
   col13: Nitrogen concentration in the leaf (g m^-2)

@@ -186,7 +186,7 @@ method for the relationship between soil water content and water stress
 factor. See \code{\link{wtrstr}} for more details for the first four
 options. The option "lwp" is more mechanistic and it attempts to calculate the
 leaf and soil water potential. The option "thresh" initiates the water
-stress when about soil water content drops below 30 percent of water
+stress when about soil water content drops below 30 (default) percent of water
 filled pore space. 
 
 \code{scsf} stomatal conductance sensitivity factor (default = 1). This is an
@@ -209,6 +209,15 @@ evaporation.
 
 \code{rsdf} Root soil depth factor. Empirical coefficient used in
 calculating the depth of roots as a function of root biomass.
+
+\code{smthresh} The threshold used for the wsFun = "thresh" method
+
+\code{lrt} and \code{lrf} are used to cause a reduction in leaf mass
+when stress is sever. It makes it possible to remove leaf mass before
+senescence has ocurred. The threshold (lrt) determines at what point this is
+activated and the factor (lrf) determines the severity
+(lrf*(1-LeafWS)). This is completely experimental, it has never been
+tested. Possible values are lrt=0.2 and lrf=1e-3.
 
 }
 
