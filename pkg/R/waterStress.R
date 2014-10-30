@@ -87,7 +87,7 @@ wsRcoef <- function(aw,fieldc,wiltp,phi1,phi2, smthresh, wsFun = c("linear","log
     wsPhoto = (1 - exp(-2.5 * (theta - wiltp)/(1 - wiltp))) / (1 - exp(-2.5));
   }else
   if(wsFun == "thresh"){
-    raw = (naw - wiltp)/(fieldc - wiltp)
+    raw = (aw - wiltp)/(fieldc - wiltp)
     if(raw > smthresh){
       wsPhoto = 1
     }else{

@@ -11,7 +11,7 @@
 }
 \usage{
 wtrstr(precipt, evapo, cws, soildepth, fieldc, wiltp, phi1 = 0.01, 
-    phi2 = 10, wsFun = c("linear", "logistic", "exp", "none")) 
+    phi2 = 10, smthresh = 0.3, wsFun = c("linear", "logistic", "exp", "none","thresh")) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,6 +24,7 @@ wtrstr(precipt, evapo, cws, soildepth, fieldc, wiltp, phi1 = 0.01,
   \item{phi1}{ coefficient which controls the spread of the logistic function.}
   \item{phi2}{ coefficient which controls the effect on leaf area
     expansion.}
+  \item{smthresh}{Soil moisture threshold for the 'thresh' method}
   \item{wsFun}{option to control which method is used for the water
     stress function.}
 

@@ -7,13 +7,14 @@
   the sunlit-shade model and the multiple layers. 
 }
 \usage{
-sunML(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,heightf=3)
+sunML(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,heightf=3,
+  maxIdir = 2235, maxIdiff = 119)
 }
 
 \arguments{
 
-\item{I.dir}{ direct light (quantum flux), (\eqn{\mu mol \; m^{-2} \; s^{-1}}{micro mol /m2/s}).} 
-\item{I.diff}{ indirect light (diffuse),  (\eqn{\mu mol \; m^{-2} \; s^{-1}}{micro mol /m2/s}).} 
+\item{Idir}{ direct light (quantum flux), (\eqn{\mu mol \; m^{-2} \; s^{-1}}{micro mol /m2/s}).} 
+\item{Idiff}{ indirect light (diffuse),  (\eqn{\mu mol \; m^{-2} \; s^{-1}}{micro mol /m2/s}).} 
 \item{LAI}{ leaf area index, default 8.}
 \item{nlayers}{ number of layers in which the canopy is partitioned, default 8.}
 \item{cos.theta}{ cosine of \eqn{\theta}{theta}, solar zenith angle.}
@@ -22,6 +23,8 @@ sunML(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,heightf=3)
   the canopy segment.}
 \item{heightf}{height factor. simple empirical relationship between LAI
   and height of a canopy.}
+\item{maxIdir}{Maximum direct irradiance}
+\item{maxIdiff}{Maximum diffuse irradiance}
 
 }
 

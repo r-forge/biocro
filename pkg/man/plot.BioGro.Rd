@@ -4,7 +4,7 @@
 \title{ Plotting function for BioGro objects }
 \description{
   By default it plots stem, leaf, root, rhizome and LAI for a
-  \code{BioGro} object. Optionally, the observed data can be plotted.
+  \code{\link{BioGro}} object. Optionally, the observed data can be plotted.
   
 }
 
@@ -44,3 +44,4 @@
 }
 \seealso{ \code{\link{BioGro}} \code{\link{OpBioGro}}}
 \keyword{ hplot }
+

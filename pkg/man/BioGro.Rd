@@ -358,20 +358,21 @@ res0 <- BioGro(weather05)
 plot(res0)
 
 ## Looking at the soil model
-
-res1 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6))
+sldpth <- 2
+res1 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6, soilDepth=sldpth))
 plot(res1, plot.kind="SW") ## Without hydraulic distribution
-res2 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6, hydrDist=TRUE))
+res2 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6,
+hydrDist=TRUE, soilDepth=sldpth))
 plot(res2, plot.kind="SW") ## With hydraulic distribution
 
 
 ## Example of user defined soil parameters.
 ## The effect of phi2 on yield and soil water content
 
-ll.0 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=1)
-ll.1 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=2)
-ll.2 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=3)
-ll.3 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=4)
+ll.0 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=1, soilDepth=sldpth)
+ll.1 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=2, soilDepth=sldpth)
+ll.2 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=3, soilDepth=sldpth)
+ll.3 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=4, soilDepth=sldpth)
 
 ans.0 <- BioGro(weather05,soilControl=ll.0)
 ans.1 <- BioGro(weather05,soilControl=ll.1)

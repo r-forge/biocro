@@ -1,5 +1,10 @@
 \name{MaizeGro}
 \alias{MaizeGro}
+\alias{MaizeCAllocParms}
+\alias{MaizeNitroParms}
+\alias{MaizePhenoParms}
+\alias{MaizePhotoParms}
+\alias{MaizeSeneParms}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
    Simulation of Maize, Growth, LAI, Photosynthesis and phenology
@@ -17,6 +22,7 @@ MaizeGro(WetDat, plant.day = NULL, emerge.day = NULL, harvest.day = NULL,
     MaizeSeneControl = list(), photoControl = list(), MaizePhenoControl = list(), 
     MaizeCAllocControl = list(), laiControl = list(), soilControl = list(), 
     MaizeNitroControl = list(), centuryControl = list()) 
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -62,6 +68,7 @@ MaizeGro(WetDat, plant.day = NULL, emerge.day = NULL, harvest.day = NULL,
 
 \code{mResp} (maintenance respiration) a vector of length 2 with the first component for leaf and stem and the second component for rhizome and root.
 
+ For other terms see \code{\link{BioGro}}.
 }
 
 
@@ -110,10 +117,15 @@ function.
       argument used to pass parameters related to phenology characteristics
 %%     ~~Describe \code{MaizePhenoControl} here~~
 }
+
+\item{MaizeCAllocControl}{
+Carbon allocation partitioning for maize. Similar to \code{\link{BioGro}}.
+  }
+
   \item{soilControl}{
 %%     ~~Describe \code{soilControl} here~~
 }
-  \item{nitroControl}{
+  \item{MaizeNitroControl}{
 %%     ~~Describe \code{nitroControl} here~~
 }
   \item{centuryControl}{
