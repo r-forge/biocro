@@ -115,6 +115,9 @@ CanA(lai,doy,hr,solar,temp,rh,windspeed,
   col12: Stomatal conductance for leaves in the shade
   col13: Nitrogen concentration in the leaf (g m^-2)
   col14: Vmax value as depending on leaf nitrogen
+  col15: Relative humidty (0-1)
+  col16: Wind speed (m/s)
+  col17: Canopy height (m)
 }    
 
 \examples{

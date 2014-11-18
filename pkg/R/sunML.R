@@ -72,13 +72,16 @@ sunML <- function(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,height
 
     Fsun = Ls/(Ls+Ld)
     Fshade = Ld/(Ls+Ld)
+
+    Itotal =(Fsun*Isolar + Idiffuse) * (1-exp(-k*LAIi))/k
+
     Iaverage = (Fsun*Isolar + Idiffuse) * (1 - exp(-k * LAIi)) / k ## Itot is the radiation
     ## ##intercepted by an average m^2 of leaf in a given layer
     ##print(k)
     ## Iaverage = (Fsun*(Isolar + Idiffuse) + Fshade*Idiffuse) * (1 - exp(-k * LAIi)) /k
     layIdir[i+1] = Isolar + Idiffuse
     layIdiff[i+1] = Idiffuse
-    layItotal[i+1] = Iaverage
+    layItotal[i+1] = Iotal
     layFsun[i+1] = Fsun
     layFshade[i+1] = Fshade
     layMaxIdir[i+1] = maxIsolar

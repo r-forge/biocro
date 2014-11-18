@@ -62,8 +62,22 @@ void lightME(double lat, int DOY, int td)
 	CCos = cos(deltaR) * cos(omega);
 
 	CosZenithAngle = SSin + CCos * cos(tf);
-	if(CosZenithAngle < pow(10,-10))
-		CosZenithAngle = pow(10,-10);
+	/* if(CosZenithAngle < pow(10,-10)) */
+	/* 	CosZenithAngle = pow(10,-10); */ 
+        /* The old code above caused problems when using
+           measured hourly data in some cases when 
+           the value was really low. For the moment, the code
+           below is a temporary fix. Some longer 
+           term solution is needed.*/
+	if(CosZenithAngle < 0.10){
+		if(td > 18 & td < 22){ 
+			CosZenithAngle = 0.10;
+		}else{
+			if(CosZenithAngle < 0)
+				CosZenithAngle = 0.00001;
+		}
+	} 
+
 
 	CosHour = -tan(omega) * tan(deltaR);
 	CosHourDeg = (1/DTR)*CosHour;
@@ -285,6 +299,14 @@ void sunML(double Idir, double Idiff, double LAI, int nlayers,
 /* Additional Functions needed for EvapoTrans */
 
 /* RH and Wind profile function */
+/* This function could be modified to follow Shaw 1974 */
+/* This would not make a big impact on the model */
+/* Especially since LAI and canopy height are related */
+/* However the k coefficient could be exposed so that */
+/* Different canopy structures could be modeled */
+/* Leuning 1995 uses a simple exponential decay.
+   They use a value of 0.5 for the extinction coefficient
+   (Table 1) */
 void WINDprof(double WindSpeed, double LAI, int nlayers)
 {
 	int i;

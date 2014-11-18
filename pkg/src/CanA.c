@@ -122,7 +122,7 @@ SEXP CanA(SEXP Lai,SEXP Doy,SEXP HR,SEXP SOLAR,SEXP TEMP,
   PROTECT(epries = allocVector(REALSXP,1));
   PROTECT(cond = allocVector(REALSXP,1));
 
-  PROTECT(mat1 = allocMatrix(REALSXP,16,nlayers));
+  PROTECT(mat1 = allocMatrix(REALSXP,17,nlayers));
 
 
   /* Light Macro Environment. As a side effect it populates tmp1. This
@@ -197,22 +197,23 @@ layIdiff, layShade vectors. */
 	    AssIdiff = tmpc42.Assim;
 
     /* Collect direct radiation assim and trans in a matrix */
-	    REAL(mat1)[i*16] = IDir;
-	    REAL(mat1)[1 + i*16] = IDiff;
-	    REAL(mat1)[2 + i*16] = Leafsun;
-	    REAL(mat1)[3 + i*16] = Leafshade;
-	    REAL(mat1)[4 + i*16] = tmp5_ET.TransR;
-	    REAL(mat1)[5 + i*16] = tmp6_ET.TransR;
-	    REAL(mat1)[6 + i*16] = AssIdir;
-	    REAL(mat1)[7 + i*16] = AssIdiff;
-	    REAL(mat1)[8 + i*16] = tmp5_ET.Deltat;
-	    REAL(mat1)[9 + i*16] = tmp6_ET.Deltat;
-	    REAL(mat1)[10 + i*16] = tmp5_ET.LayerCond; 
-	    REAL(mat1)[11 + i*16] = tmp6_ET.LayerCond; 
-	    REAL(mat1)[12 + i*16] = leafN_lay; 
-	    REAL(mat1)[13 + i*16] = vmax1;
-	    REAL(mat1)[14 + i*16] = rh; 
-	    REAL(mat1)[15 + i*16] = WindS; 
+	    REAL(mat1)[i*17] = IDir;
+	    REAL(mat1)[1 + i*17] = IDiff;
+	    REAL(mat1)[2 + i*17] = Leafsun;
+	    REAL(mat1)[3 + i*17] = Leafshade;
+	    REAL(mat1)[4 + i*17] = tmp5_ET.TransR;
+	    REAL(mat1)[5 + i*17] = tmp6_ET.TransR;
+	    REAL(mat1)[6 + i*17] = AssIdir;
+	    REAL(mat1)[7 + i*17] = AssIdiff;
+	    REAL(mat1)[8 + i*17] = tmp5_ET.Deltat;
+	    REAL(mat1)[9 + i*17] = tmp6_ET.Deltat;
+	    REAL(mat1)[10 + i*17] = tmp5_ET.LayerCond; 
+	    REAL(mat1)[11 + i*17] = tmp6_ET.LayerCond; 
+	    REAL(mat1)[12 + i*17] = leafN_lay; 
+	    REAL(mat1)[13 + i*17] = vmax1;
+	    REAL(mat1)[14 + i*17] = rh; 
+	    REAL(mat1)[15 + i*17] = WindS; 
+	    REAL(mat1)[16 + i*17] = CanHeight; 
 
 /* Below the contribution of each portion (sun, shade) is considered for assimilation, transpiration and conductance */
 

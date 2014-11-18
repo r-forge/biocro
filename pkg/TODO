@@ -1,9 +1,18 @@
 ########################################################################
 #
-# Updated 11-20-2012
+# Updated 11-15-2014
 #
 #
 ########################################################################
+
+ o Keep working on the EvapoTrans function the ga r boundary layer of
+   the leaf needs to be improved. There is the version from WIMOVAC,
+   the version of Leuning and the version from Thornley.
+
+ o Look at the sunML function (both R and C) there is a bug that only 
+   seems to occur at certain combinations of days and hours that
+   triggers a high diffuse radiation. The kd needs to be calculated
+   rather than a fixed value of say 0.7.
 
  o Notes about the model: the soil water potential seems to stop at
    -1500 but  this should not be the case. It should be able to go down lower.

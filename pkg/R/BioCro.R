@@ -15,6 +15,11 @@
 ##  http://www.r-project.org/Licenses/
 ##
 ##
+## Some of the code used internally in BioGro is derived from WIMOVAC
+##
+## WIMOVAC was created by Stephen Long and Steve Humphries
+## http://www.life.illinois.edu/plantbio/wimovac/model.htm
+
 
 BioGro <- function(WetDat, day1=NULL, dayn=NULL,
                    timestep=1,
@@ -205,7 +210,7 @@ BioGro <- function(WetDat, day1=NULL, dayn=NULL,
 
 
 canopyParms <- function(Sp = 1.7, SpD = 0, nlayers = 10,
-                        kd = 0.1, chi.l = 1,
+                        kd = 0.7, chi.l = 1,
                         mResp=c(0.02,0.03), heightFactor=3){
 
   if((nlayers < 1) || (nlayers > 50))

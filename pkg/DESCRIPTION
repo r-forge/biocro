@@ -1,5 +1,5 @@
 Package: BioCro
-Version: 0.263-0
+Version: 0.263-1
 Title: Simulation of Biomass Crops
 Author: Fernando Miguez <femiguez@iastate.edu>
 Maintainer: Fernando Miguez <femiguez@iastate.edu>
@@ -8,4 +8,4 @@ Suggests: coda
 Imports: stats
 Description: Simulates C4 photosynthesis, biomass production and estimates parameters for plant phyisiological models using optimization techinques and Markov chains.
 License: GPL (>= 2)
-Packaged: 2012-08-14 14:28:46 UTC; root
+

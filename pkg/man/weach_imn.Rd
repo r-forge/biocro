@@ -13,7 +13,14 @@
   It takes and returns hourly weather information only.
 }
 \usage{
-weach_imn(data, lati, ts = 1, temp.units = c("Fahrenheit", "Celsius"), rh.units = c("percent", "fraction"), ws.units = c("mph", "mps"), pp.units = c("in", "mm"), ...)
+weach_imn(data, lati, ts = 1, temp.units = c("Fahrenheit", "Celsius"),
+rh.units = c("percent", "fraction"), ws.units = c("mph", "mps"),
+pp.units = c("in", "mm"), ...)
+
+weach_imn2(data, temp.units = c("Fahrenheit", "Celsius"), rh.units = c("percent", 
+    "fraction"), ws.units = c("mph", "mps"), pp.units = c("in", 
+    "mm"), na.chr = -99) 
+NULL
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -50,7 +57,7 @@ weach_imn(data, lati, ts = 1, temp.units = c("Fahrenheit", "Celsius"), rh.units 
 }
 }
 \details{
-    This function should be used to transform data from the Iowa Mesonet
+    The first function (weach_imn) should be used to transform data from the Iowa Mesonet
     at hourly intervals from here:
 
     http://mesonet.agron.iastate.edu/agclimate/hist/hourlyRequest.php
@@ -80,6 +87,13 @@ weach_imn(data, lati, ts = 1, temp.units = c("Fahrenheit", "Celsius"), rh.units 
 \item{col 9}{ wind speed (mph) }
 
 }
+
+The second function is in development and it is meant to be used with
+data downloaded from:
+
+http://mesonet.agron.iastate.edu/agclimate/hist/hourly.php
+
+It might not work well at the moment. It still needs work.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{

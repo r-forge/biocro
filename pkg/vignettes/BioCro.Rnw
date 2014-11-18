@@ -86,7 +86,7 @@ timestep. The inputs should all be of length 1. See \texttt{?CanA} for details.
 
 <<ex2>>=
 nlay <- 8
-res <- CanA(lai=3, doy=200, hr=20, solar=1500, temp=25, rh=0.7, 
+res <- CanA(lai=3, doy=200, hr=12, solar=1500, temp=25, rh=0.7, 
             windspeed=2, nlayers=nlay)
 res
 @ 

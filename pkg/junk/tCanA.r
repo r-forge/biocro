@@ -14,6 +14,114 @@ res$CanopyAssim
 ## 40 layers = 0.00435
 ## 50 layers = 0.00435
 
+## Example for a full day by layer
+data(weather05)
+doy200 <- weather05[weather05$doy == 200,]
+
+lai <- 5
+nlay <- 5
+chi.l <- 1
+lat <- 42
+tmp2 <- NULL
+
+for(i in 1:24){
+  doy <- doy200[i,2]
+  hr  <- doy200[i,3]
+  solar <- doy200[i,4]
+  temp <- doy200[i,5]
+  rh <- 0.5
+  ws <- 4
+
+  tmp <- CanA(lai,doy,hr,solar,temp,rh,ws,
+              nlayers=nlay,chi.l=chi.l,
+              lat = lat)$LayMat
+
+  tmp <- cbind(hour=hr, layers=1:nlay,tmp)
+  tmp2 <- rbind(tmp2,tmp)
+     
+}
+
+ttle <- paste("LAI = ",lai,
+              "   layers = ",nlay,
+              "   chi.l = ",chi.l,
+              "   lat = ",lat, sep="")
+
+xyplot(IDir + IDiff ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Irradiance (micro mol/m2/s)",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+
+## png("../figs/LeafSun-Shade.png")
+xyplot(Leafsun + Leafshade ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Leaf Area (m2/m2)",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+## dev.off()
+
+xyplot(AssimSun + AssimShade ~ hour | factor(layers), type='l',
+       xlab = "Layers", ylab="Assimilation (micro mol/m2/s)",
+       main=ttle, 
+       auto.key=TRUE, data = as.data.frame(tmp2))
+
+## png("../figs/TransSun-Shade.png")
+xyplot(I(TransSun*Leafsun) + I(TransShade*Leafshade) ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Transpiration (kg/m2/hr)",       
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+## dev.off()
+
+## png("../figs/AssimSun-Shade.png")
+xyplot(I(AssimSun*Leafsun) + I(AssimShade*Leafshade) ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Assimilation (micro mol /m2 ground /s)",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+## dev.off()
+
+## png("../figs/DeltaSun-Shade.png")
+xyplot(DeltaSun + DeltaShade ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Delta temperature",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+#dev.off()
+
+## png("../figs/CondSun-Shade.png")
+xyplot(CondSun + CondShade ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Conductance (mmol/m2/s)",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+## dev.off()
+
+## png("../figs/CondSun-Shade.png")
+xyplot(CondSun + CondShade ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Conductance (mmol/m2/s)",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
+## dev.off()
+
+xyplot(RH ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Relative Humidity",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+
+xyplot(WindS ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Wind speed (m/s)",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+
+xyplot(CanHeight ~ hour | factor(layers), type='l',
+       xlab = "hour", ylab="Canopy Height (m)",
+       main=ttle, 
+       key=simpleKey(text=c("Sun","Shade")),
+       data = as.data.frame(tmp2), layout=c(nlay,1))
+
+
+
+
 ## Example for a full day
 data(weather05)
 doy200 <- weather05[weather05$doy == 200,]
