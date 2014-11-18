@@ -81,7 +81,7 @@ sunML <- function(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,height
     ## Iaverage = (Fsun*(Isolar + Idiffuse) + Fshade*Idiffuse) * (1 - exp(-k * LAIi)) /k
     layIdir[i+1] = Isolar + Idiffuse
     layIdiff[i+1] = Idiffuse
-    layItotal[i+1] = Iotal
+    layItotal[i+1] = Itotal
     layFsun[i+1] = Fsun
     layFshade[i+1] = Fshade
     layMaxIdir[i+1] = maxIsolar
