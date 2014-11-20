@@ -159,7 +159,7 @@ See \code{\link{wtrstr}} for more details.
 \code{phi2} Parameter which controls the reduction of the leaf area growth due to water stress.
 See \code{\link{wtrstr}} for more details.
 
-\code{soilDepths} Maximum depth of the soil that the roots have access to (i.e. rooting depth).
+\code{soilDepth} Maximum depth of the soil that the roots have access to (i.e. rooting depth).
 
 \code{hydrDist} default is 0 which means that hydraulic re distribution is not
 computed. If a number other than 0 is used it will be interpreted as 'TRUE' and
@@ -179,7 +179,7 @@ soil layer is used the behavior can be quite different.
 \code{soilDepths} Intervals for the soil layers. As a default, the soil will be
 divided in equal depths if more than one layer is specified, but this argument
 can be used to change this. For example, three layers can be constructed by
-supplying a vector such as \code{c(0,5,30,1)}.
+supplying a vector such as \code{c(0,0.3,0.5,1)}.
 
 \code{wsFun} one of "logistic","linear","exp", "none", "thresh" or "lwp". Controls the
 method for the relationship between soil water content and water stress

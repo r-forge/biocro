@@ -25,7 +25,7 @@ struct Can_Str CanAC(double LAI,int DOY,int hr,double solarR,double Temp,
 struct lai_str laiLizasoFun(double thermalt, double phenostage, double phyllochron1,
 			    double phyllochron2, double Ax, double LT, double k0, 
 			    double a1, double a2, double L0, double LLx, double Lx, 
-			    double LNl);
+			    double LNl, double stress);
 
 struct lai_str laiBirchdiscontinuousFun(double phenostage, double Lt, double Amax, 
 					double c1, double c2, double c3, double c4);

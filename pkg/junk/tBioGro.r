@@ -103,3 +103,11 @@ res2 <- BioGro(weather05, soilControl = soilParms(wsFun='lwp', soilLayers=1, lea
                             soilDepth = 3.2))
 sum(res2$CanopyTrans + res2$SoilEvapo)
 max((res2$Leaf + res2$Stem))
+
+
+## Testing the soilDepths component
+data(weather05)
+soilP <- soilParms(soilLayers = 10)
+res <- BioGro(weather05, soilControl = soilP)
+
+plot(res, plot.kind="SW")

@@ -1126,7 +1126,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 /* Here is a convention aw is available water in volume and awc
    is available water content as a fraction of the soil section being investigated.
    paw is plant available water aw - wiltp */
-	double aw, paw, awc, awc2, Newpawha, raw;
+	double aw, paw, awc, awc2, Newpawha, raw, cw;
 	double drainage = 0.0;
 	double wsPhoto = 0.0, wsSpleaf = 0.0, phi10;
 	double wsPhotoCol = 0.0, wsSpleafCol = 0.0;
@@ -1138,7 +1138,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 	double EvapoTra = 0.0, oldEvapoTra = 0.0, Sevap = 0.0, Ctransp = 0.0;
 	double psim1 = 0.0, psim2 = 0.0, K_psim = 0.0, J_w = 0.0, dPsim = 0.0;
 	double theta_s; /* This is the saturated soil water content. Larger than FieldC.*/
-	int i;
+	int i, m;
 	int j = layers - 1; 
 
 	/* Specify the soil type */
@@ -1161,6 +1161,44 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 
 	/* unit conversion for precip */
 	waterIn = precipit * 1e-3; /* convert precip in mm to m*/
+
+	if(waterIn > 0){
+		for(m=0;m<layers;m++){
+
+			/* This supports unequal depths. */
+			if(m == 0){
+				layerDepth = depths[1];
+			}else{
+				layerDepth = depths[m] - depths[m-1];
+			}
+        
+			/* There is some rain. Need to add it.*/
+			if(m == 0){
+				/* I only add the water to the first layer */
+				/* This model does not really consider the infiltration rate and therefore runoff */
+				cw = (cws[m] * layerDepth + waterIn) + oldWaterIn;
+			}else{
+				cw = (cws[m] * layerDepth) + oldWaterIn;
+			}
+			cws[m] = cw / layerDepth; 
+
+			/* They are both in meters so it works */
+			/* Adding the same amount to water to each layer */
+			/* In case there is overflow */
+			/* diffw = fieldc * layerDepth - aw; */
+			diffw = theta_s * layerDepth - cw;
+
+			if(diffw < 0){
+				/* This means that precipitation exceeded the capacity of the first layer */
+				/* Save this amount of water for the next layer */
+				oldWaterIn = -diffw;
+				/* aw = fieldc * layerDepth; */
+				aw = theta_s * layerDepth;
+			}else{
+				oldWaterIn = 0.0;
+			}
+		}
+	}
 
 	for(j=0,i=layers-1;j<layers;j++,i--){
 	/* for(i=0;i<layers;i++){ */
@@ -1215,25 +1253,6 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 
 		aw = cws[i] * layerDepth;
 /* Available water (for this layer) is the current water status times the layer depth */
-
-		if(waterIn > 0){
-			/* There is some rain. Need to add it.*/
-			aw += waterIn / layers + oldWaterIn; /* They are both in meters so it works */
-                        /* Adding the same amount to water to each layer */
-                        /* In case there is overflow */
-			/* diffw = fieldc * layerDepth - aw; */
-			diffw = theta_s * layerDepth - aw;
-
-			if(diffw < 0){
-				/* This means that precipitation exceeded the capacity of the first layer */
-				/* Save this amount of water for the next layer */
-				oldWaterIn = -diffw;
-				/* aw = fieldc * layerDepth; */
-				aw = theta_s * layerDepth;
-			}else{
-				oldWaterIn = 0.0;
-			}
-		}
 
 		/* Root Biomass */
 		rootATdepth = rootDB * tmp4.rootDist[i];

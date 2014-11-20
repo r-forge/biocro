@@ -1,5 +1,5 @@
 /*
- *  BioCro/src/maizeGro.c by Fernando Ezequiel Miguez  Copyright (C) 2012
+ *  BioCro/src/AuxMaizeGro.c by Fernando Ezequiel Miguez  Copyright (C) 2012-14
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,8 @@
 struct lai_str laiLizasoFun(double thermalt, double phenostage, 
 			    double phyllochron1, double phyllochron2, 
 			    double Ax, double LT, double k0, double a1, 
-			    double a2, double L0, double LLx, double Lx, double LNl){
+			    double a2, double L0, double LLx, double Lx, 
+                            double LNl, double stress){
 
 	struct lai_str tmp;
 	double A, kei, tei;
@@ -34,6 +35,8 @@ struct lai_str laiLizasoFun(double thermalt, double phenostage,
 	double tsi;
 	double leafnumber ;
 	double totalLAI = 0.0;
+	double GRei0, GRei1, GRei;
+        double Al;
 
         if (phenostage <= 0) {
 	  leafnumber = 0;
@@ -52,7 +55,7 @@ struct lai_str laiLizasoFun(double thermalt, double phenostage,
 	    LNl = 3.59 + 0.498 * LT;
 	}
         /* Eq 12 in Lisazo 2003 */
-	/* double Wl = 0.333333 * LT; not used ? */
+	double Wl = 0.333333 * LT;
 	double LLi;
 
 	double Wk = LT / 8.18;
@@ -73,7 +76,7 @@ struct lai_str laiLizasoFun(double thermalt, double phenostage,
 		kei = k0 + 0.174 * exp( - ((ln - 1)*(ln - 1))/(2 * Wk * Wk));
 
 		/* Eq 10 in Lizaso 2003 */
-		LLi = L0 + Lx * exp( - (ln - LNl)*(ln - LNl)/ (2*Wk*Wk));
+		LLi = L0 + Lx * exp( - (ln - LNl)*(ln - LNl)/ (2*Wl*Wl));
 		
 
 		/* Eq 6 in Lizaso 2003 */
@@ -91,8 +94,14 @@ struct lai_str laiLizasoFun(double thermalt, double phenostage,
 		/* Applying Eq 4 in Lizaso 2003 */
 		A = Aei(ln, Ax, LNx, a1, a2);
 
+                /* Calculating growth rate */
+		GRei0 = exp(-kei * (thermalt - tei));
+		GRei1 = pow((1 + GRei0),2);
+                GRei = A * kei * (GRei0 / GRei1);
+
 		/* Applying Eq 2 in Lizaso 2003 */
-		tmp.leafarea[i] = Alogistic(thermalt, A, kei, tei);
+                Al = Alogistic(thermalt, A, kei, tei); /* Not really needed */
+		tmp.leafarea[i] = GRei * stress; /* This is only the increment in biomass for each time interval */ 
 
 		/* calculating senesced area for this leaf */
 		tmp.leafarea[i] -= Alogistic(thermalt, A, kei, tsi);

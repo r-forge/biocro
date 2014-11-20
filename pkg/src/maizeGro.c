@@ -1,5 +1,5 @@
 /*
- *  BioCro/src/maizeGro.c by Fernando Ezequiel Miguez  Copyright (C) 2012
+ *  BioCro/src/maizeGro.c by Fernando Ezequiel Miguez  Copyright (C) 2014
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -405,7 +405,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 			if(laiMethod == 2.0){
 				tmpLAI = laiLizasoFun(TTc, phenoStage, phyllochron1,
 						      phyllochron2, Ax, LT, k0,
-						      a1, a2, L0, LLx, Lx, LNl);
+						      a1, a2, L0, LLx, Lx, LNl, LeafWS);
 
 				for(i2=0;i2<MAXLEAFNUMBER;i2++){
 					REAL(LAImat)[i2 + i*MAXLEAFNUMBER] = tmpLAI.leafarea[i2];

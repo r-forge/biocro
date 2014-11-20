@@ -239,7 +239,7 @@ photoParms <- function(vmax=39, alpha=0.04, kparm=0.7, theta=0.83, beta=0.93, Rd
 
 
 soilParms <- function(FieldC=NULL,WiltP=NULL,phi1=0.01,phi2=10,soilDepth=2,iWatCont=NULL,
-                      soilType=6, soilLayers=1, soilDepths=NULL, hydrDist=0,
+                      soilType=6, soilLayers=1, soilDepths=NULL, hydrDist=1,
                       wsFun=c("linear","logistic","exp","none","lwp","thresh"),
                       scsf = 1, transpRes = 5e6, leafPotTh = -800,
                       rfl=0.2, rsec=0.3, rsdf=0.44, smthresh=0.3, lrt=0.7, lrf=0){
