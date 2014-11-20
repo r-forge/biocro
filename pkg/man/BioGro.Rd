@@ -161,7 +161,7 @@ See \code{\link{wtrstr}} for more details.
 
 \code{soilDepth} Maximum depth of the soil that the roots have access to (i.e. rooting depth).
 
-\code{hydrDist} default is 0 which means that hydraulic re distribution is not
+\code{hydrDist} default is 1 which means that hydraulic re distribution is
 computed. If a number other than 0 is used it will be interpreted as 'TRUE' and
 the hydraulic redistribution in the profile will be calculated. This is only
 relevant for a soil with multiple layers.
@@ -217,7 +217,7 @@ when stress is sever. It makes it possible to remove leaf mass before
 senescence has ocurred. The threshold (lrt) determines at what point this is
 activated and the factor (lrf) determines the severity
 (lrf*(1-LeafWS)). This is completely experimental, it has never been
-tested. Possible values are lrt=0.2 and lrf=1e-3.
+tested. Possible values are lrt=0.3 and lrf=1e-3.
 
 }
 

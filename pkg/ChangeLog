@@ -1,3 +1,15 @@
+2014-11-20  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
+
+	* BioCro_0.263-3
+
+	There is a reason this package is still not mature. There multiple
+	issues to work on. Canopy transpiration is not correct yet and I'm
+	using EPen instead of the Penman Monteith which includes ga and gc.
+
+	Currently the soilML.c function has a few issues although it has
+	been resolved to some extent. I need to add a test which checks
+	the correctness of the water balance.
+
 2013-11-20  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
 
 	* BioCro_0.262-4

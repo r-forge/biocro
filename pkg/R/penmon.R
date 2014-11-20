@@ -41,9 +41,9 @@ penmon <- function(hr=12, doy=200, lat=40, long=90, stat.long=90, elev=100){
 }
 
 ## Test the function
-hrs <- 0:24
-ans <- penmon(hr=hrs, lat=0)
+## hrs <- 0:24
+## ans <- penmon(hr=hrs, lat=0)
 
 ## convert MJ m-2 hr-1 to mu mol m-2 s-1
-ans2 <- ans * (1/(60*60)) * 2.07 * 1e6
-xyplot(ans2 ~ hrs)
+## ans2 <- ans * (1/(60*60)) * 2.07 * 1e6
+## xyplot(ans2 ~ hrs)

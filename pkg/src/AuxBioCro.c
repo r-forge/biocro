@@ -1138,8 +1138,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 	double EvapoTra = 0.0, oldEvapoTra = 0.0, Sevap = 0.0, Ctransp = 0.0;
 	double psim1 = 0.0, psim2 = 0.0, K_psim = 0.0, J_w = 0.0, dPsim = 0.0;
 	double theta_s; /* This is the saturated soil water content. Larger than FieldC.*/
-	int i, m;
-	int j = layers - 1; 
+	int i, j;
 
 	/* Specify the soil type */
 
@@ -1162,107 +1161,98 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 	/* unit conversion for precip */
 	waterIn = precipit * 1e-3; /* convert precip in mm to m*/
 
-	if(waterIn > 0){
-		for(m=0;m<layers;m++){
+	/* There is some rain. Need to add it.*/
+  	if(waterIn > 0){
+	  for(i=0;i<layers;i++){
 
-			/* This supports unequal depths. */
-			if(m == 0){
-				layerDepth = depths[1];
-			}else{
-				layerDepth = depths[m] - depths[m-1];
-			}
+	    /* This supports unequal depths. */
+	    if(i == 0){
+	      layerDepth = depths[1];
+	    }else{
+	      layerDepth = depths[i+1] - depths[i];
+	    }
         
-			/* There is some rain. Need to add it.*/
-			if(m == 0){
-				/* I only add the water to the first layer */
-				/* This model does not really consider the infiltration rate and therefore runoff */
-				cw = (cws[m] * layerDepth + waterIn) + oldWaterIn;
-			}else{
-				cw = (cws[m] * layerDepth) + oldWaterIn;
-			}
-			cws[m] = cw / layerDepth; 
+	    if(i == 0){
+	      /* I only add the water to the first layer */
+	      /* This model does not really consider the infiltration rate and therefore runoff */
+	      cw = (cws[i] * layerDepth) + waterIn;
+	    }else{
+	      cw = (cws[i] * layerDepth) + oldWaterIn;
+	    }
+	    cws[i] = cw / layerDepth; 
 
-			/* They are both in meters so it works */
-			/* Adding the same amount to water to each layer */
-			/* In case there is overflow */
-			/* diffw = fieldc * layerDepth - aw; */
-			diffw = theta_s * layerDepth - cw;
+             /* They are both in meters so it works */
+	    /* Adding the same amount to water to each layer */
+	    /* In case there is overflow */
+	    /* diffw = fieldc * layerDepth - aw; */
+	    diffw = theta_s * layerDepth - cw;
 
-			if(diffw < 0){
-				/* This means that precipitation exceeded the capacity of the first layer */
-				/* Save this amount of water for the next layer */
-				oldWaterIn = -diffw;
-				/* aw = fieldc * layerDepth; */
-				aw = theta_s * layerDepth;
-			}else{
-				oldWaterIn = 0.0;
-			}
-		}
+	    if(diffw < 0){
+	      /* This means that precipitation exceeded the capacity of the first layer */
+	      /* Save this amount of water for the next layer */
+	      oldWaterIn = -diffw;
+	    }else{
+	      oldWaterIn = 0.0;
+	    }
+	  }
 	}
 
-	for(j=0,i=layers-1;j<layers;j++,i--){
-	/* for(i=0;i<layers;i++){ */
-		/* It decreases because I increase the water content due to precipitation in the last layer first*/
+	for(j=0;j<layers;j++){
 
 		/* This supports unequal depths. */
-		if(i == 0){
+		if(j == 0){
 			layerDepth = depths[1];
 		}else{
-			layerDepth = depths[i] - depths[i-1];
+			layerDepth = depths[j+1] - depths[j];
 		}
 
 
 		if(hydrDist > 0){
 			/* For this section see Campbell and Norman "Environmental BioPhysics" Chapter 9*/
 			/* First compute the matric potential */
-			psim1 = soTexS.air_entry * pow((cws[i]/theta_s),-soTexS.b) ; /* This is matric potential of current layer */
-			if(i > 0){
-				psim2 = soTexS.air_entry * pow((cws[i-1]/theta_s),-soTexS.b) ; /* This is matric potential of next layer */
-				dPsim = psim1 - psim2;
-				/* The substraction is from the layer i - (i-1). If this last term is positive then it will move upwards. If it is negative it will move downwards. Presumably this term is almost always positive. */
-			}else{
-				dPsim = 0;
-			}
+			psim1 = soTexS.air_entry * pow((cws[j]/theta_s),-soTexS.b) ; /* This is matric potential of current layer */
+			psim2 = soTexS.air_entry * pow((cws[j+1]/theta_s),-soTexS.b) ; /* This is matric potential of next layer */
+			dPsim = psim1 - psim2;
+			/* The substraction is from the layer j - (j+1). If this last term is positive then it will move downwards. If it is negative it will move upwards. */
+
 			K_psim = soTexS.Ks * pow((soTexS.air_entry/psim1),2+3/soTexS.b); /* This is hydraulic conductivity */
-			J_w = K_psim * (dPsim/layerDepth) - g * K_psim ; /*  Campbell, pg 129 do not ignore the graviational effect*/
-                        /* Notice that K_psim is positive because my
-                            reference system is reversed */
+			J_w = - K_psim * (dPsim/layerDepth) - g * K_psim ; /*  Campbell, pg 129 do not ignore the graviational effect*/
 			/* This last result should be in kg/(m2 * s)*/
 			 J_w *= 3600 * 0.9882 * 1e-3 ; /* This is flow in m3 / (m^2 * hr). */
 			/* Rprintf("J_w %.10f \n",J_w);  */
-			if(i == (layers-1) && J_w < 0){
+			if(j == (layers-1) && J_w < 0){
 					/* cws[i] = cws[i] + J_w /
 					 * layerDepth; Although this
 					 * should be done it drains
 					 * the last layer too much.*/
 					drainage += J_w;
 			}else{
-				if(i > 0){
-					cws[i] = cws[i] -  J_w / layerDepth;
-					cws[i - 1] =  cws[i-1] +  J_w / layerDepth;
-				}else{
-					cws[i] = cws[i] -  J_w / layerDepth;
-				}
+			  if(j < (layers -1)){
+			    cws[j] = cws[j] +  J_w / layerDepth;
+			    cws[j + 1] =  cws[j+1] -  J_w / layerDepth;
+			  }else{
+			    cws[j] = cws[j] +  J_w / layerDepth;
+			  }
 			}
 		}
 
-		 if(cws[i] > theta_s) cws[i] = theta_s; 
+		 if(cws[j] > theta_s) cws[j] = theta_s; 
 		/* if(cws[i+1] > fieldc) cws[i+1] = fieldc; */
-		 if(cws[i] < wiltp) cws[i] = wiltp; 
+		 if(cws[j] < wiltp) cws[j] = wiltp; 
 		/* if(cws[i+1] < wiltp) cws[i+1] = wiltp;  */
 
-		aw = cws[i] * layerDepth;
+		aw = cws[j] * layerDepth;
 /* Available water (for this layer) is the current water status times the layer depth */
 
 		/* Root Biomass */
-		rootATdepth = rootDB * tmp4.rootDist[i];
-		tmp.rootDist[i] = rootATdepth;
+		rootATdepth = rootDB * tmp4.rootDist[j];
+		tmp.rootDist[j] = rootATdepth;
 /* Plant available water is only between current water status and permanent wilting point */
 		/* Plant available water */
 		paw = aw - wiltp * layerDepth;
 		if(paw < 0) paw = 0; 
 
-		if(i == 0){
+		if(j == 0){
 			/* Only the first layer is affected by soil evaporation */
 			awc2 = aw / layerDepth;
 			/* SoilEvapo function needs soil water content  */
@@ -1277,7 +1267,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 			/* The first term in the rhs (paw * 1e4) is the m3 of water available in this layer.
 			   EvapoTra is the Mg H2O ha-1 of transpired and evaporated water. 1/0.9882 converts from Mg to m3 */
 		}else{
-			Ctransp = transp*tmp4.rootDist[i];
+			Ctransp = transp*tmp4.rootDist[j];
 			EvapoTra = Ctransp;
 			Newpawha = (paw * 1e4) - (EvapoTra + oldEvapoTra);
 		}
@@ -1285,14 +1275,16 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 		if(Newpawha < 0){
 /* If the Demand is not satisfied by this layer. This will be stored and added to subsequent layers*/
 			oldEvapoTra = -Newpawha;
-			 aw = wiltp * layerDepth; 
+			aw = wiltp * layerDepth; /* It looks like this is not needed */
+			awc = wiltp;
+		}else{
+		  oldEvapoTra = 0;
+		  paw = Newpawha / 1e4 ;
+		  awc = paw / layerDepth + wiltp;   
 		}
 
-		paw = Newpawha / 1e4 ;
-		awc = paw / layerDepth + wiltp;   
-
 /* This might look like a weird place to populate the structure, but is more convenient*/
-		tmp.cws[i] = awc;
+		tmp.cws[j] = awc;
 
 		if(wsFun == 0){
 			slp = 1/(fieldc - wiltp);
@@ -1321,8 +1313,6 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 			}
 		}
 
-
-
 		if(wsPhoto <= 0 )
 			wsPhoto = 1e-20; /* This can be mathematically lower than zero in some cases but I should prevent that. */
 
@@ -1336,12 +1326,9 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 
 	}
 
-	if(waterIn > 0){ 
-		drainage = waterIn;
-		/* Need to convert to units used in the Parton et al 1988 paper. */
-		/* The data comes in mm/hr and it needs to be in cm/month */
-		Nleach = drainage * 0.1 * (1/24*30) / (18 * (0.2 + 0.7 * soTexS.sand));
-	}
+	/* Need to convert to units used in the Parton et al 1988 paper. */
+	/* The data comes in mm/hr and it needs to be in cm/month */
+	Nleach = drainage * 0.1 * (1/24*30) / (18 * (0.2 + 0.7 * soTexS.sand));
 
 /* Apparently wsPhoto and wsSpleaf can be greater than 1 */
         if(wsPhoto > 1) wsPhoto = 1;

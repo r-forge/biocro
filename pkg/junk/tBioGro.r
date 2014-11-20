@@ -107,7 +107,19 @@ max((res2$Leaf + res2$Stem))
 
 ## Testing the soilDepths component
 data(weather05)
-soilP <- soilParms(soilLayers = 10)
+soilP <- soilParms(soilDepth=4,soilLayers = 10)
 res <- BioGro(weather05, soilControl = soilP)
 
+plot(res)
 plot(res, plot.kind="SW")
+plot(res, plot.kind="stress")
+
+
+data(weather05)
+soilP <- soilParms(soilDepth=2,soilLayers = 10, rfl=0.5, rsdf=8)
+res <- MaizeGro(weather05, plant.day=130, emerge.day=137, harvest.day=270, soilControl = soilP)
+
+plot(res)
+plot(res, plot.kind="SW")
+plot(res, plot.kind="stress")
+matplot(res$DayofYear, res$rdMat, type='l')

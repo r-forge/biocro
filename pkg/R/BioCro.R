@@ -242,7 +242,7 @@ soilParms <- function(FieldC=NULL,WiltP=NULL,phi1=0.01,phi2=10,soilDepth=2,iWatC
                       soilType=6, soilLayers=1, soilDepths=NULL, hydrDist=1,
                       wsFun=c("linear","logistic","exp","none","lwp","thresh"),
                       scsf = 1, transpRes = 5e6, leafPotTh = -800,
-                      rfl=0.2, rsec=0.3, rsdf=0.44, smthresh=0.3, lrt=0.7, lrf=0){
+                      rfl=0.2, rsec=0.3, rsdf=0.44, smthresh=0.3, lrt=0.3, lrf=0){
 
   if(soilLayers < 1 || soilLayers > 50)
     stop("soilLayers must be an integer larger than 0 and smaller than 50")
