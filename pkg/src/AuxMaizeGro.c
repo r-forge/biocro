@@ -101,7 +101,7 @@ struct lai_str laiLizasoFun(double thermalt, double phenostage,
 
 		/* Applying Eq 2 in Lizaso 2003 */
                 Al = Alogistic(thermalt, A, kei, tei); /* Not really needed */
-		tmp.leafarea[i] = GRei * stress; /* This is only the increment in biomass for each time interval */ 
+		tmp.leafarea[i] = Al ;/* GRei * stress; /* This is only the increment in biomass for each time interval */ 
 
 		/* calculating senesced area for this leaf */
 		tmp.leafarea[i] -= Alogistic(thermalt, A, kei, tsi);
