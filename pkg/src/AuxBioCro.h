@@ -1,5 +1,5 @@
 /*
- *  /src/AuxBioCro.h by Fernando Ezequiel Miguez  Copyright (C) 2007-2010
+ *  /src/AuxBioCro.h by Fernando Ezequiel Miguez  Copyright (C) 2007-2014
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ int tp3,tp4,tp5;
 double tmp1[5]; 
 double layIdir[MAXLAY];
 double layIdiff[MAXLAY];
-double layItotal[MAXLAY];
+double layIave[MAXLAY];
 double layMaxIdir[MAXLAY];
 double layMaxIdiff[MAXLAY];
 double layFsun[MAXLAY];

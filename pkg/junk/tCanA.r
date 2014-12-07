@@ -1,5 +1,5 @@
 ## Simple example
-nlay <- 50
+nlay <- 10
 res <- CanA(lai=3, doy=200, hr=12,
             solar=1500, temp=25, rh=0.7,
             windspeed=2, nlayers=nlay)
@@ -19,7 +19,7 @@ data(weather05)
 doy200 <- weather05[weather05$doy == 200,]
 
 lai <- 5
-nlay <- 5
+nlay <- 10
 chi.l <- 1
 lat <- 42
 tmp2 <- NULL
@@ -86,13 +86,6 @@ xyplot(DeltaSun + DeltaShade ~ hour | factor(layers), type='l',
        main=ttle, 
        key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
 #dev.off()
-
-## png("../figs/CondSun-Shade.png")
-xyplot(CondSun + CondShade ~ hour | factor(layers), type='l',
-       xlab = "hour", ylab="Conductance (mmol/m2/s)",
-       main=ttle, 
-       key=simpleKey(text=c("Sun","Shade")), data = as.data.frame(tmp2), layout=c(nlay,1))
-## dev.off()
 
 ## png("../figs/CondSun-Shade.png")
 xyplot(CondSun + CondShade ~ hour | factor(layers), type='l',

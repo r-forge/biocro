@@ -69,13 +69,20 @@ planting density.}
   Maximum 50. To increase the number of layers (more than 50) the \code{C}
   source code needs to be changed slightly.
 
-\code{kd} (extinction coefficient for diffuse light) between 0 and 1. It is typically much lower than the extinction coefficient for direct light.
+\code{kd} (extinction coefficient for diffuse light) between 0 and
+1. Default = 0.7.
 
 \code{mResp} (maintenance respiration) a vector of length 2 with the first component for leaf and stem and the second component for rhizome and root.
 
 \code{heightFactor} (height factor) the cummulative LAI in the canopy model will
 be divided by this number to obtain the height of the canopy. A canopy of LAI
 equal to 3 will be one meter tall using the default.
+
+\code{leafwidth} average width of a leaf (in m). Default = 0.04.
+
+\code{eteq} Allows to choose between "Penman-Monteith" (very sensitive
+to photosynthesis parameters), "Penman" (aerodynamic component) and
+"Priestly" (insensitive to aerodynamics).
 
 }
 
@@ -358,11 +365,8 @@ res0 <- BioGro(weather05)
 plot(res0)
 
 ## Looking at the soil model
-sldpth <- 2
-res1 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6, soilDepth=sldpth))
-plot(res1, plot.kind="SW") ## Without hydraulic distribution
-res2 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6,
-hydrDist=TRUE, soilDepth=sldpth))
+sldpth <- 3
+res2 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6, soilDepth=sldpth))
 plot(res2, plot.kind="SW") ## With hydraulic distribution
 
 

@@ -144,6 +144,8 @@ BioGro <- function(WetDat, day1=NULL, dayn=NULL,
     Sp <- canopyP$Sp
     SpD <- canopyP$SpD
     heightF <- canopyP$heightFactor
+    leafW <- canopyP$leafwidth
+    eteq <- canopyP$eteq
     nlayers <- canopyP$nlayers
     
     res <- .Call(MisGro,
@@ -156,7 +158,7 @@ BioGro <- function(WetDat, day1=NULL, dayn=NULL,
                  as.double(windspeed),
                  as.double(precip),
                  as.double(kd),
-                 as.double(c(chi.l,heightF)),
+                 as.double(c(chi.l,heightF,leafW,eteq)),
                  as.integer(nlayers),
                  as.double(iRhizome),
                  as.double(irtl),
@@ -211,7 +213,9 @@ BioGro <- function(WetDat, day1=NULL, dayn=NULL,
 
 canopyParms <- function(Sp = 1.7, SpD = 0, nlayers = 10,
                         kd = 0.7, chi.l = 1,
-                        mResp=c(0.02,0.03), heightFactor=3){
+                        mResp=c(0.02,0.03), heightFactor=3,
+                        leafwidth=0.04,
+                        eteq=c("Penman-Monteith","Penman","Priestly")){
 
   if((nlayers < 1) || (nlayers > 50))
     stop("nlayers should be between 1 and 50")
@@ -221,13 +225,19 @@ canopyParms <- function(Sp = 1.7, SpD = 0, nlayers = 10,
 
   if(heightFactor <= 0)
     stop("heightFactor should be positive")
+
+  eteq <- match.arg(eteq)
+  if(eteq == "Penman-Monteith") eteq <- 0
+  if(eteq == "Penman") eteq <- 1
+  if(eteq == "Priestly") eteq <- 2
   
   list(Sp=Sp,SpD=SpD,nlayers=nlayers,kd=kd,chi.l=chi.l,
-       mResp=mResp, heightFactor=heightFactor)
+       mResp=mResp, heightFactor=heightFactor,
+       leafwidth=leafwidth, eteq=eteq)
 
 }
 
-photoParms <- function(vmax=39, alpha=0.04, kparm=0.7, theta=0.83, beta=0.93, Rd=0.8, Catm=380, b0=0.01, b1=3, ws=c("gs","vmax")){
+photoParms <- function(vmax=39, alpha=0.04, kparm=0.7, theta=0.83, beta=0.93, Rd=0.8, Catm=380, b0=0.08, b1=3, ws=c("gs","vmax")){
 
   ws <- match.arg(ws)
   if(ws == "gs") ws <- 1

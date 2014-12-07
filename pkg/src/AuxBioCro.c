@@ -70,7 +70,7 @@ void lightME(double lat, int DOY, int td)
            below is a temporary fix. Some longer 
            term solution is needed.*/
 	if(CosZenithAngle < 0.10){
-		if(td > 18 & td < 22){ 
+		if(td > 18 && td < 22){ 
 			CosZenithAngle = 0.10;
 		}else{
 			if(CosZenithAngle < 0)
@@ -98,143 +98,6 @@ void lightME(double lat, int DOY, int td)
 	*(ip1+4) = Idiff;
 }
 
-/* This is the original sunML function written by Fernando Miguez */
-/* void sunML(double Idir, double Idiff, double LAI, int nlayers, double cosTheta, double kd, double chil, double heightf) */
-/* { */
-/* 	extern int sp1, sp2, sp3, sp4, sp5, sp6; */
-/* 	extern double layIdir[], layIdiff[], layItotal[], layFsun[], layFshade[], layHeight[]; */
-/* 	int i; */
-/* 	double k0, k1, k; */
-/* 	double LAIi, CumLAI; */
-/* 	double Isolar, Idiffuse, Itotal; */
-/* 	double Ls,Ls2, Ld, Ld2; */
-/* 	double Fsun, Fshade; */
-
-/* 	k0 = cosTheta * sqrt(pow(chil ,2) + pow(tan(acos(cosTheta)),2)); */
-/* 	k1 = chil + 1.744*pow((chil+1.183),-0.733); */
-/* 	k = k0/k1; */
-/* 	if(k<0) */
-/* 		k = -k; */
-
-/* 	LAIi = LAI / nlayers; */
-
-/* 	for(i=0;i<nlayers;i++) */
-/* 	{ */
-/* 		CumLAI = LAIi * (i+1); */
-/* 		if(i == 0){ */
-/* 			Isolar = Idir; */
-/* 			Idiffuse = Idiff; */
-/* 		} */
-/* 		else{ */
-/* 			Isolar = Idir * exp(-k * CumLAI); */
-/* 			Idiffuse = Idiff * exp(-kd * CumLAI); */
-/* 		} */
-/* 		Itotal = Isolar + Idiffuse; */
-
-/* 		Ls = (1-exp(-k*CumLAI))/k; */
-/* 		Ld = CumLAI - Ls; */
-/* 		Ls2 = (cosTheta * (1-exp(-k*Ls/cosTheta)))/k; */
-/* 		Ld2 = CumLAI - Ls2; */
-/* 		Fsun = Ls2 /  CumLAI; */
-/* 		Fshade = Ld2 / CumLAI; */
-
-/* 		/\* collecting the results *\/ */
-/* 		layIdir[sp1++] = Isolar; */
-/* 		layIdiff[sp2++] = Idiffuse; */
-/* 		layItotal[sp3++] = Itotal; */
-/* 		layFsun[sp4++] = Fsun; */
-/* 		layFshade[sp5++] = Fshade; */
-/* 		layHeight[sp6++] = CumLAI/heightf; */
-/* 	} */
-/* } */
-
-/* sunML function. Sun-Shade Multi-Layer model */
-/* This function was written by Deepak Jaiswal */
-/* June 1 2012 */
-/* void sunML(double Idir, double Idiff, double LAI, int nlayers, */
-/* 	   double cosTheta, double kd, double chil, double heightf) */
-/* { */
-/* 	extern int sp1, sp2, sp3, sp4, sp5, sp6; */
-/* 	extern double layIdir[], layIdiff[], layItotal[], layFsun[], layFshade[], layHeight[]; */
-/* 	int i; */
-/* 	double k0, k1, k; */
-/* 	double LAIi, CumLAI; */
-/* 	double Isolar, Idiffuse, Itotal,Iscat,alphascatter; */
-/* 	double Ls,Ls2, Ld, Ld2; */
-/* 	double Fsun, Fshade,Fcanopy; */
-/* 	double Lssaved,Ldsaved; */
-
-/* 	/\*extinction coefficient evaluated here is defnied as ratio of */
-/* 	  shadow on the horizontal area projected from a zenith angle Theta. */
-/* 	  Earlier version of the code was based on ratio of area projected in */
-/* 	  the direction of incoming beam radiation. */
-/* 	  Therefore, cosTheta term in numerator is removed */
-/* 	*\/ */
-/* 	/\** wishlist**\/ */
-/* 	/\* currently a default value of kd is used, this value can be calculated, see page 254 of Campbell and Norman *\/ */
-/* 	/\* Long Wave radiation balanc has not been included in the canopy environment *\/ */
-
-/* 	alphascatter=0.8; /\* This value is for PAR, for long wave radiation a shorter value = 0.2 is recommended see page  255 of campbell and Norman *\/ */
-/* 	k0 =  sqrt(pow(chil ,2) + pow(tan(acos(cosTheta)),2)); */
-/* 	k1 = chil + 1.744*pow((chil+1.183),-0.733); */
-/* 	k = k0/k1; */
-/* 	if(k<0) k = -k; */
-/* 	if(k > 1) k = 1; */
-
-/* 	LAIi = LAI / nlayers; */
-
-/* 	for(i=0;i<nlayers;i++) */
-/* 	{ */
-/* 		CumLAI = LAIi * (i+1/2); */
-/* 		if(i == 0) */
-/* 		      { */
-		
-/* 			Iscat=Idir * cosTheta * exp(-k *sqrt(alphascatter)* CumLAI)-Idir * cosTheta * exp(-k * CumLAI); /\* scattered radiation Eq 15.19 from Campbell and Norman pp 259 *\/ */
-/* 			Idiffuse = Idiff * exp(-kd * CumLAI) + Iscat; /\* Eq 15.19 from Campbell and Norman pp 259 *\/ */
-/* 			Isolar = Idir * k * cosTheta; /\* Avergae direct radiation on sunlit leaves *\/ */
-/* 			Itotal = Isolar + Idiffuse; /\* Total radiation *\/ */
-	                
-/* 			Fcanopy=CumLAI; /\* leaf area of canopy currenly under consideration *\/ */
-/* 			/\* old version Ls = (1-exp(-k*CumLAI))/k; /\* To evaluate sunlit leaf area in Fcanopy*\/ */
-/*                         Ls = (1-exp(-k*LAIi))/k * exp(-k*CumLAI); */
-/* 			Lssaved=Ls;              /\* To use for evaluating sunlit leaves in the lower layer *\/ */
-/* 			Ld=LAIi-Ls;          /\* shaded leaf area *\/ */
-/* 			Ldsaved=Ld;              /\* To use for evaluating shaded leaves in the lower layer*\/ */
-/* 			Fsun=Ls/(Ls+Ld);         /\*fracction of sunlit leaves in the current layer *\/ */
-/* 			Fshade=Ld/(Ls+Ld);       /\* fraction of shaded leaves in the current layer *\/ */
-/*                         Itotal = Fsun*Isolar + Idiffuse; */
-/* 			} */
-		
-/* 		else */
-/* 		{ */
-/* 			Iscat=Idir * cosTheta * exp(-k *sqrt(alphascatter)* CumLAI)-Idir * cosTheta * exp(-k * CumLAI); /\* scattered radiation Eq 15.19 from Campbell and Norman pp 259 *\/ */
-/* 			Idiffuse = Idiff * exp(-kd * CumLAI) + Iscat; /\* Eq 15.19 from Campbell and Norman pp 259 *\/ */
-/* 			Isolar = Idir * k * cosTheta; /\* Avergae direct radiation on sunlit leaves *\/ */
-/* 			Itotal = Isolar + Idiffuse; */
-	                
-/* 			Fcanopy=CumLAI;  /\* leaf area of canopy currenly under consideration *\/ */
-/* 			Ls = (1-exp(-k*LAIi))/k * exp(-k*CumLAI); /\* To evaluate  sunlit leaf area  in Fcanopy*\/ */
-/* 			Ld=LAIi-Ls; /\* evaluate shaded leaf area in Fcanopy *\/ */
-/* 			/\* Ls= Ls-Lssaved; /\* subtract the sunlit areas of all the upper layers saved in Lssaved; now we have sunlit area of current layer*\/ */
-/* 			Lssaved = Ls+ Lssaved; /\* update the Lssaved for calculation of the next lower layer *\/ */
-/* 			Ld=Ld-Ldsaved; /\* subtract the shaded areas of all the upper layers saved in Ldsaved; now we have shaded area of current layer*\/ */
-/* 			Ldsaved=Ld+Ldsaved; /\* update the Ldsaved for calculation of the next lower layer *\/ */
-/* 			Fsun=Ls/(Ls+Ld);   /\*fracction of sunlit leaves in the current layer *\/ */
-/* 			Fshade=Ld/(Ls+Ld);  /\* fraction of shaded leaves in the current layer *\/ */
-/*                         Itotal = Fsun * Isolar + Idiffuse; */
-/* 		} */
-		
-/*                       /\* collecting the results *\/ */
-
-/* 		layIdir[sp1++] = Isolar+Idiffuse;  /\* This is used to calculate sunlit leaf photosynthesis *\/ */
-/* 		layIdiff[sp2++] = Idiffuse;       /\* ok, this is used to calculate shaded leaf photosynthesis *\/ */
-/* 		layItotal[sp3++] = Itotal;        /\* this is used to evaluate evapotranspiration..Think about other factors that might influence energy balance to include *\/ */
-/* 		layFsun[sp4++] = Fsun; */
-/* 		layFshade[sp5++] = Fshade; */
-/* 		layHeight[sp6++] = CumLAI / heightf; */
-/* 	} */
-/* } */
-
 
 /* This is the function written by Joe Iverson */
 void sunML(double Idir, double Idiff, double LAI, int nlayers,
@@ -242,7 +105,7 @@ void sunML(double Idir, double Idiff, double LAI, int nlayers,
 	   double maxIdir, double maxIdiff)
 {
 	extern int sp1, sp2, sp3, sp4, sp5, sp6, sp7, sp8;
-	extern double layIdir[], layIdiff[], layItotal[], layFsun[], layFshade[], layHeight[], layMaxIdir[], layMaxIdiff[];
+	extern double layIdir[], layIdiff[], layIave[], layFsun[], layFshade[], layHeight[], layMaxIdir[], layMaxIdiff[];
 	double i;
 	double k0, k1, k;
 	double LAIi, CumLAI;
@@ -285,7 +148,7 @@ void sunML(double Idir, double Idiff, double LAI, int nlayers,
 		/* collecting the results */
 		layIdir[sp1++] = Isolar + Idiffuse;
 		layIdiff[sp2++] = Idiffuse;
-		layItotal[sp3++] = Itotal;
+		layIave[sp3++] = Iaverage;
 		layMaxIdir[sp4++] = maxIsolar;
 		layMaxIdiff[sp5++] = maxIdiffuse;
 		layFsun[sp6++] = Fsun;
@@ -394,14 +257,13 @@ double TempToSWVC(double Temp)
 
 /* EvapoTrans function */
 struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtemperature, double RH,
-			 double WindSpeed,double LeafAreaIndex, double CanopyHeight, double StomataWS, int ws,
-			 double vmax2, double alpha2, double kparm, double theta, double beta, double Rd2, double b02, double b12)
+			 double WindSpeed,double LeafAreaIndex, double CanopyHeight, 
+			 double stomatacond, double leafw, int eteq)
 {
 	/* creating the structure to return */
 	struct ET_Str tmp;
 	struct c4_str tmpc4;
 
-	const double LeafWidth = 0.04; /* This assumes a leaf 4 cm wide */
 	const double kappa = 0.41;
 	double WindSpeedHeight = 2; /* This is the height at which the wind speed was measured */
 	const double dCoef = 0.77;
@@ -457,6 +319,13 @@ but Thornley and Johnson use it as MJ kg-1  */
 	if(LayerRelativeHumidity > 100) 
 		error("LayerRelativehumidity > 100"); 
 
+	PsycParam =(DdryA * SpecificHeat) / LHV; /* This is in kg m-3 K-1 */
+
+	if(SWVC < 0)
+		error("SWVC < 0");
+	/* Now RHprof returns relative humidity in the 0-1 range */
+	DeltaPVa = SWVC * (1 - LayerRelativeHumidity / 100);
+
         /* SOLAR RADIATION COMPONENT*/
 
         /* First calculate the Radiation term */
@@ -482,6 +351,7 @@ but Thornley and Johnson use it as MJ kg-1  */
 
         /* Non iterative calculation of longwave radiation */
 	ActualVaporPressure = (LayerRelativeHumidity/100) * SWVC;
+
 	if(Imax < 1){
 		rels = 0.3;
 	}else{
@@ -497,8 +367,6 @@ but Thornley and Johnson use it as MJ kg-1  */
 
 	rlc = StefanBoltzmann * pow(273 + Airtemperature, 4) * eprime * f;
 
-	/* Rprintf("rlc1 %.8f \n",rlc); */
-
         /* Net radiation */
 	PhiN = Ja - rlc;
 
@@ -506,6 +374,7 @@ but Thornley and Johnson use it as MJ kg-1  */
 	PhiN2 = Ja2 - rlc;
 
         /* AERODYNAMIC COMPONENT */
+        /* This is needed to calculate canopy conductance */
 	Zeta = ZetaCoef * CanopyHeight;
 	Zetam = ZetaMCoef * CanopyHeight;
 	d = dCoef * CanopyHeight;
@@ -513,34 +382,6 @@ but Thornley and Johnson use it as MJ kg-1  */
 	if(WindSpeed < 0.5) WindSpeed = 0.5;
 
 	LayerWindSpeed = WindSpeed;
-
-	tmpc4 = c4photoC(Rad,Airtemperature,RH,vmax2,alpha2,kparm,theta,beta,Rd2,b02,b12,StomataWS, 380, ws); 
-	/* tmpc4 = c4photoC(Imax,Airtemperature,RH,vmax2,alpha2,kparm,theta,beta,Rd2,b02,b12,StomataWS, 380, ws);   */
-	/*  Rprintf("Imax %.8f \n",Imax);  */
-
-	LayerConductance = tmpc4.Gs / LeafAreaIndex; /* Right now this is too small and even I have to factor in the leaf area index? */
-
-        /* Convert from mmol H20/m2/s to m/s */
-	LayerConductance = LayerConductance * (1.0/41000.0) ;
-	/* LayerConductance = LayerConductance * 24.39 * 1e-6; Original from WIMOVAC */ 
-        /* 1/41000 is the same as 24.39 * 1e-6 */
-
-	/* Thornley and Johnson use m s^-1 on page 418 */
-
-	/* prevent errors due to extremely low Layer conductance */
-	if(LayerConductance <=0)
-		LayerConductance = 0.0001;
-
-	if(SWVC < 0)
-		error("SWVC < 0");
-	/* Now RHprof returns relative humidity in the 0-1 range */
-	DeltaPVa = SWVC * (1 - LayerRelativeHumidity / 100);
-
-	/* Rprintf("DeltaPVa %.8f \n",DeltaPVa); */
-
-	PsycParam =(DdryA * SpecificHeat) / LHV; /* This is in kg m-3 K-1 */
-
-	/* Rprintf("PsycParam %.8f \n",PsycParam); */
 
 	/* Calculation of ga */
         /* The calculation of ga in WIMOVAC follows */
@@ -558,21 +399,26 @@ but Thornley and Johnson use it as MJ kg-1  */
 
        /* In WIMOVAC this follows */
 	DiffCoef = (2.126 * 1e-5) + ((1.48 * 1e-7) * Airtemperature);
-	BoundaryLayerThickness = 0.004 * sqrt(LeafWidth / LayerWindSpeed);
+	BoundaryLayerThickness = 0.004 * sqrt(leafw / LayerWindSpeed);
 	LeafboundaryLayer = DiffCoef / BoundaryLayerThickness;
-        gav2 = (gav2 * LeafboundaryLayer) / (gav2 + LeafboundaryLayer); 
-
-	/* Rprintf("Layer Conductance %.8f \n",LayerConductance);  */
-	/* Rprintf("ga %.8f \n",ga);  */
-	/* Rprintf("gav2 %.8f \n",gav2);  */
+        gav2 = (gav2 * LeafboundaryLayer) / (gav2 + LeafboundaryLayer); /* This is the original from WIMOVAC but it does not make sense to me? */
 
 /* There are two ways of calculating ga in this code
  One method is taken from Thornley and Johnson, but this method
    does not consider a multilayer canopy 
- The other method is taken from the original WIMOVAC code.
-The WIMOVAC code is what I'm using at the moment. */
+ The other method is taken from the original WIMOVAC code. */
 
-	/* ga = gav2; */
+        /* Leaf Conductance */
+	LayerConductance = stomatacond; 
+        /* Convert from mmol H20/m2/s to m/s */
+	LayerConductance = LayerConductance * (1.0/41000.0) ;
+	/* LayerConductance = LayerConductance * 24.39 * 1e-6; Original from WIMOVAC */ 
+        /* 1/41000 is the same as 24.39 * 1e-6 */
+	/* Thornley and Johnson use m s^-1 on page 418 */
+
+	/* prevent errors due to extremely low Layer conductance */
+	if(LayerConductance <=0)
+		LayerConductance = 0.0001;
 
 	TopValue = PhiN2 * (1 / ga + 1 / LayerConductance) - LHV * DeltaPVa;
 	BottomValue = LHV * (SlopeFS + PsycParam * (1 + ga / LayerConductance));
@@ -587,7 +433,7 @@ The WIMOVAC code is what I'm using at the moment. */
 	{
 		OldDeltaT = Deltat;
 
-		rlc = 4 * (5.67*1e-8) * pow(273 + Airtemperature, 3) * Deltat;  
+		rlc = 4 * StefanBoltzmann * pow(273 + Airtemperature, 3) * Deltat;  
 
 /* rlc=net long wave radiation emittted per second =radiation emitted per second - radiation absorbed per second=sigma*(Tair+deltaT)^4-sigma*Tair^4 */
  
@@ -597,11 +443,11 @@ The WIMOVAC code is what I'm using at the moment. */
  
 /* where 4*sigma*Tair^3 is the derivative of sigma*(Tair+deltaT)^4 evaluated at deltaT=0, */
 
-		PhiN2 = (Ja2 - rlc);
+		PhiN2 = (Ja2 - rlc) * LeafAreaIndex;
 
 		TopValue = PhiN2 * (1 / ga + 1 / LayerConductance) - LHV * DeltaPVa;
 		BottomValue = LHV * (SlopeFS + PsycParam * (1 + ga / LayerConductance));
-		Deltat = TopValue / BottomValue;
+		Deltat = TopValue / BottomValue; /* This equation is from Thornley and Johnson pg. 418 */
 		if(Deltat > 7)	Deltat = 7;
 		if(Deltat < -7)	Deltat = -7;
 
@@ -617,30 +463,22 @@ The WIMOVAC code is what I'm using at the moment. */
 	if(PhiN < 0)
 		PhiN = 0;
 
-	/* Rprintf("Imax %.5f \n",Imax); */
-	/* Rprintf("Deltat %.5f \n",Deltat); */
-	/* Rprintf("rlc2 %.5f \n",rlc); */
-
-	TransR = (SlopeFS * PhiN + (LHV * PsycParam * ga * DeltaPVa)) / (LHV * (SlopeFS + PsycParam * (1 + ga / LayerConductance)));
+	TransR = (SlopeFS * PhiN + (LHV * PsycParam * ga * DeltaPVa)) / (LHV * (SlopeFS + PsycParam * (ga / LayerConductance)));
 
 	EPen = (((SlopeFS * PhiN) + LHV * PsycParam * ga * DeltaPVa)) / (LHV * (SlopeFS + PsycParam));
 
 	EPries = 1.26 * ((SlopeFS * PhiN) / (LHV * (SlopeFS + PsycParam)));
 
-	/* Rprintf("PhiN %.8f \n", PhiN); */
-	/* Rprintf("Ja %.8f \n", Ja); */
-	/* Rprintf("SlopeFS %.8f \n", SlopeFS); */
-	/* Rprintf("LHV %.8f \n", LHV); */
-	/* Rprintf("PsycParam %.8f \n", PsycParam); */
-	/* Rprintf("DeltaPVa %.8f \n", DeltaPVa); */
-	/* Rprintf("ga %.8f \n", ga); */
-	/* Rprintf("LayerConductance %.8f \n", LayerConductance); */
-
         /* For now */
 /* This needs to be fixed, but at the moment it seems that the way we apply
    these equations LayerConductance is too small so that TransR is too small */
 
-	TransR = EPen;
+	if(eteq == 1){
+		TransR = EPen;
+	}
+	if(eteq == 2){
+		TransR = EPries;
+	}
 
 	/* This values need to be converted from Kg/m2/s to
 	   mmol H20 /m2/s according to S Humphries */
@@ -654,8 +492,6 @@ The WIMOVAC code is what I'm using at the moment. */
 	tmp.EPriestly = EPries * 1e6 / 18; 
 	tmp.Deltat = Deltat;
 	tmp.LayerCond = LayerConductance * 41000 * LeafAreaIndex;   
-	/*    tmp.LayerCond = RH2;   */
-	/*   tmp.LayerCond = 0.7; */
 	return(tmp);
 }
 
@@ -828,24 +664,27 @@ double SoilEvapo(double LAI, double k, double AirTemp, double IRad,
    existing LAI and weather conditions to canopy assimilation
    and transpiration */
 
-struct Can_Str CanAC(double LAI,int DOY, int hr,double solarR,double Temp,
-	             double RH,double WindSpeed,double lat,int nlayers, double Vmax,
+struct Can_Str CanAC(double LAI, int DOY, int hr, double solarR, double Temp,
+	             double RH, double WindSpeed, double lat, int nlayers, double Vmax,
 		     double Alpha, double Kparm, double theta, double beta,
 		     double Rd, double Catm, double b0, double b1,
                      double StomataWS, int ws, double kd, double chil, double heightf,
-		     double leafN, double kpLN, double lnb0, double lnb1, int lnfun)
+		     double leafN, double kpLN, double lnb0, double lnb1, 
+		     int lnfun, double leafwidth, int eteq)
 {
 
 	struct ET_Str tmp5_ET, tmp6_ET;
 	struct Can_Str ans;
 	struct c4_str tmpc4;
 	struct c4_str tmpc42;
+	struct c4_str tmpc40;
+	struct c4_str tmpc420;
 
 	int i;
 	double Idir, Idiff, cosTh, maxIdir, maxIdiff;
 	double maxIDir, maxIDiff;
 	double LAIc;
-	double IDir, IDiff, Itot, rh, WS;
+	double IDir, IDiff, Iave, rh, WS;
 	double pLeafsun, pLeafshade;
 	double Leafsun, Leafshade;
 	double CanHeight;
@@ -905,7 +744,7 @@ struct Can_Str CanAC(double LAI,int DOY, int hr,double solarR,double Temp,
 		}
 
 		IDir = layIdir[--sp1];
-		Itot = layItotal[--sp3];
+		Iave = layIave[--sp3];
 
 		maxIDir = layMaxIdir[--sp4];
 		maxIDiff = layMaxIdiff[--sp5];
@@ -915,7 +754,8 @@ struct Can_Str CanAC(double LAI,int DOY, int hr,double solarR,double Temp,
 		pLeafsun = layFsun[--sp6];
 		CanHeight = layHeight[--sp8];
 		Leafsun = LAIc * pLeafsun;
-		tmp5_ET = EvapoTrans(IDir,Itot,maxIDir,Temp,rh,WS,LAIc,CanHeight,StomataWS,ws,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1);
+		tmpc40 = c4photoC(IDir,TempIdir,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
+		tmp5_ET = EvapoTrans(IDir,Iave,maxIDir,Temp,rh,WS,LAIc,CanHeight,tmpc40.Gs,leafwidth,eteq);
 		TempIdir = Temp + tmp5_ET.Deltat;
 		tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
 		AssIdir = tmpc4.Assim;
@@ -924,7 +764,8 @@ struct Can_Str CanAC(double LAI,int DOY, int hr,double solarR,double Temp,
 		IDiff = layIdiff[--sp2];
 		pLeafshade = layFshade[--sp7];
 		Leafshade = LAIc * pLeafshade;
-		tmp6_ET = EvapoTrans(IDiff,Itot,maxIDiff,Temp,rh,WS,LAIc,CanHeight,StomataWS,ws,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1);
+		tmpc420 = c4photoC(IDiff,TempIdiff,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
+		tmp6_ET = EvapoTrans(IDiff,Iave,maxIDiff,Temp,rh,WS,LAIc,CanHeight,tmpc420.Gs,leafwidth,eteq);
 		TempIdiff = Temp + tmp6_ET.Deltat;
 		tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
 		AssIdiff = tmpc42.Assim;

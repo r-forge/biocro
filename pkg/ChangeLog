@@ -1,3 +1,24 @@
+2014-12-07  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
+
+	* BioCro_0.263-7
+
+	Have been working on the EvapoTrans function trying to simplify it. 
+	We have first addressed the issued with leaf temperature and now I'm 
+	working on fixing the problem with the calculation of Penman-Monteith.
+	I have added the option to choose the method for estimation ET.
+
+2014-11-24  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
+
+	* BioCro_0.263-5
+
+	Included the leaf area index in the calculation of the leaf
+	temperature as in WIMOVAC. In reality it does not make sense to
+	me, but this is a temp fix. The reason why is because as it is now
+	the leaf temperature depends on the number of layers.
+
+	I included the effect of atm CO2 on the calculation of
+	transpiration in EvapoTrans.
+
 2014-11-20  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
 
 	* BioCro_0.263-3

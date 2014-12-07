@@ -17,8 +17,8 @@
 ##
 
 CanA <- function(lai,doy,hr,solar,temp,rh,windspeed,
-                 lat=40,nlayers=8,kd=0.1,StomataWS=1,
-                 chi.l=1,
+                 lat=40,nlayers=8,kd=0.7,StomataWS=1,
+                 chi.l=1, leafwidth=0.04,
                  heightFactor=3,
                  photoControl = list(),
                  lnControl = list(),
@@ -60,7 +60,8 @@ CanA <- function(lai,doy,hr,solar,temp,rh,windspeed,
                  as.double(kd), as.double(heightFactor),
                  as.integer(ws), as.double(lnP$LeafN),
                  as.double(lnP$kpLN), as.double(lnP$lnb0),
-                 as.double(lnP$lnb1), as.integer(lnP$lnFun), as.double(chi.l))
+                 as.double(lnP$lnb1), as.integer(lnP$lnFun),
+                 as.double(chi.l), as.double(leafwidth))
 
     res$LayMat <- t(res$LayMat)
     colnames(res$LayMat) <- c("IDir","IDiff","Leafsun",

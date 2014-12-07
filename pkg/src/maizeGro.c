@@ -282,6 +282,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SEXP SoilWatCont;
 	SEXP StomatalCondCoefs;
 	SEXP Drainage;
+	/* SEXP MinNitroVec; */
+	/* SEXP RespVec; /\* This is for soil microbial respiration *\/ */
 
 	PROTECT(lists = allocVector(VECSXP,24)); /* 1 */
 	PROTECT(names = allocVector(STRSXP,24)); /* 2 */  
@@ -310,6 +312,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	PROTECT(SoilWatCont = allocVector(REALSXP,vecsize)); /* 24 */
 	PROTECT(StomatalCondCoefs = allocVector(REALSXP,vecsize)); /* 25 */
 	PROTECT(Drainage = allocVector(REALSXP,vecsize)); /* 26 */
+	/* PROTECT(MinNitroVec = allocVector(REALSXP,vecsize)); /\* 27 *\/ */
+	/* PROTECT(RespVec = allocVector(REALSXP,vecsize)); /\* 28 *\/ */
 
 	int *pt_doy = INTEGER(DOY);
 	int *pt_hr = INTEGER(HR);
@@ -467,7 +471,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 				       theta,beta,Rd1,Ca,b01,b11,StomWS,
 				       ws, kd,
 				       chil, heightFactor,
-				       LeafN, kpLN, lnb0, lnb1, lnFun);
+				       LeafN, kpLN, lnb0, lnb1, lnFun, 0.04, 1);
 
 			/* Rprintf("LAI: %.4f, vmax: %.1f",LAI,vmax);  */
 
@@ -576,6 +580,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 /* In this case we should actually have some stress due to excess water */
 		if(LeafWS > 1) LeafWS = 1;
 		if(StomWS > 1) StomWS = 1;
+
+
 
                /* Soil Carbon Pools place holder*/
 		REAL(SCpools)[0] = 1;

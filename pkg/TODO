@@ -1,9 +1,21 @@
 ########################################################################
 #
-# Updated 11-15-2014
+# Updated 11-23-2014
 #
 #
 ########################################################################
+
+ o At the moment there is a very crude limitation of ET given by the
+   use of StomataWS directly on the Priestly-Taylor
+   equation. Eventually I will like to use Penman-Monteith, but right
+   now the conductance being so low simulates very low transpiration
+
+ o In the Century model the Min N needs to be looked at. I just
+   changed the demand to be dependent on the new Leaf and Stem.
+
+ o Work to do on the lightME and EvapoTrans functions. The correct
+   radiation to pass to the calculation of leaf temperature is the
+   average radiation. Right now the total radiation is being passed.
 
  o Keep working on the EvapoTrans function the ga r boundary layer of
    the leaf needs to be improved. There is the version from WIMOVAC,

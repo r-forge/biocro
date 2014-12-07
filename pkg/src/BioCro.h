@@ -50,7 +50,8 @@ struct Can_Str CanAC(double LAI,int DOY,int hr,double solarR,double Temp,
 		     double RH,double WindSpeed,double lat,int nlayers, double Vmax, double Alpha, 
 		     double Kparm, double theta, double beta, double Rd, double Catm, double b0, 
 		     double b1, double StomataWS, int ws, double kd, double chil, double heightf,
-		     double leafN, double kpLN, double lnb0, double lnb1, int lnfun);
+		     double leafN, double kpLN, double lnb0, double lnb1, 
+		     int lnfun, double leafwidth, int eteq);
 
 struct dbp_str sel_dbp_coef(double coefs[25], double TherPrds[6], double TherTime);
 
@@ -59,11 +60,6 @@ double resp(double comp, double mrc, double temp);
 struct ws_str watstr(double precipit, double evapo, double cws, double soildepth, 
                      double fieldc, double wiltp, double phi1, double phi2, 
 		     double smthresh, int soiltype, int wsFun);
-
-/* struct ET_Str EvapoTrans(double Rad, double Itot, double Airtemperature, double RH, */
-/* 			 double WindSpeed,double LeafAreaIndex, double CanopyHeight, double StomataWS, int ws, */
-/* 			 double vmax2, double alpha2, double kparm, double theta, double beta, */
-/* 			 double Rd2, double b02, double b12); */
 
 double SoilEvapo(double LAI, double k, double AirTemp, double DirectRad,
 		 double awc, double fieldc, double wiltp, double winds, double RelH, double rsec,

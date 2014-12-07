@@ -5,14 +5,14 @@
 #
 #  TODO
 #
-#   1. The input should be in g m^-2 for the century model, so If I have
-#      Mg ha^-1 I need to make the conversion: 1 Mg ha^-1 is 100 g m^-2. This is done in the C version
+#   1. The input can be in g m^-2 for the century model, as in some of the original papers. 
 #   2. Add to the Nitrogen submodel the NO3 leaching, and the other destinations.
 #   3. Need to add the N uptake, N2 loss and N2O and NOx losses
 #
 ##########################################################################################
 
-Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWater, centuryControl = list(),verbose=FALSE){
+Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWater, centuryControl = list(),
+                    soilType=5, verbose=FALSE){
 
   ## I need the separate fractions of Leaf Litter and Stem Litter
   ## Because they have different lignin to N ratios
@@ -26,6 +26,9 @@ Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWate
 
   timestep <- centuryP$timestep
 
+  if(timestep == "day") timestep <- 1
+  if(timestep == "week") timestep <- 7
+      
   if(verbose) cat("Ks :",centuryP$Ks, "\n");
   
   ## Additional nitrogen processes
@@ -58,10 +61,11 @@ Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWate
   if(verbose) cat("MinN 0: ",MinN,"\n");
   ## I can calculate leaching by assuming that the excess water from
   ## my simple water budget contains NO3 and that this NO3 is lost
-  
-  T = 0.47; # silt plus clay content of the soil
-  Ts = 0.53; # Sand content of the soil
-  Tc = 0.4; # Clay content of the soil
+
+  st = SoilType(soilType)
+  T = st$silt + st$clay
+  Ts = st$sand
+  Tc = st$clay
   ## Termed T in the original paper
 
   ## The value 17% for lignin content corresponds to maize stover
@@ -137,10 +141,10 @@ Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWate
   ## and Parton et al. 1993 Global Biogeochemistry pg 785
   Ks <- centuryP$Ks
 
-  if(timestep == "week"){
+  if(timestep == 7){
     Ks = Ks / 52; # The units are week^-1
   }else
-  if(timestep == "day"){
+  if(timestep == 1){
     Ks = Ks / 365; # The units are day^-1 
     }
   
@@ -459,12 +463,13 @@ flow <- function(SC,CNratio,A,Lc,Tm,resp,kno,Ks,verbose=FALSE){
 
 }
   
-centuryParms <- function(SC1=1,SC2=1,SC3=1,SC4=1,SC5=1,SC6=1,
-                       SC7=1,SC8=1,SC9=1,
+centuryParms <- function(SC1=1,SC2=1,SC3=1,SC4=1,SC5=1,SC6=NULL,
+                       SC7=NULL,SC8=NULL,SC9=1,
                        LeafL.Ln=0.17,StemL.Ln=0.17,RootL.Ln=0.17,RhizL.Ln=0.17,
                        LeafL.N=0.004,StemL.N=0.004,RootL.N=0.004,RhizL.N=0.004,
                        Nfert=c(0,0),iMinN=0, Litter = c(0,0,0,0),
                        timestep=c("day","week","year"),
+                         om = 2, cc = 0.5, depth = 0.3, bd=1.3, pp=c(0.01,0.19,0.8),
                          Ks =  c(3.9, 4.9, 7.3, 6.0, 14.8, 18.5, 0.2, 0.0045)){
 
   timestep <- match.arg(timestep)
@@ -474,6 +479,18 @@ centuryParms <- function(SC1=1,SC2=1,SC3=1,SC4=1,SC5=1,SC6=1,
 
   if(length(Nfert) != 2)
     stop("Nfert should be of length 2")
+
+  if(missing(SC6)){
+      SC6 <- somc(om=om, cc=cc, depth=depth, bd=bd, pp=pp)$SC6
+  }
+
+  if(missing(SC7)){
+      SC7 <- somc(om=om, cc=cc, depth=depth, bd=bd, pp=pp)$SC7
+  }
+
+  if(missing(SC8)){
+      SC8 <- somc(om=om, cc=cc, depth=depth, bd=bd, pp=pp)$SC8
+  }
   
   list(SC1=SC1,SC2=SC2,SC3=SC3,
        SC4=SC4,SC5=SC5,SC6=SC6,SC7=SC7,SC8=SC8,SC9=SC9,
@@ -486,10 +503,11 @@ centuryParms <- function(SC1=1,SC2=1,SC3=1,SC4=1,SC5=1,SC6=1,
 
 ## The Century C version need to be rewritten
 
-CenturyC <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWater, centuryControl = list(),soilType=0){
+CenturyC <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWater, centuryControl = list(), soilType=5){
 
   ## The C version accepts biomass in Mg ha^-1
   ## but I want the R version to accept biomass in g m^-2
+  ## To convert from g/m2 to Mg/ha it is * 1e-6 * 1e4
   LeafL <- LeafL / 100
   StemL <- StemL / 100
   RootL <- RootL / 100
@@ -550,3 +568,58 @@ CenturyC <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWat
 
 }
   
+## Converting between som and content per depth
+
+## Information needed:
+##
+## som
+## C content of som
+## depth
+##
+## output:
+##
+## g C / kg Soil
+## g C / m^2 of soil
+## Mg C / ha
+##
+
+## The title of the function is soil organic matter conversion
+## Here I'm using a default of 2% OM and 30 cm depth, som C content of 0.5 and bulk density of 1.3
+## bd is g/cm3 
+somc <- function(om = 2, cc = 0.5, depth = 0.3, bd=1.3, pp=c(0.01,0.19,0.8)){
+
+    bd2 <- bd * (100^3) * 1e-3 ## This is kg/m^3, the first term converts from cm3 to m3 and the second from g to kg
+    ## If we assume 1 m2 of ground with a depth of 30cm what is the carbon content?
+    soil.mass <- 1 * depth * bd2
+    ## Some percent of this is actually carbon
+    soil.carbon <- (om/100) * cc * soil.mass ## This is kg C /m2 when the depth is defined as 0.3m
+    soil.carbon.g.kg <- (om/100) * cc * 1e3
+    soil.carbon.Mg.ha <- soil.carbon * 1e4 * 1e-3 ## This converts from kg C /m2 to Mg/ha
+
+    SC <- soil.carbon.Mg.ha * pp
+    ans <- list(soil.carbon.kg.m2=soil.carbon,
+                soil.carbon.g.kg=soil.carbon.g.kg,
+                soil.carbon.Mg.ha=soil.carbon.Mg.ha,
+                SC6=SC[1], SC7=SC[2], SC8=SC[3])
+    ans
+}
+
+isom <- function(SC6=0.39, SC7=7.41, SC8=31.2, cc=0.5, depth=0.3, bd=1.3){
+
+    bd2 <- bd * (100^3) * 1e-3 ## This is kg/m^3, the first term converts from cm3 to m3 and the second from g to kg
+    ## If we assume 1 m2 of ground with a depth of 30cm what is the carbon content?
+    soil.mass <- 1 * depth * bd2
+    
+    ## The inputs are in Mg/ha
+    soil.carbon.Mg.ha <- sum(SC6 + SC7 + SC8) 
+    soil.carbon.kg.m2 <- soil.carbon.Mg.ha * 1e-4 * 1e3
+
+    om <- (soil.carbon.kg.m2 / soil.mass) / cc * 1e2
+
+    soil.carbon.g.kg <- (om/100) * cc * 1e3 
+    
+    ans <- list(om = om, soil.carbon.Mg.ha=soil.carbon.Mg.ha,
+                soil.carbon.kg.m2=soil.carbon.kg.m2, soil.carbon.g.kg=soil.carbon.g.kg)
+    ans
+    
+}

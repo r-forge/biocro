@@ -35,6 +35,7 @@ export(CanA)
 
 ## Century.R 
 export(Century, CenturyC)
+export(somc, isom)
 
 ## constrOpBioGro.R
 export(constrOpBioGro)

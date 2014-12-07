@@ -51,7 +51,7 @@ SEXP eCanA(SEXP lai, SEXP Doy, SEXP Hr, SEXP SolarR, SEXP ATemp,
   double Idir, Idiff, cosTh, maxIdir, maxIdiff;
   double maxIDir, maxIDiff;
   double LAIc;
-  double IDir, IDiff, Itot, rh, WS;
+  double IDir, IDiff, Iave, rh, WS;
   double pLeafsun, pLeafshade;
   double Leafsun, Leafshade;
 
@@ -114,7 +114,7 @@ SEXP eCanA(SEXP lai, SEXP Doy, SEXP Hr, SEXP SolarR, SEXP ATemp,
   for(i=0;i<nlayers;i++)
     {
       IDir = layIdir[--sp1];
-      Itot = layItotal[--sp3];
+      Iave = layIave[--sp3];
 
       maxIDir = layMaxIdir[--sp4];
       maxIDiff = layMaxIdiff[--sp5];
@@ -124,7 +124,7 @@ SEXP eCanA(SEXP lai, SEXP Doy, SEXP Hr, SEXP SolarR, SEXP ATemp,
       pLeafsun = layFsun[--sp6];
       CanHeight = layHeight[--sp8];
       Leafsun = LAIc * pLeafsun;
-      tmp5 = EvapoTrans(IDir,Itot,maxIDir,Temp,rh,WS,Leafsun,CanHeight,stomataws,1,39,0.04,0.7,0.83,0.93,0.8,0.01,3);
+      tmp5 = EvapoTrans(IDir,Iave,maxIDir,Temp,rh,WS,Leafsun,CanHeight,300,0.04,1);
       /* not the right thing to do here to add these values at the end of the ET function
 but just a simple fix for now. The problem is that the eC4photoC function should have its own
 EvapoTrans function. */
@@ -135,7 +135,7 @@ EvapoTrans function. */
       IDiff = layIdiff[--sp2];
       pLeafshade = layFshade[--sp7];
       Leafshade = LAIc * pLeafshade;
-      tmp6 = EvapoTrans(IDiff,Itot,maxIDiff,Temp,rh,WS,Leafshade,CanHeight,stomataws,1,39,0.04,0.7,0.83,0.93,0.8,0.01,3);
+      tmp6 = EvapoTrans(IDiff,Iave,maxIDiff,Temp,rh,WS,Leafshade,CanHeight,300,0.04,1);
       /* not the right thing to do here to add these values at the end of the ET function
 but just a simple fix for now*/
       TempIdiff = Temp + tmp6.Deltat;

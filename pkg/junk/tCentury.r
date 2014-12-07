@@ -6,7 +6,7 @@ iSoilP <- centuryParms(timestep="week")
 iSoilP[1:9] <- iSoilP0[1:9]
 
 #nsim <- 52*1000 ## weekly
-nsim <- 52 * 1000 ## yearly
+nsim <- 52 * 10000 ## yearly
 
 mat <- matrix(nrow=nsim,ncol=9)
 mat2 <- matrix(nrow=nsim,ncol=4)
@@ -59,6 +59,15 @@ if(add){
 mat.9d <- mat
 
 ## Plotting the different soil carbon pools
+labs <- paste("SC",1:8,sep="")
+xyplot(mat[,1] + mat[,2] + mat[,3] +
+       mat[,4] + mat[,5] + mat[,6] +
+       mat[,7] + mat[,8] ~ I(1:nsim/52),type="l",ylab="carbon",
+       col=rainbow(8),
+       lty=1, lwd=3,
+       key=list(text=list(labs),lines=TRUE,col=rainbow(8)),
+       main = paste("total annual biomass = 6 Mg/ha/yr"))
+
 labs <- paste("SC",1:9,sep="")
 xyplot(mat[,1] + mat[,2] + mat[,3] +
        mat[,4] + mat[,5] + mat[,6] +

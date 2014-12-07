@@ -10,8 +10,9 @@
 }
 \usage{
 CanA(lai,doy,hr,solar,temp,rh,windspeed,
-     lat=40,nlayers=8,kd=0.1,
-     StomataWS=1, chi.l=1, heightFactor = 3,
+     lat=40,nlayers=8,kd=0.7,
+     StomataWS=1, chi.l=1, leafwidth=0.04,
+     heightFactor = 3,
      photoControl = list(),
      lnControl = list(),
      units = c("kg/m2/hr","Mg/ha/hr"))
@@ -36,7 +37,8 @@ CanA(lai,doy,hr,solar,temp,rh,windspeed,
 \item{chi.l}{ The ratio of horizontal to vertical projected area of
   leaves in the canopy segment. A smaller than 1 value represents a more
   upright canopy and a value higher than 1 is represented by more
-  horizontal leaves.}  
+  horizontal leaves.}
+\item{leafwidth}{average leaf width.}
 \item{heightFactor}{ Height Factor. Divide LAI by this number to get the
   height of a crop.}
 \item{photoControl}{ list that sets the photosynthesis parameters. See

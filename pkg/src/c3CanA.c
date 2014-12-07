@@ -65,7 +65,7 @@ SEXP c3CanA(SEXP Lai,
   double maxIdir, maxIdiff;
   double maxIDir, maxIDiff;
   double LAIc;
-  double IDir, IDiff, Itot,rh, WindS;
+  double IDir, IDiff, Iave, rh, WindS;
   double TempIdir,TempIdiff,AssIdir,AssIdiff;
   double  pLeafsun, pLeafshade;
   double Leafsun, Leafshade;
@@ -146,7 +146,7 @@ SEXP c3CanA(SEXP Lai,
   maxIdir = tmp1[3];
   maxIdiff = tmp1[4];
 
-/* sun multilayer model. As a side effect it populates the layIdir, layItotal, layFsun, layHeight,
+/* sun multilayer model. As a side effect it populates the layIdir, layIave, layFsun, layHeight,
 layIdiff, layShade vectors. */
     
   sunML(Idir,Idiff,LAI,nlayers,cosTh,kd,chil,heightf, maxIdir, maxIdiff);
@@ -180,7 +180,7 @@ layIdiff, layShade vectors. */
 	    }
 
 	    IDir = layIdir[--sp1];
-	    Itot = layItotal[--sp3];
+	    Iave = layIave[--sp3];
 	    
 	    maxIDir = layMaxIdir[--sp4];
 	    maxIDiff = layMaxIdiff[--sp5];
@@ -192,7 +192,7 @@ layIdiff, layShade vectors. */
 	    CanHeight = layHeight[--sp8];
 	    Leafsun = LAIc * pLeafsun;
 /* Need a new evapo transpiration function specifically for c3*/
-	    tmp5_ET = c3EvapoTrans(IDir,Itot,Temp,rh,WindS,LAIc,CanHeight,
+	    tmp5_ET = c3EvapoTrans(IDir,Iave,Temp,rh,WindS,LAIc,CanHeight,
 				 vmax1,jmax1,Rd1,b01,b11,Catm,210,theta);
 	    TempIdir = Temp + tmp5_ET.Deltat;
 	    tmpc3 = c3photoC(IDir,TempIdir,rh,vmax1,jmax1,Rd1,b01,b11,Catm,O2,theta);
@@ -201,7 +201,7 @@ layIdiff, layShade vectors. */
 	    IDiff = layIdiff[--sp2];
 	    pLeafshade = layFshade[--sp7];
 	    Leafshade = LAIc * pLeafshade;
-	    tmp6_ET = c3EvapoTrans(IDiff,Itot,Temp,rh,WindS,LAIc,CanHeight,
+	    tmp6_ET = c3EvapoTrans(IDiff,Iave,Temp,rh,WindS,LAIc,CanHeight,
 				 vmax1,jmax1,Rd1,b01,b11,Catm,210,theta);
 	    TempIdiff = Temp + tmp6_ET.Deltat;
 	    tmpc32 = c3photoC(IDiff,TempIdiff,rh,vmax1,jmax1,Rd1,b01,b11,Catm,O2,theta);

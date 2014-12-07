@@ -33,7 +33,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	    SEXP WINDSPEED,           /* Wind Speed                7 */ 
 	    SEXP PRECIP,              /* Precipitation             8 */
 	    SEXP KD,                  /* K D (ext coeff diff)      9 */
-	    SEXP CHILHF,              /* Chi and Height factor    10 */
+	    SEXP CHILHF,              /* Chi and Height factor LW 10 */
 	    SEXP NLAYERS,             /* # Lay canop              11 */
 	    SEXP RHIZOME,             /* Ini Rhiz                 12 */
             SEXP IRTL,                /* i rhiz to leaf           13 */
@@ -321,6 +321,8 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	double kd = REAL(KD)[0];
 	double chil = REAL(CHILHF)[0];
 	double hf = REAL(CHILHF)[1];
+        double leafwidth = REAL(CHILHF)[2];
+        int eteq = REAL(CHILHF)[3];
 
 	/* Creation of pointers outside the loop */
 	sti = &newLeafcol[0]; /* This creates sti to be a pointer to the position 0
@@ -348,7 +350,8 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 			       theta,beta,Rd1,Ca,b01,b11,StomWS,
 			       ws, kd,
 			       chil, hf,
-                               LeafN, kpLN, lnb0, lnb1, lnfun);
+                               LeafN, kpLN, lnb0, lnb1, lnfun,
+                               leafwidth, eteq);
 
 		/* Collecting the results */
 		CanopyA = Canopy.Assim * timestep;
@@ -514,7 +517,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
  		   The demand is in Mg/ha. I need a conversion factor of 
  		   multiply by 1000, divide by 10000. */
  
- 		MinNitro = MinNitro - LeafN * (Stem + Leaf) * 1e-1;
+ 		MinNitro = MinNitro - LeafN * (newStem + newLeaf) * 1e-1;
  		if(MinNitro < 0) MinNitro = 1e-3;
 
 		if(kLeaf > 0)
@@ -1972,7 +1975,7 @@ void BioGro(double lat, int doy[],int hr[],double solar[],double temp[],double r
 			       solar[i],temp[i],rh[i],windspeed[i],
 			       lat,nlayers,vmax,alpha,kparm,theta,beta,
 			       Rd,Catm,b0,b1,StomWS,ws,kd, chil,
-			       heightf, LeafN, kpLN, lnb0, lnb1, lnfun);
+			       heightf, LeafN, kpLN, lnb0, lnb1, lnfun, 0.04, 1);
 
 
 

@@ -46,6 +46,7 @@ sunML <- function(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,height
   layIdir <- rep(0,nlayers)
   layIdiff <- rep(0,nlayers)
   layItotal <- rep(0,nlayers)
+  layIave <- rep(0,nlayers)
   layFsun <- rep(0,nlayers)
   layFshade <- rep(0,nlayers)
   layMaxIdir <- numeric(nlayers)
@@ -75,13 +76,14 @@ sunML <- function(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,height
 
     Itotal =(Fsun*Isolar + Idiffuse) * (1-exp(-k*LAIi))/k
 
-    Iaverage = (Fsun*Isolar + Idiffuse) * (1 - exp(-k * LAIi)) / k ## Itot is the radiation
+    ## Iaverage = (Fsun*Isolar + Idiffuse) * (1 - exp(-k * LAIi)) / k ## Itot is the radiation
     ## ##intercepted by an average m^2 of leaf in a given layer
     ##print(k)
-    ## Iaverage = (Fsun*(Isolar + Idiffuse) + Fshade*Idiffuse) * (1 - exp(-k * LAIi)) /k
+    Iaverage = (Fsun*(Isolar + Idiffuse) + Fshade*Idiffuse) * (1 - exp(-k * LAIi)) /k
     layIdir[i+1] = Isolar + Idiffuse
     layIdiff[i+1] = Idiffuse
     layItotal[i+1] = Itotal
+    layIave[i+1] = Iaverage ## (Isolar + 2*Idiffuse)/2  ## This is the average radiation incident on a leaf
     layFsun[i+1] = Fsun
     layFshade[i+1] = Fshade
     layMaxIdir[i+1] = maxIsolar
@@ -90,7 +92,8 @@ sunML <- function(Idir,Idiff,LAI=8,nlayers=8,cos.theta=0.5,kd=0.7,chi.l=1,height
     ## Old version of the previous line
     ## Change FEM 10/27/2014
     ## layHeight[nlayers-i] = CumLAI / heightf
-    Sun=data.frame(layIdir=layIdir,layIdiff=layIdiff,layItotal=layItotal,layFsun=layFsun,layFshade=layFshade,layHeight=layHeight, layMaxIdir=layMaxIdir, layMaxIdiff=layMaxIdiff)
+    Sun=data.frame(layIdir=layIdir,layIdiff=layIdiff,layItotal=layItotal, layIave=layIave,
+        layFsun=layFsun,layFshade=layFshade,layHeight=layHeight, layMaxIdir=layMaxIdir, layMaxIdiff=layMaxIdiff)
   }
   return(Sun)
 }

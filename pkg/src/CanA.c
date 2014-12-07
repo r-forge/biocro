@@ -35,11 +35,13 @@ SEXP CanA(SEXP Lai,SEXP Doy,SEXP HR,SEXP SOLAR,SEXP TEMP,
 	  SEXP ReH,SEXP windspeed,SEXP LAT,SEXP NLAYERS, SEXP STOMATAWS,
 	  SEXP VMAX, SEXP ALPH, SEXP KPARM, SEXP THETA, SEXP BETA,
 	  SEXP RD, SEXP B0, SEXP B1, SEXP CATM, SEXP KD, SEXP HEIGHTF, 
-	  SEXP WS, SEXP LEAFN, SEXP KPLN, SEXP LNB0, SEXP LNB1, SEXP LNFUN, SEXP CHIL)
+	  SEXP WS, SEXP LEAFN, SEXP KPLN, SEXP LNB0, SEXP LNB1, 
+          SEXP LNFUN, SEXP CHIL, SEXP LEAFWIDTH)
 {
 /* Declaring the struct for the Evaop Transpiration */
 	struct ET_Str tmp5_ET , tmp6_ET; 
-	struct c4_str tmpc4, tmpc42; 
+	struct c4_str tmpc4, tmpc42;
+        struct c4_str tmpc40, tmpc420; 
 
 	const double cf = 3600 * 1e-6 * 30 * 1e-6 * 10000;
 /* Need a different conversion factor for transpiration */
@@ -54,13 +56,13 @@ SEXP CanA(SEXP Lai,SEXP Doy,SEXP HR,SEXP SOLAR,SEXP TEMP,
   double Idir, Idiff, cosTh, maxIdir, maxIdiff;
   double maxIDir, maxIDiff;
   double LAIc;
-  double IDir, IDiff, Itot,rh, WindS;
+  double IDir, IDiff, Iave, rh, WindS;
   double TempIdir,TempIdiff,AssIdir,AssIdiff;
   double pLeafsun, pLeafshade;
   double Leafsun, Leafshade;
 
-  double CanopyA ;
-  double CanopyT , CanopyPe = 0.0, CanopyPr = 0.0;
+  double CanopyA;
+  double CanopyT, CanopyPe = 0.0, CanopyPr = 0.0;
   double CanopyC = 0.0;
   double CanHeight;
   /* Need to label them something different from the arguments of the c4photoC
@@ -69,7 +71,7 @@ SEXP CanA(SEXP Lai,SEXP Doy,SEXP HR,SEXP SOLAR,SEXP TEMP,
      yet (I need to think about this a bit harder). */
   double vmax1;
   double leafN_lay;
-
+  double leafwidth = REAL(LEAFWIDTH)[0];
 
   /* INTEGERS */
   int DOY = INTEGER(Doy)[0];
@@ -98,8 +100,8 @@ SEXP CanA(SEXP Lai,SEXP Doy,SEXP HR,SEXP SOLAR,SEXP TEMP,
   double b01 = REAL(B0)[0];
   double b11 = REAL(B1)[0];
   double stomataws = REAL(STOMATAWS)[0];
-  double  LeafN = REAL(LEAFN)[0];
-  double  kpLN = REAL(KPLN)[0];
+  double LeafN = REAL(LEAFN)[0];
+  double kpLN = REAL(KPLN)[0];
   double lnb0 = REAL(LNB0)[0];
   double lnb1 = REAL(LNB1)[0];
   int lnfun = INTEGER(LNFUN)[0];
@@ -148,10 +150,10 @@ layIdiff, layShade vectors. */
     RHprof(RlH,nlayers);
     /* It populates tmp4. */
 
-     WINDprof(WindSpeed,LAI,nlayers);
+    WINDprof(WindSpeed,LAI,nlayers);
     /* It populates tmp3. */
 
-     LNprof(LeafN, LAI, nlayers, kpLN);
+    LNprof(LeafN, LAI, nlayers, kpLN);
     /* It populates tmp5 */
 
     /* Next use the EvapoTrans function */
@@ -170,7 +172,7 @@ layIdiff, layShade vectors. */
 	    }
 
 	    IDir = layIdir[--sp1];
-	    Itot = layItotal[--sp3];
+	    Iave = layIave[--sp3];
 	    
 	    maxIDir = layMaxIdir[--sp4];
 	    maxIDiff = layMaxIdiff[--sp5];
@@ -181,8 +183,9 @@ layIdiff, layShade vectors. */
 	    pLeafsun = layFsun[--sp6];
 	    CanHeight = layHeight[--sp8];
 	    Leafsun = LAIc * pLeafsun;
-	    tmp5_ET = EvapoTrans(IDir,Itot,maxIDir,Temp,rh,WindS,LAIc,CanHeight,stomataws,
-				 INTEGER(WS)[0],vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11);
+	   
+	    tmpc40 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]); /* I ran this here to feed the EvapoTrans function stomatal conductance */
+	    tmp5_ET = EvapoTrans(IDir,Iave,maxIDir,Temp,rh,WindS,LAIc,CanHeight,tmpc40.Gs,leafwidth,0);
 	    TempIdir = Temp + tmp5_ET.Deltat;
 	    tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
 	    AssIdir = tmpc4.Assim;
@@ -190,8 +193,8 @@ layIdiff, layShade vectors. */
 	    IDiff = layIdiff[--sp2];
 	    pLeafshade = layFshade[--sp7];
 	    Leafshade = LAIc * pLeafshade;
-	    tmp6_ET = EvapoTrans(IDiff,Itot,maxIDiff,Temp,rh,WindS,LAIc,CanHeight,
-				 stomataws,INTEGER(WS)[0],vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11);
+	    tmpc420 = c4photoC(IDiff,TempIdiff,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
+	    tmp6_ET = EvapoTrans(IDiff,Iave,maxIDiff,Temp,rh,WindS,LAIc,CanHeight,tmpc420.Gs,leafwidth,0);
 	    TempIdiff = Temp + tmp6_ET.Deltat;
 	    tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
 	    AssIdiff = tmpc42.Assim;
