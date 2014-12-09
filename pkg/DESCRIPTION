@@ -1,9 +1,9 @@
 Package: BioCro
-Version: 0.264-0
+Version: 0.264-1
 Title: Simulation of Biomass Crops
 Author: Fernando Miguez <femiguez@iastate.edu>
 Maintainer: Fernando Miguez <femiguez@iastate.edu>
-Depends: R(>= 2.5.0), lattice
+Depends: R(>= 2.5.0), lattice, knitr
 Suggests: coda
 Imports: stats
 VignetteBuilder: knitr
