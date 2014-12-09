@@ -1,5 +1,7 @@
 \name{c4photo}
 \alias{c4photo}
+\alias{c4photoR}
+\alias{ballBerry}
 \title{Coupled photosynthesis-stomatal conductance simulation}
 
 \description{
@@ -9,7 +11,7 @@ References). Stomatal conductance is based on code provided by Joe Berry.
 \usage{
 c4photo(Qp, Tl, RH, vmax = 39, alpha = 0.04, kparm = 0.7,
         theta = 0.83, beta = 0.93, Rd = 0.8, 
-        Catm = 380, b0 = 0.08, b1 = 3, StomWS = 1, ws = c("gs", "vmax")) 
+        Catm = 380, b0 = 0.08, b1 = 3, stress = 1, ws = c("gs", "vmax")) 
 }
 
 \arguments{
@@ -28,7 +30,7 @@ c4photo(Qp, Tl, RH, vmax = 39, alpha = 0.04, kparm = 0.7,
 \item{Catm}{Atmospheric CO2 in ppm (or \eqn{\mu}{micro}mol/mol).}
 \item{b0}{intercept for the Ball-Berry stomatal conductance model.}
 \item{b1}{slope for the Ball-Berry stomatal conductance model.}
-\item{StomWS}{coefficient which controls the effect of water stress on
+\item{stress}{coefficient which controls the effect of water stress on
   stomatal conductance and assimilation.}
 \item{ws}{ option to control whether the water stress factor is applied
   to stomatal conductance ("gs") or to Vmax ("vmax").}
@@ -163,8 +165,8 @@ Qps <- seq(0,2000,10)
 Tls <- seq(0,55,5)
 rhs <- c(0.7)
 dat1 <- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs))
-res1 <- c4photo(dat1$Qp,dat1$Tl,dat1$RH) ## default StomWS = 1 No stress
-res2 <- c4photo(dat1$Qp,dat1$Tl,dat1$RH,StomWS=0.5)
+res1 <- c4photo(dat1$Qp,dat1$Tl,dat1$RH) ## default stress = 1 No stress
+res2 <- c4photo(dat1$Qp,dat1$Tl,dat1$RH,stress=0.5)
 
 ## Plot comparing StomWS = 1 vs. 0.5 for a range of conditions
 xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,

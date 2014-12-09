@@ -124,29 +124,29 @@ CanA(lai,doy,hr,solar,temp,rh,windspeed,
 
 \examples{
 
-data(doy124)
-tmp <- numeric(24)
+ \dontrun{
+  data(doy124)
+  tmp <- numeric(24)
 
-for(i in 1:24){
-   lai <- doy124[i,1]
-   doy <- doy124[i,3]
-   hr  <- doy124[i,4]
- solar <- doy124[i,5]
-  temp <- doy124[i,6]
+  for(i in 1:24){
+    lai <- doy124[i,1]
+    doy <- doy124[i,3]
+    hr  <- doy124[i,4]
+    solar <- doy124[i,5]
+    temp <- doy124[i,6]
     rh <- doy124[i,7]
     ws <- doy124[i,8]
 
-  tmp[i] <- CanA(lai,doy,hr,solar,temp,rh,ws)$CanopyAssim
+    tmp[i] <- CanA(lai,doy,hr,solar,temp,rh,ws)$CanopyAssim
 
-}
+  }
 
-\dontrun{
-plot(c(0:23),tmp,
+  plot(c(0:23),tmp,
             type="l",lwd=2,
             xlab="Hour",
             ylab=expression(paste("Canopy assimilation (kg  ",
             m^-2," ",h^-1,")")))
-}
+ }
 }
 
 \keyword{models}

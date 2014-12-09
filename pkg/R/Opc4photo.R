@@ -20,7 +20,7 @@
 
 Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
                       itheta=0.83, ibeta=0.93,
-                      Catm=380,ib0=0.08,ib1=3,iStomWS=1, ws=c("gs","vmax"),
+                      Catm=380,ib0=0.08,ib1=3,istress=1, ws=c("gs","vmax"),
                       response=c("Assim","StomCond"),
                       curve.kind=c("Q","Ci"),
                       op.level=1,
@@ -62,7 +62,7 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
   xparms <- list(Rd=iRd, kparm=ikparm, alpha=ialpha,
                  theta=itheta, beta=ibeta,
                  Catm=Catm, b0=ib0, b1=ib1,
-                 StomWS=iStomWS,ws=ws)
+                 stress=istress,ws=ws)
 
   
   RSS <- function(coefs){
@@ -75,16 +75,16 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
           if(op.level == 1){
             vec1 <- c4photo(data[,2],data[,3],data[,4],
                             coefs[1],coefs[2],ikparm,itheta,ibeta,
-                            iRd,Catm,ib0,ib1,iStomWS,ws=ws)
+                            iRd,Catm,ib0,ib1,istress,ws=ws)
           }else
           if(op.level == 2){
             vec1 <- c4photo(data[,2],data[,3],data[,4],
                             coefs[1],coefs[2],ikparm,itheta,ibeta,
-                            coefs[3],Catm,ib0,ib1,iStomWS,ws=ws)
+                            coefs[3],Catm,ib0,ib1,istress,ws=ws)
           }else{
             vec1 <- c4photo(data[,2],data[,3],data[,4],
                             coefs[1],coefs[2],ikparm,coefs[3],ibeta,
-                            coefs[4],Catm,ib0,ib1,iStomWS,ws=ws)
+                            coefs[4],Catm,ib0,ib1,istress,ws=ws)
           }
         }else{
           if(op.level == 1){
@@ -337,7 +337,7 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
 
 RsqC4photo <- function(data, vmax=39,alph=0.04,
                            kparm=0.7,theta=0.83,beta=0.93,
-                       Rd=0.8,Catm=380,b0=0.08,b1=3,StomWS=1,
+                       Rd=0.8,Catm=380,b0=0.08,b1=3,stress=1,
                            response=c("Assim","StomCond")){
   response <- match.arg(response)
   if(response == "Assim"){
@@ -345,14 +345,14 @@ RsqC4photo <- function(data, vmax=39,alph=0.04,
       warning("Units of Assim might be wrong:
                should be micro mol m-2 s-1\n")
      vec1 <- c4photo(data[,2],data[,3],data[,4],
-                    vmax,alph,kparm,theta,beta,Rd,Catm,b0,b1,StomWS)$Assim
+                    vmax,alph,kparm,theta,beta,Rd,Catm,b0,b1,stress)$Assim
    }
   if(response == "StomCond"){
     if(max(data[,1]) < 1)
       warning("Units of StomCond might be wrong:
                should be mmol m-2 s-1\n")
      vec1 <- c4photo(data[,2],data[,3],data[,4],
-                    vmax,alph,kparm,theta,beta,Rd,Catm,b0,b1,StomWS)$Gs
+                    vmax,alph,kparm,theta,beta,Rd,Catm,b0,b1,stress)$Gs
   }
   obsvec <- as.matrix(data[,1])
   SST <- sum(obsvec^2)
@@ -500,14 +500,14 @@ predict.Opc4photo <- function(object, newdata,...){
                        theta = theta, beta = x$xparms$beta,
                        Rd = Rd, Catm = x$xparms$Catm,
                        b0 = x$xparms$b0, b1 = x$xparms$b1,
-                       StomWS = x$xparms$StomWS, ws = x$xparms$ws)
+                       stress = x$xparms$stress, ws = x$xparms$ws)
     }else{
       fittd <- c4photo(newdata[,2],newdata[,3],newdata[,4], vmax = vmax,
                        alpha = alpha, kparm = x$xparms$kparm,
                        theta = theta, beta = x$xparms$beta,
                        Rd = Rd, Catm = x$xparms$Catm,
                        b0 = x$xparms$b0, b1 = x$xparms$b1,
-                       StomWS = x$xparms$StomWS, ws = x$xparms$ws)
+                       stress = x$xparms$stress, ws = x$xparms$ws)
 
     }
   }else{
@@ -517,14 +517,14 @@ predict.Opc4photo <- function(object, newdata,...){
                        theta = x$xparms$theta, beta = beta,
                        Rd = Rd, Catm = x$xparms$Catm,
                        b0 = x$xparms$b0, b1 = x$xparms$b1,
-                       StomWS = x$xparms$StomWS, ws = x$xparms$ws)
+                       stress = x$xparms$stress, ws = x$xparms$ws)
     }else{
       fittd <- c4photo(newdata[,2],newdata[,3],newdata[,4], vmax = vmax,
                        alpha = x$xparms$alpha, kparm = kparm,
                        theta = x$xparms$theta, beta = beta,
                        Rd = Rd, Catm = x$xparms$Catm,
                        b0 = x$xparms$b0, b1 = x$xparms$b1,
-                       StomWS = x$xparms$StomWS, ws = x$xparms$ws)
+                       stress = x$xparms$stress, ws = x$xparms$ws)
 
     }    
   }

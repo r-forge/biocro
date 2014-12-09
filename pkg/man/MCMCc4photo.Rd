@@ -18,7 +18,7 @@
  \usage{
 MCMCc4photo(data, niter = 20000, ivmax = 39, ialpha = 0.04, ikparm =
            0.7, itheta = 0.83, ibeta = 0.93, iRd = 0.8, Catm = 380, b0 = 0.08,
-           b1 = 3, StomWS = 1, ws = c("gs", "vmax"), scale = 1,
+           b1 = 3, stress = 1, ws = c("gs", "vmax"), scale = 1,
            sds = c(1, 0.005), prior=c(39,10,0.04,0.02)) 
 }
 

@@ -18,7 +18,7 @@
 
 c4photo <- function(Qp,Tl,RH,vmax=39,alpha=0.04,kparm=0.7,theta=0.83,
                     beta=0.93,Rd=0.8,Catm=380,b0=0.08,b1=3,
-                    StomWS=1,ws=c("gs","vmax"))
+                    stress=1,ws=c("gs","vmax"))
 {
     if((max(RH) > 1) || (min(RH) < 0))
         stop("RH should be between 0 and 1")
@@ -43,7 +43,7 @@ c4photo <- function(Qp,Tl,RH,vmax=39,alpha=0.04,kparm=0.7,theta=0.83,
                  as.double(kparm),as.double(theta),
                  as.double(beta),
                  as.double(Rd),as.double(Catm),
-                 as.double(b0),as.double(b1),as.double(StomWS),as.integer(ws))
+                 as.double(b0),as.double(b1),as.double(stress),as.integer(ws))
     res
 }
 
@@ -51,7 +51,7 @@ c4photo <- function(Qp,Tl,RH,vmax=39,alpha=0.04,kparm=0.7,theta=0.83,
 MCMCc4photo <- function(data, niter = 20000, ivmax = 39,
                         ialpha = 0.04, ikparm = 0.7, itheta=0.83,
                         ibeta=0.93, iRd = 0.8, Catm = 380,
-                        b0 = 0.08, b1 = 3, StomWS=1, ws=c("gs","vmax"), scale = 1,
+                        b0 = 0.08, b1 = 3, stress=1, ws=c("gs","vmax"), scale = 1,
                         sds=c(1,0.005),prior=c(39,10,0.04,0.02)){
 
     if(ncol(data) != 4)
@@ -77,7 +77,7 @@ MCMCc4photo <- function(data, niter = 20000, ivmax = 39,
                  as.double(ivmax), as.double(ialpha), as.double(ikparm),
                  as.double(itheta), as.double(ibeta),
                  as.double(iRd), as.double(Catm), as.double(b0), as.double(b1),
-                 as.double(StomWS), as.double(scale), as.double(sds[1]),
+                 as.double(stress), as.double(scale), as.double(sds[1]),
                  as.double(sds[2]), as.integer(ws), as.double(prior))
     res$resuMC <- t(res$resuMC)
     res$niter <- niter
