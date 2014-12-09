@@ -31,7 +31,7 @@ S3method(print, MCMCc4photo)
 S3method(plot, MCMCc4photo)
 
 ## c4photoR.R
-export(c4photoR, ballBerry)
+##export(c4photoR, ballBerry)
 
 ## CanA.R 
 export(CanA)
