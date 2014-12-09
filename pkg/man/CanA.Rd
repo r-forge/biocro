@@ -140,12 +140,13 @@ for(i in 1:24){
 
 }
 
+\dontrun{
 plot(c(0:23),tmp,
             type="l",lwd=2,
             xlab="Hour",
             ylab=expression(paste("Canopy assimilation (kg  ",
             m^-2," ",h^-1,")")))
-
+}
 }
 
 \keyword{models}
