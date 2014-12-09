@@ -1,5 +1,6 @@
-\name{weather05}
+\name{cmi-weather}
 \alias{weather06}
+\alias{weather05}
 \alias{weather04}
 \docType{data}
 \title{
@@ -27,6 +28,8 @@ Weather data
 \source{
   These data are generated from the \code{\link{cmi0506}} object using the
   \code{weach} function.
+  The original data is from the Illinois WARM network.
+  http://www.isws.illinois.edu/warm/data/cdfs/cmiday.txt
 }
 \examples{
 data(weather06)

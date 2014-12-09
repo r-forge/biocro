@@ -58,7 +58,9 @@ SEXP c4photo(SEXP Qp, SEXP Tl, SEXP RH, SEXP VMAX, SEXP ALPHA,
 	SEXP ASSV;
 	SEXP CiV;
 
-	nq = length(Qp);nt = length(Tl);nr = length(RH);
+	nq = length(Qp);
+        nt = length(Tl);
+        nr = length(RH);
 
 	PROTECT(lists = allocVector(VECSXP,3));
 	PROTECT(names = allocVector(STRSXP,3));

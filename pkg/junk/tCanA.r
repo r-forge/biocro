@@ -1,10 +1,11 @@
 ## Simple example
 nlay <- 10
 res <- CanA(lai=3, doy=200, hr=12,
-            solar=1500, temp=25, rh=0.7,
+            solar=1500, temp=25, rh=0.7, ##photoControl=photoParms(b1=7),
             windspeed=2, nlayers=nlay)
 
 res$CanopyAssim
+res$CanopyTrans
 
 ##  2 layers = 0.00347
 ##  3 layers = 0.00378
@@ -13,6 +14,21 @@ res$CanopyAssim
 ## 20 layers = 0.00431
 ## 40 layers = 0.00435
 ## 50 layers = 0.00435
+
+res <- CanA(lai=3, doy=200, hr=12,
+            solar=1500, temp=25, rh=0.7, photoControl=photoParms(ws="gs"),
+            windspeed=2, nlayers=nlay, StomataWS=0.3)
+
+res$CanopyAssim
+res$CanopyTrans
+
+res <- CanA(lai=3, doy=200, hr=12,
+            solar=1500, temp=25, rh=0.7, photoControl=photoParms(ws="gs"),
+            windspeed=2, nlayers=nlay, StomataWS=0.3)
+
+res$CanopyAssim
+res$CanopyTrans
+
 
 ## Example for a full day by layer
 data(weather05)

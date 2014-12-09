@@ -262,7 +262,6 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 {
 	/* creating the structure to return */
 	struct ET_Str tmp;
-	struct c4_str tmpc4;
 
 	const double kappa = 0.41;
 	double WindSpeedHeight = 2; /* This is the height at which the wind speed was measured */
@@ -759,7 +758,6 @@ struct Can_Str CanAC(double LAI, int DOY, int hr, double solarR, double Temp,
 		TempIdir = Temp + tmp5_ET.Deltat;
 		tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
 		AssIdir = tmpc4.Assim;
-
 
 		IDiff = layIdiff[--sp2];
 		pLeafshade = layFshade[--sp7];
