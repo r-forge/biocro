@@ -42,25 +42,7 @@ eCanA(LAI, doy, hour, solarR, AirTemp, RH, WindS, Vcmax,
 
 \examples{
 
-data(doy124)
-tmp1 <- numeric(24)
-for(i in 1:24){
-  lai <- doy124[i,1]
-  doy <- doy124[i,3]
-  hr  <- doy124[i,4]
-  solar <- doy124[i,5]
-  temp <- doy124[i,6]
-  rh <- doy124[i,7]/100
-  ws <- doy124[i,8]
-
-  tmp1[i] <- CanA(lai,doy,hr,solar,temp,rh,ws)
-}
-
-plot(c(0:23),tmp1,
-     type="l",lwd=2,
-     xlab="Hour",
-     ylab=expression(paste("Canopy assimilation (mol  ",
-     m^-2," ",s^-1,")")))
+## No examples yet
 
 }
 
