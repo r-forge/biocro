@@ -140,8 +140,7 @@ export(valid_dbp)
 export(wtrstr, wsRcoef)
 
 ## weach.R
-export(weach)
-export(is.leap)
+export(weach, is.leap)
 
 ## weach_imn.R
 export(weach_imn)

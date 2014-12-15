@@ -144,3 +144,23 @@ weach <- function(X,lat=40,ts=1,solar.units=c("MJ/m2"), temp.units=c("Fahrenheit
   ans <- as.data.frame(cbind(year,doy,hour,SolarR,Temp,RH,WS,precip))
   ans
 }
+
+
+## This function is not really needed, but here it is in case I need
+## it in the future
+is.leap <- function(year){
+  if(year %% 4 == 0){
+    if(year %% 100 == 0){
+       if(year %% 400 == 0){
+         ans <- TRUE
+         }else{
+           ans <- FALSE
+         }
+     }else{
+       ans <- TRUE
+     }
+  }else{
+    ans <- FALSE
+  }
+  ans
+}

@@ -12,7 +12,8 @@
 
 }
 \usage{
-weach(X,lat=40,ts=1,temp.units=c("Fahrenheit","Celsius"),rh.units=c("percent","fraction"),ws.units=c("mph","mps"),pp.units=c("in","mm"),...)
+weach(X,lat=40,ts=1, solar.units=c("MJ/m2"), temp.units=c("Fahrenheit","Celsius"),
+rh.units=c("percent","fraction"), ws.units=c("mph","mps"), pp.units=c("in","mm"),...)
 
 is.leap(year)
 }
@@ -37,6 +38,8 @@ is.leap(year)
     precipitation is entered. Default is inches.}
   \item{\ldots}{additional arguments to be passed to
     \code{\link{lightME}}}
+  \item{year}{ input for the \code{is.leap} function. It checks
+  if a year is leap or not.}
 }
 
 \details{
