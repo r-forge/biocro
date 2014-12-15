@@ -11,7 +11,7 @@
 \usage{
 CanA(lai,doy,hr,solar,temp,rh,windspeed,
      lat=40,nlayers=8,kd=0.7,
-     StomataWS=1, chi.l=1, leafwidth=0.04,
+     stress=1, chi.l=1, leafwidth=0.04,
      heightFactor = 3,
      photoControl = list(),
      lnControl = list(),
@@ -32,7 +32,7 @@ CanA(lai,doy,hr,solar,temp,rh,windspeed,
 \item{nlayers}{number of layers in the simulation of the canopy (max
   allowed is 50).}
 \item{kd}{ Ligth extinction coefficient for diffuse light.}
-\item{StomataWS}{coefficient controlling the effect of water stress on
+\item{stress}{coefficient controlling the effect of water stress on
   stomatal conductance and assimilation.}
 \item{chi.l}{ The ratio of horizontal to vertical projected area of
   leaves in the canopy segment. A smaller than 1 value represents a more

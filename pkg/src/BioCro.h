@@ -81,7 +81,7 @@ void WINDprof(double WindSpeed, double LAI, int nlayers);
 void sunML(double Idir, double Idiff, double LAI, int nlayers, double cosTheta, double kd, double chil, double heightf, double maxIdir, double maxIdiff);
 void lightME(double lat, int DOY, int td);
 
-struct cenT_str Century(double *LeafL, double *StemL, double *RootL, double *RhizL, double smoist, double stemp, int timestep, 
+struct cenT_str Century(double *LeafL, double *StemL, double *RootL, double *RhizL, double smoist, double stemp, double timestep, 
 			double SCs[9] , double leachWater, double Nfert, double MinN, double precip,
 			double LeafL_Ln, double StemL_Ln, double RootL_Ln, double RhizL_Ln,
 			double LeafL_N, double StemL_N, double RootL_N, double RhizL_N, int soilType,

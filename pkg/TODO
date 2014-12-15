@@ -1,30 +1,41 @@
 ########################################################################
 #
-# Updated 11-23-2014
+# Updated 12-11-2014
 #
 #
 ########################################################################
 
- o At the moment there is a very crude limitation of ET given by the
-   use of StomataWS directly on the Priestly-Taylor
-   equation. Eventually I will like to use Penman-Monteith, but right
-   now the conductance being so low simulates very low transpiration
+Immediate priorities
+
+ o Keep working on the testing of EvapoTranspiration. It seems now
+   Priestly works well. Penman depends on the bulk conductance so it
+   is affected by 'ga' in the model. Penman-Monteith is affected by
+   both 'ga' and 'gc' or stomatal conductance. I might want to
+   do an experiment where I test all possible combinations of
+   calculations of ga using the WIMOVAC method, the Thornley method
+   and possible side effects of leaf temperature. 
+
+Less immediate priorities
+
+ o Test the Century model and implement the possibility of running it
+   at an hourly and yearly time step
+
+ o Incorporate Century in MaizeGro
 
  o In the Century model the Min N needs to be looked at. I just
    changed the demand to be dependent on the new Leaf and Stem.
 
- o Work to do on the lightME and EvapoTrans functions. The correct
-   radiation to pass to the calculation of leaf temperature is the
-   average radiation. Right now the total radiation is being passed.
+ o There is a known 'bug' that is not that easy to fix. It is related
+   to CosZenithAngle which can cause very high photosynthesis late in
+   the day with observed data (i.e. data not processed with the weach
+   function).
 
- o Keep working on the EvapoTrans function the ga r boundary layer of
-   the leaf needs to be improved. There is the version from WIMOVAC,
-   the version of Leuning and the version from Thornley.
+ o The weach function can be improved to reflect better relationships
+   for relative humidity and wind speed. There is also an assumption
+   that 0.12 of the radiation in a day occurs during an hour at peak
+   insolation.
 
- o Look at the sunML function (both R and C) there is a bug that only 
-   seems to occur at certain combinations of days and hours that
-   triggers a high diffuse radiation. The kd needs to be calculated
-   rather than a fixed value of say 0.7.
+ o In sunML/CanA the kd needs to be calculated rather than a fixed value of say 0.7.
 
  o Notes about the model: the soil water potential seems to stop at
    -1500 but  this should not be the case. It should be able to go down lower.

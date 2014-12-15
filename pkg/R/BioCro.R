@@ -126,6 +126,7 @@ BioGro <- function(WetDat, day1=NULL, dayn=NULL,
     }
     if(centuryP$timestep == "week") centTimestep <- 7
     if(centuryP$timestep == "day") centTimestep <- 1
+    if(centuryP$timestep == "hour") centTimestep <- 1/24
     
     vmax <- photoP$vmax
     alpha <- photoP$alpha
@@ -188,7 +189,7 @@ BioGro <- function(WetDat, day1=NULL, dayn=NULL,
                  as.integer(soilType),
                  as.integer(wsFun),
                  as.double(centCoefs),
-                 as.integer(centTimestep),
+                 as.double(centTimestep),
                  as.double(centuryP$Ks),
                  as.integer(soilP$soilLayers),
                  as.double(soilP$soilDepths),

@@ -1,5 +1,5 @@
 ##
-##  BioCro/R/weach.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2010
+##  BioCro/R/weach.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2014
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 ##
 ##
 
-weach <- function(X,lati,ts=1,temp.units=c("Fahrenheit","Celsius"),
+weach <- function(X,lat=40,ts=1,solar.units=c("MJ/m2"), temp.units=c("Fahrenheit","Celsius"),
                   rh.units=c("percent","fraction"),ws.units=c("mph","mps"),
                   pp.units=c("in","mm"),...){
 
-  if(missing(lati))
+  if(missing(lat))
     stop("latitude is missing")
   
   if((ts<1)||(24%%ts != 0))
@@ -29,12 +29,22 @@ weach <- function(X,lati,ts=1,temp.units=c("Fahrenheit","Celsius"),
   if(dim(X)[2] != 11)
     stop("X should have 11 columns")
 
+  if(nrow(X) == 366 || is.leap(X[1,1])){
+      warning("leap year")
+      year.days <- 366
+  }else{
+      year.days <- 365
+  }
+  
   MPHTOMPERSEC <- 0.447222222222222
 
+  solar.units <- match.arg(solar.units)
   temp.units <- match.arg(temp.units)
   rh.units <- match.arg(rh.units)
   ws.units <- match.arg(ws.units)
   pp.units <- match.arg(pp.units)
+
+  if(solar.units != "MJ/m2") stop("MJ/m2 is the only option at the moment")
   
   year <- X[,1]
   DOYm <- X[,2]
@@ -68,10 +78,10 @@ weach <- function(X,lati,ts=1,temp.units=c("Fahrenheit","Celsius"),
   solarR <- rep(solarR , each = tint)
 
   ltseq <- length(tseq)
-  resC2 <- numeric(ltseq*365)
-  for(i in 1:365)
+  resC2 <- numeric(ltseq*year.days)
+  for(i in 1:year.days)
     {
-      res <- lightME(DOY = i , t.d = tseq, lat = lati, ...)
+      res <- lightME(DOY = i , t.d = tseq, lat = lat, ...)
       Itot <- res$I.dir + res$I.diff
       indx <- 1:ltseq + (i-1)*ltseq 
       resC2[indx] <- (Itot-min(Itot))/max(Itot)
@@ -86,36 +96,37 @@ weach <- function(X,lati,ts=1,temp.units=c("Fahrenheit","Celsius"),
     maxTemp <- (maxTemp - 32)*(5/9)
     maxTemp <- rep(maxTemp , each = tint)
     rangeTemp <- maxTemp - minTemp
-#    avgTemp <- rep((avgTemp - 32)*(5/9),each=tint)
   }else{
     minTemp <- rep(minTemp , each = tint)
     maxTemp <- rep(maxTemp , each = tint)
     rangeTemp <- maxTemp - minTemp
   }
 
-    xx <- rep(tseq,365)
-    temp1 <- sin(2 * pi * (xx - 10)/tint)
-    temp1 <- (temp1 + 1)/2
-    Temp <- minTemp + temp1 * rangeTemp
+  xx <- rep(tseq,year.days)
+  temp1 <- sin(2 * pi * (xx - 10)/tint)
+  temp1 <- (temp1 + 1)/2
+  Temp <- minTemp + temp1 * rangeTemp
 
   ## Relative humidity
-#  avgRH <- rep(avgRH,each=tint)
   minRH <- rep(minRH,each=tint)
   maxRH <- rep(maxRH,each=tint)
 
-  temp2 <- cos(2 * pi * (xx - 10)/tint)
-  temp2 <- (temp2 + 1)/2
+  temp2 <- cos(2 * pi * (xx - 15)/tint)
+  temp2 <- (-temp2 + 1)/2
   if(rh.units == "percent"){
     RH <- (minRH + temp2 * (maxRH - minRH))/100
   }else{
     RH <- (minRH + temp2 * (maxRH - minRH))
   }
 
+  RH <- ifelse(RH > 0.99999, 0.9999, RH) 
+  
   ## Wind Speed
+  temp3 <- temp1 + 0.5
   if(ws.units == "mph"){
-    WS <- rep(WindSpeed,each=tint) * MPHTOMPERSEC
+    WS <- temp3 * rep(WindSpeed,each=tint) * MPHTOMPERSEC
   }else{
-    WS <- rep(WindSpeed,each=tint)
+    WS <- temp3 * rep(WindSpeed,each=tint)
   }
 
   ## Precipitation
@@ -125,11 +136,11 @@ weach <- function(X,lati,ts=1,temp.units=c("Fahrenheit","Celsius"),
     precip <- rep(I(precip/tint),each=tint)
   }
   
-  hour <- rep(tseq,365)
-  DOY <- 1:365
+  hour <- rep(tseq,year.days)
+  DOY <- 1:year.days
   doy <- rep(DOY,each=tint)
 
 
-  ans <- cbind(year,doy,hour,SolarR,Temp,RH,WS,precip)
+  ans <- as.data.frame(cbind(year,doy,hour,SolarR,Temp,RH,WS,precip))
   ans
 }

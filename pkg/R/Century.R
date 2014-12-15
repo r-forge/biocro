@@ -26,6 +26,7 @@ Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWate
 
   timestep <- centuryP$timestep
 
+  if(timestep == "hour") timestep <- 1/24
   if(timestep == "day") timestep <- 1
   if(timestep == "week") timestep <- 7
       
@@ -52,7 +53,11 @@ Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWate
     Na = Na * (1/365);
     Nf = Nf * (1/365);
   }
-
+  if(timestep < 1){
+    Na = Na * (1/(365*24));
+    Nf = Nf * (1/(365*24));
+  }
+  
   ## Nitrogen in the form of fertilizer
   Nfert = centuryP$Nfert[1]; # The input units should be in g N m^-2
 
@@ -147,6 +152,9 @@ Century <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWate
   if(timestep == 1){
     Ks = Ks / 365; # The units are day^-1 
     }
+  if(timestep < 1){
+      Ks = Ks / (365*24); # The units are day^-1 
+  }
   
   ## Need to calculate the effect of temperature and moisture.
   if(stemp < 35){
@@ -463,12 +471,12 @@ flow <- function(SC,CNratio,A,Lc,Tm,resp,kno,Ks,verbose=FALSE){
 
 }
   
-centuryParms <- function(SC1=1,SC2=1,SC3=1,SC4=1,SC5=1,SC6=NULL,
+centuryParms <- function(SC1=0,SC2=0,SC3=0,SC4=0,SC5=0,SC6=NULL,
                        SC7=NULL,SC8=NULL,SC9=1,
                        LeafL.Ln=0.17,StemL.Ln=0.17,RootL.Ln=0.17,RhizL.Ln=0.17,
                        LeafL.N=0.004,StemL.N=0.004,RootL.N=0.004,RhizL.N=0.004,
                        Nfert=c(0,0),iMinN=0, Litter = c(0,0,0,0),
-                       timestep=c("day","week","year"),
+                       timestep=c("hour","day","week","year"),
                          om = 2, cc = 0.5, depth = 0.3, bd=1.3, pp=c(0.01,0.19,0.8),
                          Ks =  c(3.9, 4.9, 7.3, 6.0, 14.8, 18.5, 0.2, 0.0045)){
 
@@ -537,6 +545,7 @@ CenturyC <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWat
   if(timestep == "year") timestep <- 365
   if(timestep == "week") timestep <- 7
   if(timestep == "day") timestep <- 1
+  if(timestep == "hour") timestep <- 1/24
 
    res <- .Call(cntry,
                 as.double(LeafL),             # 1
@@ -545,7 +554,7 @@ CenturyC <- function(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWat
                 as.double(RhizL),             # 4
                 as.double(smoist),            # 5 
                 as.double(stemp),             # 6
-                as.integer(timestep),         # 7
+                as.double(timestep),          # 7
                 as.double(SCCs),              # 8
                 as.double(leachWater),        # 9
                 as.double(centuryP$Nfert[1]), # 10

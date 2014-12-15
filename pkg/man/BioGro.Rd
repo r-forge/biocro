@@ -358,30 +358,36 @@ when it was applied.
 
 \examples{
 \dontrun{
-data(weather05)
+data(cmi05)
 
-res0 <- BioGro(weather05)
+res0 <- BioGro(cmi05)
 
 plot(res0)
+plot(res, plot.kind="ET")
+plot(res, plot.kind="cumET")
+plot(res, plot.kind="stress")
 
 ## Looking at the soil model
-sldpth <- 3
-res2 <- BioGro(weather05, soilControl = soilParms(soilLayers = 6, soilDepth=sldpth))
-plot(res2, plot.kind="SW") ## With hydraulic distribution
-
+sldpth <- 2
+res2 <- BioGro(cmi05, soilControl = soilParms(soilLayers = 6, soilDepth=sldpth))
+plot(res2, plot.kind="SW") 
 
 ## Example of user defined soil parameters.
 ## The effect of phi2 on yield and soil water content
 
-ll.0 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=1, soilDepth=sldpth)
-ll.1 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=2, soilDepth=sldpth)
-ll.2 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=3, soilDepth=sldpth)
-ll.3 <- soilParms(FieldC=0.37,WiltP=0.2,phi2=4, soilDepth=sldpth)
+sldpth <- 1.25
+ll.0 <- soilParms(FieldC=0.31,WiltP=0.25,phi2=10, soilDepth=sldpth)
+ll.1 <- soilParms(FieldC=0.31,WiltP=0.25,phi2=20, soilDepth=sldpth)
+ll.2 <- soilParms(FieldC=0.31,WiltP=0.25,phi2=30, soilDepth=sldpth)
+ll.3 <- soilParms(FieldC=0.31,WiltP=0.25,phi2=40, soilDepth=sldpth)
 
-ans.0 <- BioGro(weather05,soilControl=ll.0)
-ans.1 <- BioGro(weather05,soilControl=ll.1)
-ans.2 <- BioGro(weather05,soilControl=ll.2)
-ans.3 <-BioGro(weather05,soilControl=ll.3)
+ans.0 <- BioGro(cmi05,soilControl=ll.0)
+ans.1 <- BioGro(cmi05,soilControl=ll.1)
+ans.2 <- BioGro(cmi05,soilControl=ll.2)
+ans.3 <- BioGro(cmi05,soilControl=ll.3)
+
+## Soil moisture is nearly identical because LAI, although reduced was
+## high to begin with
 
 xyplot(ans.0$SoilWatCont +
        ans.1$SoilWatCont +
@@ -392,6 +398,7 @@ xyplot(ans.0$SoilWatCont +
        xlab="DOY")
 
 ## Compare LAI
+## LAI is reduced more dramatically
 
 xyplot(ans.0$LAI +
        ans.1$LAI +
@@ -401,8 +408,14 @@ xyplot(ans.0$LAI +
        ylab="Leaf Area Index",
        xlab="DOY")
 
-
-
+## and so is biomass
+xyplot(ans.0$Stem +
+       ans.1$Stem +
+       ans.2$Stem +
+       ans.3$Stem ~ ans.0$DayofYear,
+       type="l",		 
+       ylab="Stem (Mg/ha)",
+       xlab="DOY")
 }
 }
 \keyword{models}

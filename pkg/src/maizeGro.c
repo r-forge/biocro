@@ -47,7 +47,10 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	      SEXP SOILP2,                /* Soil parameters 2                19 */
 	      SEXP SOILDEPTHS,            /* Soil depths                      20 */
 	      SEXP CWS,                    /* Current water status             21 */
-	      SEXP SENEP                   /* Maize senescence parameteres     22*/
+	      SEXP SENEP,                   /* Maize senescence parameteres     22*/
+	      SEXP CENTCOEFS,              /* Century coefficients              23 */
+              SEXP CENTTIMESTEP,           /* Century timestep                   24 */
+              SEXP CENTKS                  /* Century decomp rates               25 */
 	      )
 
 {
@@ -63,6 +66,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	struct soilML_str soilMLS;
 	struct soilText_str soTexS; 
 	struct ws_str WaterS;
+	struct cenT_str centS; 
 
 	int plantDate, emergeDate, harvestDate;
 	double baseTemp, maxLeaves;
@@ -90,6 +94,14 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 /* Variables for canopy */
         double Sp, SpD, nlayers, kd, chil, heightFactor;
 	double mrc1, mrc2;
+
+	/* Variables needed for collecting litter */
+	double LeafLitter = REAL(CENTCOEFS)[20], StemLitter = REAL(CENTCOEFS)[21];
+	double RootLitter = REAL(CENTCOEFS)[22], RhizomeLitter = REAL(CENTCOEFS)[23];
+	double LeafLitter_d = 0.0, StemLitter_d = 0.0;
+	double RootLitter_d = 0.0, RhizomeLitter_d = 0.0;
+	double ALitter = 0.0, BLitter = 0.0;
+	double LeafLitter2;
 
 /* Variables for senescence */
 	double seneLeaf, seneStem, seneRoot;
@@ -142,13 +154,13 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
         /* Parameters for calculating leaf water potential */
 	double LeafPsim = 0.0;
 
-/* Extracting dates */
+        /* Extracting dates */
 
 	plantDate = INTEGER(DATES)[0];
 	emergeDate = INTEGER(DATES)[1];
 	harvestDate = INTEGER(DATES)[2];
 
-/* Extracting phenology parameters */
+        /* Extracting phenology parameters */
 
 	baseTemp = REAL(PHENOP)[0];
 	maxLeaves = REAL(PHENOP)[1];
@@ -253,6 +265,37 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 
 	soTexS = soilTchoose(soilType);
 
+/* Extracting Century parameters */
+	double MinNitro = REAL(CENTCOEFS)[19];
+	int doyNfert = REAL(CENTCOEFS)[18];
+	double Nfert;
+	double SCCs[9];
+	double Resp = 0.0;
+	int centTimestep = INTEGER(CENTTIMESTEP)[0];
+
+
+	centS.SCs[0] = 0.0;
+	centS.SCs[1] = 0.0;
+	centS.SCs[2] = 0.0;
+	centS.SCs[3] = 0.0;
+	centS.SCs[4] = 0.0;
+	centS.SCs[5] = 0.0;
+	centS.SCs[6] = 0.0;
+	centS.SCs[7] = 0.0;
+	centS.SCs[8] = 0.0;
+	centS.Resp = 0.0;
+
+	SCCs[0] = REAL(CENTCOEFS)[0];
+	SCCs[1] = REAL(CENTCOEFS)[1];
+	SCCs[2] = REAL(CENTCOEFS)[2];
+	SCCs[3] = REAL(CENTCOEFS)[3];
+	SCCs[4] = REAL(CENTCOEFS)[4];
+	SCCs[5] = REAL(CENTCOEFS)[5];
+	SCCs[6] = REAL(CENTCOEFS)[6];
+	SCCs[7] = REAL(CENTCOEFS)[7];
+	SCCs[8] = REAL(CENTCOEFS)[8];
+
+
 /* Create list components */
 
 	SEXP lists;
@@ -282,11 +325,11 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SEXP SoilWatCont;
 	SEXP StomatalCondCoefs;
 	SEXP Drainage;
-	/* SEXP MinNitroVec; */
-	/* SEXP RespVec; /\* This is for soil microbial respiration *\/ */
+	SEXP MinNitroVec;
+	SEXP mRespVec; /* This is for soil microbial respiration */
 
-	PROTECT(lists = allocVector(VECSXP,24)); /* 1 */
-	PROTECT(names = allocVector(STRSXP,24)); /* 2 */  
+	PROTECT(lists = allocVector(VECSXP,26)); /* 1 */
+	PROTECT(names = allocVector(STRSXP,26)); /* 2 */  
 
 	PROTECT(DayofYear = allocVector(REALSXP,vecsize)); /* 3 */
 	PROTECT(Hour = allocVector(REALSXP,vecsize)); /* 4 */
@@ -312,8 +355,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	PROTECT(SoilWatCont = allocVector(REALSXP,vecsize)); /* 24 */
 	PROTECT(StomatalCondCoefs = allocVector(REALSXP,vecsize)); /* 25 */
 	PROTECT(Drainage = allocVector(REALSXP,vecsize)); /* 26 */
-	/* PROTECT(MinNitroVec = allocVector(REALSXP,vecsize)); /\* 27 *\/ */
-	/* PROTECT(RespVec = allocVector(REALSXP,vecsize)); /\* 28 *\/ */
+	PROTECT(MinNitroVec = allocVector(REALSXP,vecsize)); /* 27 */
+	PROTECT(mRespVec = allocVector(REALSXP,vecsize)); /* 28 */
 
 	int *pt_doy = INTEGER(DOY);
 	int *pt_hr = INTEGER(HR);
@@ -581,28 +624,59 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 		if(LeafWS > 1) LeafWS = 1;
 		if(StomWS > 1) StomWS = 1;
 
+                /* Nitrogen fertilizer */
+                /* Only the day in which the fertilizer was applied this is available */
+/* When the day of the year is equal to the day the N fert was applied
+ * then there is addition of fertilizer */
+		if(doyNfert == *(pt_doy+i)){
+			Nfert = REAL(CENTCOEFS)[17] / 24.0;
+		}else{
+			Nfert = 0;
+		}                
 
 
-               /* Soil Carbon Pools place holder*/
-		REAL(SCpools)[0] = 1;
-		REAL(SCpools)[1] = 1;
-		REAL(SCpools)[2] = 1;
-		REAL(SCpools)[3] = 1;
-		REAL(SCpools)[4] = 1;
-		REAL(SCpools)[5] = 1;
-		REAL(SCpools)[6] = 1;
-		REAL(SCpools)[7] = 1;
-		REAL(SCpools)[8] = 1;
+		/* Here I will insert the Century model */
 
-		REAL(SNpools)[0] = 1;
-		REAL(SNpools)[1] = 1;
-		REAL(SNpools)[2] = 1;
-		REAL(SNpools)[3] = 1;
-		REAL(SNpools)[4] = 1;
-		REAL(SNpools)[5] = 1;
-		REAL(SNpools)[6] = 1;
-		REAL(SNpools)[7] = 1;
-		REAL(SNpools)[8] = 1;
+		if(i % 24*centTimestep == 0){
+
+			LeafLitter_d = LeafLitter * ((0.1/30)*centTimestep);
+			StemLitter_d = StemLitter * ((0.1/30)*centTimestep);
+			RootLitter_d = RootLitter * ((0.1/30)*centTimestep);
+			RhizomeLitter_d = RhizomeLitter * ((0.1/30)*centTimestep);
+
+			LeafLitter -= LeafLitter_d;
+			StemLitter -= StemLitter_d;
+			RootLitter -= RootLitter_d;
+			RhizomeLitter -= RhizomeLitter_d;
+
+			centS = Century(&LeafLitter_d,&StemLitter_d,&RootLitter_d,&RhizomeLitter_d,
+					waterCont,*(pt_temp+i),centTimestep,SCCs,WaterS.runoff,
+					Nfert, /* N fertilizer*/
+					MinNitro, /* initial Mineral nitrogen */
+					*(pt_precip+i), /* precipitation */
+					REAL(CENTCOEFS)[9], /* Leaf litter lignin */
+					REAL(CENTCOEFS)[10], /* Stem litter lignin */
+					REAL(CENTCOEFS)[11], /* Root litter lignin */
+					REAL(CENTCOEFS)[12], /* Rhizome litter lignin */
+					REAL(CENTCOEFS)[13], /* Leaf litter N */
+					REAL(CENTCOEFS)[14], /* Stem litter N */
+					REAL(CENTCOEFS)[15],  /* Root litter N */
+					REAL(CENTCOEFS)[16],   /* Rhizome litter N */
+					soilType, 
+					REAL(CENTKS));
+		}
+
+		MinNitro = centS.MinN; /* These should be kg / m^2 per hr */
+		Resp = centS.Resp; /* Mg C / ha/ hr */
+		SCCs[0] = centS.SCs[0];
+		SCCs[1] = centS.SCs[1];
+		SCCs[2] = centS.SCs[2];
+		SCCs[3] = centS.SCs[3];
+		SCCs[4] = centS.SCs[4];
+		SCCs[5] = centS.SCs[5];
+		SCCs[6] = centS.SCs[6];
+		SCCs[7] = centS.SCs[7];
+		SCCs[8] = centS.SCs[8];
 
                /* Need to incoporate the partitioning of carbon to plant components  */
 		tmpDBP = maize_sel_dbp_coef(REAL(MALLOCP), phenoStage);
@@ -705,7 +779,33 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 		REAL(SoilWatCont)[i] = waterCont;
 		REAL(StomatalCondCoefs)[i] = StomWS;
 		REAL(Drainage)[i] = WaterS.drainage;
+		REAL(MinNitroVec)[i] = MinNitro / (24.0*centTimestep); 
+		REAL(mRespVec)[i] = Resp / (24.0*centTimestep); /* Mg/ha/hr */
+
 	}
+
+/* Populating the results of the Century model */
+
+	REAL(SCpools)[0] = centS.SCs[0];
+	REAL(SCpools)[1] = centS.SCs[1];
+	REAL(SCpools)[2] = centS.SCs[2];
+	REAL(SCpools)[3] = centS.SCs[3];
+	REAL(SCpools)[4] = centS.SCs[4];
+	REAL(SCpools)[5] = centS.SCs[5];
+	REAL(SCpools)[6] = centS.SCs[6];
+	REAL(SCpools)[7] = centS.SCs[7];
+	REAL(SCpools)[8] = centS.SCs[8];
+
+	REAL(SNpools)[0] = centS.SNs[0];
+	REAL(SNpools)[1] = centS.SNs[1];
+	REAL(SNpools)[2] = centS.SNs[2];
+	REAL(SNpools)[3] = centS.SNs[3];
+	REAL(SNpools)[4] = centS.SNs[4];
+	REAL(SNpools)[5] = centS.SNs[5];
+	REAL(SNpools)[6] = centS.SNs[6];
+	REAL(SNpools)[7] = centS.SNs[7];
+	REAL(SNpools)[8] = centS.SNs[8];
+
 
 	SET_VECTOR_ELT(lists, 0, DayofYear);
 	SET_VECTOR_ELT(lists, 1, Hour);
@@ -731,6 +831,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SET_VECTOR_ELT(lists, 21, SoilWatCont);
 	SET_VECTOR_ELT(lists, 22, StomatalCondCoefs);
 	SET_VECTOR_ELT(lists, 23, Drainage);
+	SET_VECTOR_ELT(lists, 24, MinNitroVec);
+	SET_VECTOR_ELT(lists, 25, mRespVec);
 
 	SET_STRING_ELT(names,0,mkChar("DayofYear"));
 	SET_STRING_ELT(names,1,mkChar("Hour"));
@@ -756,9 +858,11 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SET_STRING_ELT(names,21,mkChar("SoilWatCont"));
 	SET_STRING_ELT(names,22,mkChar("StomatalCondCoefs"));
 	SET_STRING_ELT(names,23,mkChar("Drainage"));
+	SET_STRING_ELT(names,24,mkChar("MinNitroVec"));
+	SET_STRING_ELT(names,25,mkChar("mRespVec"));
 
 	setAttrib(lists,R_NamesSymbol,names);
-	UNPROTECT(26);
+	UNPROTECT(28);
 	return(lists);
 
 }

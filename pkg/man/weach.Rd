@@ -1,5 +1,6 @@
 \name{weach}
 \alias{weach}
+\alias{is.leap}
 \title{Simulates the hourly conditions from daily}
 
 \description{
@@ -11,7 +12,9 @@
 
 }
 \usage{
-weach(X,lati,ts=1,temp.units=c("Fahrenheit","Celsius"),rh.units=c("percent","fraction"),ws.units=c("mph","mps"),pp.units=c("in","mm"),...)
+weach(X,lat=40,ts=1,temp.units=c("Fahrenheit","Celsius"),rh.units=c("percent","fraction"),ws.units=c("mph","mps"),pp.units=c("in","mm"),...)
+
+is.leap(year)
 }
 
 \arguments{
@@ -62,10 +65,11 @@ the arguments.
 
 
 
-\value{
-  a \code{\link{matrix}} 
-  returning hourly (or sub-daily) weather data. Dimensions 8760 (if hourly) by 8.
 
+\value{
+  a \code{\link{data.frame}} 
+  returning hourly (or sub-daily) weather data. Dimensions 8760 (if hourly) by 8.
+If it is a leap year it will be 8784 rows.
   
 \item{year}{Year.}
 \item{doy}{Day of the year.}
@@ -80,11 +84,14 @@ the arguments.
 }    
 
 \examples{
-data(cmi0506)
-tmp1 <- cmi0506[cmi0506$year == 2005,]
-wet05 <- weach(tmp1,40)
+## The data typically used can be obtained from
+## http://www.isws.illinois.edu/warm/weather/
+## I have downloaded and cleaned up the data
+## For Champaign and it is available here
+url <- "http://www.agron.iastate.edu/miguezlab/research/biocro/data/cmi-weather.csv"
+cmi <- read.csv(url)
 
-# Return data every 3 hours
-wet05.3 <- weach(tmp1,40,ts=3)
+cmi05 <- weach(subset(cmi, year == 2005), lat=40)
+
 }
 \keyword{datagen}

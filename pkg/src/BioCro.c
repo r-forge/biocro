@@ -157,7 +157,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	double Nfert;
 	double SCCs[9];
 	double Resp = 0.0;
-	int centTimestep = INTEGER(CENTTIMESTEP)[0];
+	double centTimestep = REAL(CENTTIMESTEP)[0];
 
 	double SeneLeaf, SeneStem, SeneRoot = 0.0, SeneRhizome = 0.0 ;
 	double *sti , *sti2, *sti3, *sti4; 
@@ -454,7 +454,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 
 		/* Here I will insert the Century model */
 
-		if(i % 24*centTimestep == 0){
+		if(i % 24*centTimestep == 0 || centTimestep < 1){
 
 			LeafLitter_d = LeafLitter * ((0.1/30)*centTimestep);
 			StemLitter_d = StemLitter * ((0.1/30)*centTimestep);
@@ -485,8 +485,8 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 
 
 
-		MinNitro = centS.MinN; /* These should be kg / m^2 per week? */
-		Resp = centS.Resp;
+		MinNitro = centS.MinN; 
+		Resp = centS.Resp; 
 		SCCs[0] = centS.SCs[0];
 		SCCs[1] = centS.SCs[1];
 		SCCs[2] = centS.SCs[2];
@@ -710,8 +710,8 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 		REAL(VmaxVec)[i] = vmax1;
 		REAL(AlphaVec)[i] = alpha1;
 		REAL(SpVec)[i] = Sp;
-		REAL(MinNitroVec)[i] = MinNitro / (24*centTimestep);
-		REAL(RespVec)[i] = Resp / (24*centTimestep);
+		REAL(MinNitroVec)[i] = MinNitro / (24.0*centTimestep); 
+		REAL(RespVec)[i] = Resp / (24.0*centTimestep); /* Mg/ha/hr */
 		REAL(SoilEvaporation)[i] = soilEvap;
 		REAL(LeafPsimVec)[i] = LeafPsim;
 		REAL(Drainage)[i] = WaterS.drainage;

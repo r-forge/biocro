@@ -1,5 +1,6 @@
 \name{weach_imn}
 \alias{weach_imn}
+\alias{boo14.200}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   Weather change Iowa Mesonet

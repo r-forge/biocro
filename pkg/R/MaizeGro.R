@@ -117,6 +117,20 @@ MaizeGro <- function(WetDat, plant.day=NULL,
     mCallocP <- MaizeCAllocParms()
     mCallocP[names(MaizeCAllocControl)] <- MaizeCAllocControl
     mCallocP <- c(unlist(mCallocP))
+
+    ## Century model parameters
+    centuryP <- centuryParms()
+    centuryP[names(centuryControl)] <- centuryControl
+
+    centCoefs <- as.vector(unlist(centuryP)[1:24])
+
+    if(centuryP$timestep == "year"){
+        stop("Not developed yet")
+        centTimestep <- dayn - day1 ## This is really the growing season
+    }
+    if(centuryP$timestep == "week") centTimestep <- 7
+    if(centuryP$timestep == "day") centTimestep <- 1
+    
     
     res <- .Call("maizeGro",
                  as.integer(WetDat[,2]), ## Day of the year                         1
@@ -142,7 +156,10 @@ MaizeGro <- function(WetDat, plant.day=NULL,
                  as.integer(soilP[c(7,8,10,14)]), ## Soil type and number of layers      19
                  as.double(soilP$soilDepths), ## Soil depths                       20
                  as.double(soilP$iWatCont), ## initial water status                 21
-                 as.double(seneP) ## senescence parameters                         22
+                 as.double(seneP), ## senescence parameters                         22
+                 as.double(centCoefs), ## Century coefficients                      23
+                 as.integer(centTimestep), ## Century timestep                      24
+                 as.double(centuryP$Ks) ## Century rate parameters                  25
                  )
 
     ## Transform the phenology
@@ -449,8 +466,7 @@ plot.MaizeGro <- function (x, obs = NULL, stem = TRUE, leaf = TRUE, root = TRUE,
     }
 }else
   if(plot.kind == "SW"){
-##    stop("not implemented yet")
-    matplot(x$TTTc,as.matrix(x$cwsMat),type="l",ylab="Soil Water Content",xlab="Thermal Time")
+    matplot(x$DayofYear,as.matrix(x$cwsMat),type="l",ylab="Soil Water Content",xlab="Thermal Time")
   }else
   if(plot.kind == "LAI"){
     matplot(x$TTTc,as.matrix(x$LAImat),type="l",ylab="Individual Leaf Area",xlab="Thermal Time")

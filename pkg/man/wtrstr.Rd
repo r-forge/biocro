@@ -12,6 +12,9 @@
 \usage{
 wtrstr(precipt, evapo, cws, soildepth, fieldc, wiltp, phi1 = 0.01, 
     phi2 = 10, smthresh = 0.3, wsFun = c("linear", "logistic", "exp", "none","thresh")) 
+
+wsRcoef(aw, fieldc, wiltp, phi1, phi2, smthresh, wsFun = c("linear", 
+    "logistic", "exp", "none", "thresh")) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,6 +30,8 @@ wtrstr(precipt, evapo, cws, soildepth, fieldc, wiltp, phi1 = 0.01,
   \item{smthresh}{Soil moisture threshold for the 'thresh' method}
   \item{wsFun}{option to control which method is used for the water
     stress function.}
+
+  function \code{wsRcoef} is similar but it takes different arguments 
 
 }
 \details{
@@ -76,7 +81,7 @@ SDepth <- seq(0.05,2,0.05)
 wats <- numeric(length(SDepth))
 
 for(i in 1:length(SDepth)){
-wats[i] <- wtrstr(1,1,0.3,SDepth[i],0.37,0.2,2e-2,3)$wsPhoto
+wats[i] <- wtrstr(1,4,0.3,SDepth[i],0.37,0.2,2e-2,3)$wsPhoto
 }
 
 xyplot(wats ~ SDepth, ylab="Water Stress Coef",

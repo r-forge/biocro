@@ -37,7 +37,7 @@ struct cenT_str Century(double *LeafL,
 			double *RhizL, 
 			double smoist, 
 			double stemp, 
-			int timestep, 
+			double timestep, 
 			double SCs[9] , 
 			double leachWater, 
 			double Nfert, 
@@ -158,25 +158,35 @@ struct cenT_str Century(double *LeafL,
     /* Rprintf("Ks[5] : %f Ks[6] : %f \n",Ks[5],Ks[6]); */
 
      if(timestep == 7){
-       Ks[0] = Ks_cf[0] / 52 ;
-       Ks[1] = Ks_cf[1] / 52 ;
-       Ks[2] = Ks_cf[2] / 52 ;
-       Ks[3] = Ks_cf[3] / 52 ;
-       Ks[4] = Ks_cf[4] / 52 ;
-       Ks[5] = Ks_cf[5] / 52 ;
-       Ks[6] = Ks_cf[6] / 52 ;
-       Ks[7] = Ks_cf[7] / 52 ;
+	     Ks[0] = Ks_cf[0] / 52;
+	     Ks[1] = Ks_cf[1] / 52;
+	     Ks[2] = Ks_cf[2] / 52;
+	     Ks[3] = Ks_cf[3] / 52;
+	     Ks[4] = Ks_cf[4] / 52;
+	     Ks[5] = Ks_cf[5] / 52;
+	     Ks[6] = Ks_cf[6] / 52;
+	     Ks[7] = Ks_cf[7] / 52;
      }else
      if(timestep == 1){   
-       Ks[0] = Ks_cf[0] / 365 ; 
-       Ks[1] = Ks_cf[1] / 365 ; 
-       Ks[2] = Ks_cf[2] / 365 ; 
-       Ks[3] = Ks_cf[3] / 365 ; 
-       Ks[4] = Ks_cf[4] / 365 ; 
-       Ks[5] = Ks_cf[5] / 365 ; 
-       Ks[6] = Ks_cf[6] / 365 ; 
-       Ks[7] = Ks_cf[7] / 365 ;  
-     } 
+	     Ks[0] = Ks_cf[0] / 365; 
+	     Ks[1] = Ks_cf[1] / 365; 
+	     Ks[2] = Ks_cf[2] / 365; 
+	     Ks[3] = Ks_cf[3] / 365; 
+	     Ks[4] = Ks_cf[4] / 365; 
+	     Ks[5] = Ks_cf[5] / 365; 
+	     Ks[6] = Ks_cf[6] / 365; 
+	     Ks[7] = Ks_cf[7] / 365;  
+     }else 
+     if(timestep < 1){   
+	     Ks[0] = Ks_cf[0] / (365*24); 
+	     Ks[1] = Ks_cf[1] / (365*24); 
+	     Ks[2] = Ks_cf[2] / (365*24); 
+	     Ks[3] = Ks_cf[3] / (365*24); 
+	     Ks[4] = Ks_cf[4] / (365*24); 
+	     Ks[5] = Ks_cf[5] / (365*24); 
+	     Ks[6] = Ks_cf[6] / (365*24); 
+	     Ks[7] = Ks_cf[7] / (365*24);  
+     }
 
 /* Nitrogen processes 
     N deposition */
@@ -200,6 +210,10 @@ struct cenT_str Century(double *LeafL,
   if(timestep == 1){
      Na /=  365;
      Nf /=  365;
+  }else
+  if(timestep < 1){
+     Na /=  (365*24);
+     Nf /=  (365*24);
   }
 
 /*   Rprintf("Na : %f \n",Na); */
@@ -651,7 +665,7 @@ SEXP cntry(SEXP LEAFL,           /* 1 */
 		&RhizL,
                 REAL(SMOIST)[0], 
 		REAL(STEMP)[0], 
-		INTEGER(TIMESTEP)[0], 
+		REAL(TIMESTEP)[0], 
 		REAL(SCS),
                 REAL(LEACHWATER)[0], 
 		REAL(NFERT)[0], 

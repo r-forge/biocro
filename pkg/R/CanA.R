@@ -17,7 +17,7 @@
 ##
 
 CanA <- function(lai,doy,hr,solar,temp,rh,windspeed,
-                 lat=40,nlayers=8,kd=0.7,StomataWS=1,
+                 lat=40,nlayers=8,kd=0.7,stress=1,
                  chi.l=1, leafwidth=0.04,
                  heightFactor=3,
                  photoControl = list(),
@@ -28,6 +28,8 @@ CanA <- function(lai,doy,hr,solar,temp,rh,windspeed,
     if(length(c(lai,doy,hr,solar,temp,rh,windspeed)) != 7)
       stop("all input should be of length 1")
 
+
+    
     if(nlayers > 50) stop("nlayers should be less than 50")
     
     units <- match.arg(units)
@@ -52,7 +54,7 @@ CanA <- function(lai,doy,hr,solar,temp,rh,windspeed,
     res <- .Call(CanA_sym,as.double(lai),as.integer(doy),
                  as.integer(hr),as.double(solar),as.double(temp),
                  as.double(rh),as.double(windspeed),
-                 as.double(lat),as.integer(nlayers),as.double(StomataWS),
+                 as.double(lat),as.integer(nlayers),as.double(stress),
                  as.double(vmax),as.double(alpha),as.double(kparm),
                  as.double(theta), as.double(beta),
                  as.double(Rd),as.double(b0),

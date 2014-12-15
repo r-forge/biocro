@@ -1,3 +1,74 @@
+## First I need to figure out the units in Century
+## Let's say that I want CenturyR to run on g/m2
+## I know that the inputs might be about 1-200 g/m2
+## of biomass and that a soil with 5% OM with 0.5 of 
+## that being C results in 9750 g/m2 for the first 30cm
+## With a distribution of 0.01, 0.19, 0.8 into f,s,p pools
+## means 7800 g/m2 p, 1850 g/m2 s and 97.5 g/m2 f
+
+centP <- centuryParms(SC6=97.5, SC7=1850, SC8=7800)
+res <- Century(200,200,200,200, 0.3, 25, 2, 0, centuryControl = centP)
+
+## The result of 1.38 g/m2 of soil respiration mean that
+## in a day this was emitted from the soil. In one second
+## 1.38 / (24*60*60) were emitted. This is in mol equivalents
+## (44 g/mol) 1.38 / (24*60*60) / 44. Now in micro mols
+## 1.38 / (24*60*60) * 1e6 result in 0.363 micro/mol/m2/s
+## This is ok as I do not have all the pools stabilized here.
+## What if I run the model for a long time?
+
+centP <- centuryParms(SC6=97.5, SC7=1850, SC8=7800, timestep='week')
+
+nsim <- 2e4
+
+ans <- numeric(nsim)
+
+LL <- 100
+SL <- 100
+RL <- 100
+RhL <- 100
+
+for(i in 1:nsim){
+
+  res <- Century(LL,SL,RL,RhL, 0.2, 20, 2, 0, centuryControl = centP)
+  ans[i] <- res$Resp  / (7*24*60*60) * (1/44) * 1e6
+  centP[1:8] <- res$SCs[1:8]
+  if(nsim %% 52 == 0){
+      LL <- 100
+      SL <- 100
+      RL <- 100
+      RhL <- 100    
+  }else{
+      LL <- 0
+      SL <- 0
+      RL <- 0
+      RhL <- 0
+  }
+}
+
+xyplot(ans ~ 1:nsim, ylab = "soil resp (micro mol/m2/s)", type='l')
+
+## MaizeGro vs BioGro
+data(weather05)
+res <- BioGro(weather05, centuryControl = centuryParms(om=0.5))
+
+## Convert Mg to g, ha to m^2, hr to sec, g to mol, mol to micro mol
+plot(res$RespVec * 1e6 * 1e-4 * (1/3600) * (1/44) * 1e6,
+     ylab = "CO2 efflux (micro mol/m2/s)") ## This is micro mol CO2 /m2/s
+
+res <- MaizeGro(weather05,
+                plant.day=120,
+                emerge.day=130,
+                harvest.day=280,
+                laiControl = laiParms(lai.method="ind-leaf-Lizaso"),
+                centuryControl = centuryParms(SC1=0,SC2=0,
+                    SC3=0,SC4=0,SC5=0,om=5))
+
+
+plot(res$mRespVec * 1e6 * 1e-4 * (1/3600) * (1/44) * 1e6,
+     ylab = "CO2 efflux (micro mol/m2/s)") ## This is micro mol CO2 /m2/s)
+
+
 ## Test script for the Century Model
 
 iSoilP0 <- iSoilP

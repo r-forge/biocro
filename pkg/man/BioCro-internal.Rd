@@ -12,6 +12,7 @@
 \alias{TempToLHV}
 \alias{TempToSFS}
 \alias{TempToSWVC}
+\alias{is.leap}
 \title{Internal BioCro functions}
 \description{
  Internal BioCro functions
