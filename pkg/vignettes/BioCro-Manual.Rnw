@@ -489,22 +489,188 @@ names(tmp5) <- c("CanopyAssim","CanopyTrans",
 <<echo=FALSE>>=
 xyplot(tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans + tmp3$TranEpries ~ 1:24,
        type='o', col=c(rep("blue",3),"green"), lty=c(1:3,1),
-       key= list(text=list(c("b1=12","b1= 7","b1= 3","Priestly")),
-           col=c(rep("blue",3),"green"), 
-           lty=c(1:3,1), pch=NA,
+       key= list(text=list(c("Priestly","b1=12","b1= 7","b1= 3")),
+           col=c("green",rep("blue",3)), 
+           lty=c(1,1:3), pch=NA,
            lines=TRUE, points=FALSE, x=0.1, y=0.9),
            xlab='hour',
            ylab="Transpiration (mm/h)")
 @ 
 
-\subsection{Parameters to adjust}
+\subsection{Effect of stress on diurnal transpiration}
 
+Another significant component that will affect transpiration during a
+day is the level of water stress the plant is experiencing.
 
+<<include=FALSE>>=
+## No stress
+dat2 <- NULL
+tmp2 <- matrix(ncol=5,nrow=24)
+layers <- 10
+lai <- 3
+doy <- 200
+photoP <- photoParms(b1=3)
+
+for(i in 1:24){
+         
+    hr  <- boo14.200[i,3]
+    solar <- boo14.200[i,4]
+    temp <- boo14.200[i,5]
+    rh <- boo14.200[i,6]
+    ws <- boo14.200[i,7]
+    
+    tmp1 <- CanA(lai,doy,hr,solar,temp,rh,ws, stress=1,
+                 nlayers=layers, photoControl=photoP)
+
+    tmp2[i,1] <- tmp1$CanopyAssim
+    tmp2[i,2] <- tmp1$CanopyTrans
+    tmp2[i,3] <- tmp1$TranEpen
+    tmp2[i,4] <- tmp1$TranEpries
+    tmp2[i,5] <- tmp1$CanopyCond
+        
+    dat1 <- data.frame(hour=i,layer=1:layers, 
+                       as.data.frame(tmp1$LayMat))
+
+    dat2 <- rbind(dat2,dat1)
+}
+
+tmp3 <- as.data.frame(tmp2)
+
+names(tmp3) <- c("CanopyAssim","CanopyTrans",
+                 "TranPen","TranEpries","CanopyCond")
+
+## Moderate stress
+dat2 <- NULL
+tmp2 <- matrix(ncol=5,nrow=24)
+layers <- 10
+lai <- 3
+doy <- 200
+photoP <- photoParms(b1=3)
+
+for(i in 1:24){
+         
+    hr  <- boo14.200[i,3]
+    solar <- boo14.200[i,4]
+    temp <- boo14.200[i,5]
+    rh <- boo14.200[i,6]
+    ws <- boo14.200[i,7]
+    
+    tmp1 <- CanA(lai,doy,hr,solar,temp,rh,ws, stress=0.8,
+                 nlayers=layers, photoControl=photoP)
+
+    tmp2[i,1] <- tmp1$CanopyAssim
+    tmp2[i,2] <- tmp1$CanopyTrans
+    tmp2[i,3] <- tmp1$TranEpen
+    tmp2[i,4] <- tmp1$TranEpries
+    tmp2[i,5] <- tmp1$CanopyCond
+        
+    dat1 <- data.frame(hour=i,layer=1:layers, 
+                       as.data.frame(tmp1$LayMat))
+
+    dat2 <- rbind(dat2,dat1)
+}
+
+tmp4 <- as.data.frame(tmp2)
+
+names(tmp4) <- c("CanopyAssim","CanopyTrans",
+                 "TranPen","TranEpries","CanopyCond")
+
+## medium stress
+dat2 <- NULL
+tmp2 <- matrix(ncol=5,nrow=24)
+layers <- 10
+lai <- 3
+doy <- 200
+photoP <- photoParms(b1=3)
+
+for(i in 1:24){
+         
+    hr  <- boo14.200[i,3]
+    solar <- boo14.200[i,4]
+    temp <- boo14.200[i,5]
+    rh <- boo14.200[i,6]
+    ws <- boo14.200[i,7]
+    
+    tmp1 <- CanA(lai,doy,hr,solar,temp,rh,ws, stress=0.5,
+                 nlayers=layers, photoControl=photoP)
+
+    tmp2[i,1] <- tmp1$CanopyAssim
+    tmp2[i,2] <- tmp1$CanopyTrans
+    tmp2[i,3] <- tmp1$TranEpen
+    tmp2[i,4] <- tmp1$TranEpries
+    tmp2[i,5] <- tmp1$CanopyCond
+        
+    dat1 <- data.frame(hour=i,layer=1:layers, 
+                       as.data.frame(tmp1$LayMat))
+
+    dat2 <- rbind(dat2,dat1)
+}
+
+tmp5 <- as.data.frame(tmp2)
+
+names(tmp5) <- c("CanopyAssim","CanopyTrans",
+                 "TranPen","TranEpries","CanopyCond")
+
+## significant stress
+dat2 <- NULL
+tmp2 <- matrix(ncol=5,nrow=24)
+layers <- 10
+lai <- 3
+doy <- 200
+photoP <- photoParms(b1=3)
+
+for(i in 1:24){
+         
+    hr  <- boo14.200[i,3]
+    solar <- boo14.200[i,4]
+    temp <- boo14.200[i,5]
+    rh <- boo14.200[i,6]
+    ws <- boo14.200[i,7]
+    
+    tmp1 <- CanA(lai,doy,hr,solar,temp,rh,ws, stress=0.3,
+                 nlayers=layers, photoControl=photoP)
+
+    tmp2[i,1] <- tmp1$CanopyAssim
+    tmp2[i,2] <- tmp1$CanopyTrans
+    tmp2[i,3] <- tmp1$TranEpen
+    tmp2[i,4] <- tmp1$TranEpries
+    tmp2[i,5] <- tmp1$CanopyCond
+        
+    dat1 <- data.frame(hour=i,layer=1:layers, 
+                       as.data.frame(tmp1$LayMat))
+
+    dat2 <- rbind(dat2,dat1)
+}
+
+tmp6 <- as.data.frame(tmp2)
+
+names(tmp6) <- c("CanopyAssim","CanopyTrans",
+                 "TranPen","TranEpries","CanopyCond")
+@ 
+
+<<echo=FALSE>>=
+xyplot(tmp6$CanopyTrans + tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans ~ 1:24,
+       type='o', col=c(rep("blue",3),"green"), lty=4:1,
+       key= list(text=list(c("stress=1","stress=0.8","stress=0.5","stress=0.3")),
+           col=c("green",rep("blue",3)), 
+           lty=1:4, pch=NA,
+           lines=TRUE, points=FALSE, x=0.1, y=0.9),
+           xlab='hour',
+           ylab="Transpiration (mm/h)")
+
+## What about assimilation
+xyplot(tmp6$CanopyAssim + tmp5$CanopyAssim + tmp4$CanopyAssim + tmp3$CanopyAssim ~ 1:24,
+       type='o', col=c(rep("blue",3),"green"), lty=4:1,
+       key= list(text=list(c("stress=1","stress=0.8","stress=0.5","stress=0.3")),
+           col=c("green",rep("blue",3)), 
+           lty=1:4, pch=NA,
+           lines=TRUE, points=FALSE, x=0.1, y=0.9),
+           xlab='hour',
+           ylab="Canopy Assimilation (kg/m2/h)")
+@ 
 
 TODO
 \begin{itemize}
-\item Include an example in which I see the effect of stress on
-  diurnal transpiration.
 \item Include an example in which I see the effect of canopy height on
   diurnal transpiration.
 \item Include an example in which I see the effect of changing chi.l
