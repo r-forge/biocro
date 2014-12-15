@@ -130,6 +130,7 @@ MaizeGro <- function(WetDat, plant.day=NULL,
     }
     if(centuryP$timestep == "week") centTimestep <- 7
     if(centuryP$timestep == "day") centTimestep <- 1
+    if(centuryP$timestep == "hour") centTimestep <- 1/24
     
     
     res <- .Call("maizeGro",
@@ -158,7 +159,7 @@ MaizeGro <- function(WetDat, plant.day=NULL,
                  as.double(soilP$iWatCont), ## initial water status                 21
                  as.double(seneP), ## senescence parameters                         22
                  as.double(centCoefs), ## Century coefficients                      23
-                 as.integer(centTimestep), ## Century timestep                      24
+                 as.double(centTimestep), ## Century timestep                      24
                  as.double(centuryP$Ks) ## Century rate parameters                  25
                  )
 

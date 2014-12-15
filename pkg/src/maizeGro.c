@@ -271,7 +271,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	double Nfert;
 	double SCCs[9];
 	double Resp = 0.0;
-	int centTimestep = INTEGER(CENTTIMESTEP)[0];
+	double centTimestep = REAL(CENTTIMESTEP)[0];
 
 
 	centS.SCs[0] = 0.0;
@@ -637,7 +637,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 
 		/* Here I will insert the Century model */
 
-		if(i % 24*centTimestep == 0){
+		if(i % 24*centTimestep == 0 || centTimestep < 1){
 
 			LeafLitter_d = LeafLitter * ((0.1/30)*centTimestep);
 			StemLitter_d = StemLitter * ((0.1/30)*centTimestep);
