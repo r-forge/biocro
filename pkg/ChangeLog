@@ -1,9 +1,9 @@
 2014-12-15  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
 
-	* BioCro_0.264-5
+	* BioCro_0.264-6
 
 	Adde the option of running the century model at an hourly time
-	step.
+	step. Some more examples in the vignette.
 
 2014-12-12  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
 
