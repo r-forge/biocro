@@ -782,20 +782,20 @@ further (try \code{?BioGro}).
 
 The plotting method provides a convenient way of displaying the results.
 
-<<plotBioGro, eval=FALSE>>=
-plot(res)
-@ 
-<<echo=FALSE>>=
-pdf("./figs/BioCro-plotBioGro.pdf")
-plot(res)
-dev.off()
-@
-\begin{figure}[htbp!]
-  \centering
-  \includegraphics[scale=0.8]{./figs/BioCro-plotBioGro.pdf}
-  \caption{Dry biomass accumulation and Leaf Area Index for a generic biomass crop against thermal time.}
-  \label{fig:plotBioGro}
-\end{figure}
+%<<plotBioGro, eval=FALSE>>=
+%plot(res)
+%@ 
+%<<echo=FALSE>>=
+%pdf("./figs/BioCro-plotBioGro.pdf")
+%plot(res)
+%dev.off()
+%@
+%\begin{figure}[htbp!]
+%  \centering
+%  \includegraphics[scale=0.8]{./figs/BioCro-plotBioGro.pdf}
+%  \caption{Dry biomass accumulation and Leaf Area Index for a generic biomass crop against thermal time.}
+%  \label{fig:plotBioGro}
+%\end{figure}
 
 The default plotting option (\texttt{plot.kind}) for the
 \texttt{BioGro} option is ``DB'' for dry biomass.  The plot method for
