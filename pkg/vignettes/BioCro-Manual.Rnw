@@ -685,7 +685,8 @@ time steps. The data can be generated using the \code{weach} function
 from daily data.
 
 <<BioGro>>=
-##data(cmi05)
+data(cmi05)
+summary(cmi05)
 ##res <- BioGro(cmi05)
 ##plot(res)
 ##plot(res, plot.kind="SW")
