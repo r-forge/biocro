@@ -738,7 +738,7 @@ into. An example of a simulation using 7 layers and a soil depth of 1.5m.
 <<soil-water>>=
 soilP <- soilParms(soilLayers = 7, soilDepth = 1.5)
 res <- BioGro(cmi05, soilControl = soilP)
-plot(res, plot.kind="SW")
+##plot(res, plot.kind="SW")
 @ 
 
 The shallower layers are depleted while the deeper layers still have
