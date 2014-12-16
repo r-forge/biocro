@@ -1,5 +1,6 @@
 %\VignetteIndexEntry{Introduction to BioCro}
 %\VignettePackage{BioCro}
+%\VignetteEngine{knitr::knitr}
 
 \documentclass[12pt]{article}
 
@@ -48,7 +49,7 @@ initial efforts at modeling \emph{Miscanthus} $\times$ \emph{giganteus}.
 There is a large range in the complexity of models that have been used
 to simulate photosynthesis. \package{BioCro} offers functions
 \code{c4photo} and \code{c3photo}. Both functions take as minimum
-input radiation (PAR $\mu mol \; m^-2 \; s^-1$), temperature (Celsius)
+input radiation (PAR $\mu mol \; m^{-2} \; s^{-1}$), temperature (Celsius)
 and relative humidity (0-1).
 
 Since WIMOVAC originated as a photosynthesis model we can start with a
@@ -75,7 +76,7 @@ based on the c3 photosynthesis model described in WIMOVAC. Notice that
 the parameters and interpretation are different from the
 \code{c4photo} function. 
 
-<<c4photo, warning=FALSE>>=
+<<c4photo-aq-aci, warning=FALSE, fig.height=2.8, out.width='0.45\\textwidth'>>=
 pr <- seq(0,2000)
 temp <- rep(25, length(pr))
 rh <- rep(0.7, length(pr))
@@ -169,7 +170,7 @@ characteristic of a canopy and the architecture can be modified mainly
 by changing the \code{chi.l} parameter which represents the ratio of
 horizontal leaf projections to vertical leaf projections. 
 
-<<>>=
+<<leaf-sun-shade>>=
 apply(res$LayMat[,3:4], 2, sum)
 @ 
 
@@ -376,7 +377,7 @@ function. This increases transpiration in the Penman-Monteith model
 but only up to a point.  Priestly and Penman are almost always higher
 than Penman-Monteith.
 
-<<include=FALSE>>=
+<<ball-berry-effect,include=FALSE>>=
 dat2 <- NULL
 tmp2 <- matrix(ncol=5,nrow=24)
 layers <- 10
@@ -486,7 +487,7 @@ names(tmp5) <- c("CanopyAssim","CanopyTrans",
 
 @ 
 
-<<echo=FALSE>>=
+<<ball-berry-priestly,echo=FALSE>>=
 xyplot(tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans + tmp3$TranEpries ~ 1:24,
        type='o', col=c(rep("blue",3),"green"), lty=c(1:3,1),
        key= list(text=list(c("Priestly","b1=12","b1= 7","b1= 3")),
@@ -502,7 +503,7 @@ xyplot(tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans + tmp3$TranEpries 
 Another significant component that will affect transpiration during a
 day is the level of water stress the plant is experiencing.
 
-<<include=FALSE>>=
+<<canopy-stress, include=FALSE>>=
 ## No stress
 dat2 <- NULL
 tmp2 <- matrix(ncol=5,nrow=24)
@@ -648,7 +649,7 @@ names(tmp6) <- c("CanopyAssim","CanopyTrans",
                  "TranPen","TranEpries","CanopyCond")
 @ 
 
-<<echo=FALSE>>=
+<<canopy-stress-graphs,echo=FALSE, fig.width=4, fig.height=3, out.width='0.45\\textwidth'>>=
 xyplot(tmp6$CanopyTrans + tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans ~ 1:24,
        type='o', col=c(rep("blue",3),"green"), lty=4:1,
        key= list(text=list(c("stress=1","stress=0.8","stress=0.5","stress=0.3")),
@@ -706,7 +707,7 @@ canopy level, when doing a simulation for the whole growing season the
 soil information becomes highly relevant. The basic information is
 supplied through the \code{soilParms} function. 
 
-<<>>=
+<<soilParms>>=
 soilP <- soilParms()
 names(soilP)
 @ 
@@ -717,7 +718,7 @@ point \code{WiltP} if they are not supplied they are obtained from a
 default soil given by \code{soilType}. To look at the standard soils
 see
 
-<<>>=
+<<show-soil-type>>=
 showSoilType(0)
 showSoilType(5)
 showSoilType(10)
@@ -734,7 +735,7 @@ the entire profile. If the number of layers is larger than one the
 roots will only have access to the layers in which they have grown
 into. An example of a simulation using 7 layers and a soil depth of 1.5m.
 
-<<>>=
+<<soil-water>>=
 soilP <- soilParms(soilLayers = 7, soilDepth = 1.5)
 res <- BioGro(cmi05, soilControl = soilP)
 plot(res, plot.kind="SW")
@@ -765,12 +766,6 @@ parameter estimation. In addition, it uses the \package{lattice} for
 building custom graphics.
 
 A simple example follows
-
-<<ex1>>=
-data(weather05)
-res <- BioGro(weather05)
-res
-@ 
 
 First, an example data set was loaded using the \code{data}
 function. Then an object called \code{res} was created which stores
