@@ -687,13 +687,13 @@ from daily data.
 <<BioGro>>=
 data(cmi05)
 summary(cmi05)
-##res <- BioGro(cmi05)
-##plot(res)
-##plot(res, plot.kind="SW")
-##plot(res, plot.kind="ET")
-##plot(res, plot.kind="cumET")
-##plot(res, plot.kind="stress")
-##names(res)
+res <- BioGro(cmi05)
+plot(res)
+plot(res, plot.kind="SW")
+plot(res, plot.kind="ET")
+plot(res, plot.kind="cumET")
+plot(res, plot.kind="stress")
+names(res)
 @ 
 
 The last command \code{names(res)} shows the list of objects available
