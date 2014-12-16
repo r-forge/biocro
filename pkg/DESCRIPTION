@@ -3,7 +3,7 @@ Version: 0.264-7
 Title: Simulation of Biomass Crops
 Author: Fernando Miguez <femiguez@iastate.edu>
 Maintainer: Fernando Miguez <femiguez@iastate.edu>
-Depends: R(>= 2.5.0), lattice
+Depends: R(>= 2.10), lattice
 Suggests: coda, knitr
 Imports: stats
 VignetteBuilder: knitr

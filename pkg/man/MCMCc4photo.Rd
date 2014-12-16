@@ -49,7 +49,7 @@ MCMCc4photo(data, niter = 20000, ivmax = 39, ialpha = 0.04, ikparm =
 \item{Catm}{ see \code{\link{c4photo}} function.}
 \item{b0}{ see \code{\link{c4photo}} function. }
 \item{b1}{ see \code{\link{c4photo}} function.}
-\item{StomWS}{ see \code{\link{c4photo}} function. }
+\item{stress}{ see \code{\link{c4photo}} function. }
 \item{ws}{see \code{\link{c4photo}} function. }
  \item{scale}{ This scale parameter controls the size of the standard
     deviations which generate the moves in the chain. }

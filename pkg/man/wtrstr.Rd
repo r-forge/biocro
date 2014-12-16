@@ -31,7 +31,8 @@ wsRcoef(aw, fieldc, wiltp, phi1, phi2, smthresh, wsFun = c("linear",
   \item{wsFun}{option to control which method is used for the water
     stress function.}
 
-  function \code{wsRcoef} is similar but it takes different arguments 
+  function \code{wsRcoef} is similar but it takes different arguments.
+  \item{aw}{plant available water.}
 
 }
 \details{

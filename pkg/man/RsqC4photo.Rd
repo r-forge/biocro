@@ -16,7 +16,7 @@
 \usage{
 RsqC4photo(data, vmax = 39, alph = 0.04, kparm = 0.7,
           theta = 0.83, beta = 0.93, Rd = 0.8, Catm = 380,
-           b0 = 0.08, b1 = 3, StomWS = 1, response = c("Assim", "StomCond"))
+           b0 = 0.08, b1 = 3, stress = 1, response = c("Assim", "StomCond"))
 }
 
 \arguments{
@@ -48,7 +48,7 @@ the  \code{\link{c4photo}} function. }
 \item{Rd}{Rd as in Collatz (default = 0.8); for more details see
 the  \code{\link{c4photo}} function. }
 
-\item{StomWS}{StomWS as in Collatz (default = 1); for more details see
+\item{stress}{stress as in Collatz (default = 1); for more details see
 the  \code{\link{c4photo}} function. }
 
 \item{Catm}{Atmospheric CO2 in ppm (or \eqn{\mu}mol/mol).}

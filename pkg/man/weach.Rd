@@ -24,10 +24,11 @@ is.leap(year)
     The input format is strict but it is meant to be used with the data
     usually obtained from weather stations in Illinois. The data frame
     should  have 11 columns (see details).}
-  \item{lati}{latitude at the specific location}
+  \item{lat}{latitude at the specific location}
   \item{ts}{timestep for the simulation of sub-daily data from
     daily. For example a value of 3 would return data every 3
     hours. Only divisors of 24 work (i.e. 1,2,3,4, etc.).}
+  \item{solar.units}{ Assumed units for solar radiation input.}
   \item{temp.units}{ Option to specify the units in which the
     temperature is entered. Default is Farenheit.}
   \item{rh.units}{ Option to specify the units in which the

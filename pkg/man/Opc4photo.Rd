@@ -18,7 +18,7 @@
  \usage{
 Opc4photo(data, ivmax = 39, ialpha = 0.04, iRd = 0.8, ikparm = 0.7, 
     itheta = 0.83, ibeta = 0.93, Catm = 380, ib0 = 0.08, ib1 = 3, 
-    iStomWS = 1, ws = c("gs", "vmax"), response = c("Assim", 
+    istress = 1, ws = c("gs", "vmax"), response = c("Assim", 
         "StomCond"), curve.kind = c("Q", "Ci"), op.level = 1, 
     level = 0.95, hessian = TRUE, op.ci = FALSE, ...) 
 
@@ -50,7 +50,7 @@ Opc4photo(data, ivmax = 39, ialpha = 0.04, iRd = 0.8, ikparm = 0.7,
 \item{Catm}{Atmospheric CO2 in ppm (or \eqn{\mu}mol/mol).}
 \item{ib0}{ initial value for the Ball-Berry intercept.}
 \item{ib1}{ initial value for the Ball-Berry slope.}
-\item{iStomWS}{ initial value for the stomata water stress factor.}
+\item{istress}{ initial value for the stomata water stress factor.}
 \item{ws}{ \code{ws} flag. See \code{\link{c4photo}}.}
 
 \item{response}{Use \code{"Assim"} if you want to optimize

@@ -11,7 +11,7 @@ SoilEvapo(LAI, k, AirTemp, IRad, awc, FieldC, WiltP, winds, RelH)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{LAI}{ Leaf Area Index.}
-  \item{k}{ ~~Describe \code{k} here~~ }
+  \item{k}{ extinction coefficient. }
   \item{AirTemp}{ Air temperature. }
   \item{IRad}{ Incident radiation. }
   \item{awc}{ Available water content.}
@@ -21,7 +21,7 @@ SoilEvapo(LAI, k, AirTemp, IRad, awc, FieldC, WiltP, winds, RelH)
   \item{RelH}{ Relative humidty. }
 }
 \details{
- The style of the code is \code{C} like because this is a prototype for
+ The style of the code is \code{C} because this is a prototype for
  the underlying \code{C} (like so many other functions in this
  package). I leave it here for future development.
 }
