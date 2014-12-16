@@ -76,7 +76,7 @@ based on the c3 photosynthesis model described in WIMOVAC. Notice that
 the parameters and interpretation are different from the
 \code{c4photo} function. 
 
-<<c4photo-aq-aci, warning=FALSE, fig.height=2.8, out.width='0.45\\textwidth'>>=
+<<c4photo-aq-aci, warning=FALSE, fig.height=3.8>>=
 pr <- seq(0,2000)
 temp <- rep(25, length(pr))
 rh <- rep(0.7, length(pr))
@@ -649,13 +649,13 @@ names(tmp6) <- c("CanopyAssim","CanopyTrans",
                  "TranPen","TranEpries","CanopyCond")
 @ 
 
-<<canopy-stress-graphs,echo=FALSE, fig.width=4, fig.height=3, out.width='0.45\\textwidth'>>=
+<<canopy-stress-graphs,echo=FALSE, fig.width=5, fig.height=5>>=
 xyplot(tmp6$CanopyTrans + tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans ~ 1:24,
        type='o', col=c(rep("blue",3),"green"), lty=4:1,
        key= list(text=list(c("stress=1","stress=0.8","stress=0.5","stress=0.3")),
            col=c("green",rep("blue",3)), 
            lty=1:4, pch=NA,
-           lines=TRUE, points=FALSE, x=0.1, y=0.9),
+           lines=TRUE, points=FALSE, x=0.01, y=0.9),
            xlab='hour',
            ylab="Transpiration (mm/h)")
 
@@ -665,7 +665,7 @@ xyplot(tmp6$CanopyAssim + tmp5$CanopyAssim + tmp4$CanopyAssim + tmp3$CanopyAssim
        key= list(text=list(c("stress=1","stress=0.8","stress=0.5","stress=0.3")),
            col=c("green",rep("blue",3)), 
            lty=1:4, pch=NA,
-           lines=TRUE, points=FALSE, x=0.1, y=0.9),
+           lines=TRUE, points=FALSE, x=0.01, y=0.9),
            xlab='hour',
            ylab="Canopy Assimilation (kg/m2/h)")
 @ 
