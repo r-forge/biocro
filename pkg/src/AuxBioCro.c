@@ -689,7 +689,7 @@ struct Can_Str CanAC(double LAI, int DOY, int hr, double solarR, double Temp,
 	double CanHeight;
 
 	double vmax1, leafN_lay;
-	double TempIdir,TempIdiff,AssIdir,AssIdiff;
+	double TempIdir = 0.0, TempIdiff = 0.0, AssIdir,AssIdiff;
 
 	double CanopyA, CanopyT;
 

@@ -99,7 +99,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	double Leaf, Stem, Root, LAI, Grain = 0.0;
 	double TTc = 0.0;
 	double kLeaf = 0.0, kStem = 0.0, kRoot = 0.0, kRhizome = 0.0, kGrain = 0.0;
-	double newLeaf, newStem = 0.0, newRoot, newRhizome, newGrain = 0.0;
+	double newLeaf = 0.0, newStem = 0.0, newRoot = 0.0, newRhizome = 0.0, newGrain = 0.0;
 
 	/* Variables needed for collecting litter */
 	double LeafLitter = REAL(CENTCOEFS)[20], StemLitter = REAL(CENTCOEFS)[21];

@@ -57,7 +57,7 @@ SEXP CanA(SEXP Lai,SEXP Doy,SEXP HR,SEXP SOLAR,SEXP TEMP,
   double maxIDir, maxIDiff;
   double LAIc;
   double IDir, IDiff, Iave, rh, WindS;
-  double TempIdir,TempIdiff,AssIdir,AssIdiff;
+  double TempIdir = 0.0, TempIdiff = 0.0, AssIdir,AssIdiff;
   double pLeafsun, pLeafshade;
   double Leafsun, Leafshade;
 
