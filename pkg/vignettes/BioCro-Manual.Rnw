@@ -689,7 +689,7 @@ from daily data.
 data(cmi05)
 summary(cmi05)
 soilP <- soilParms(wsFun='none')
-res <- BioGro(cmi05)
+res <- BioGro(cmi05, soilControl=soilP)
 plot(res)
 plot(res, plot.kind="SW")
 plot(res, plot.kind="ET")
