@@ -1,5 +1,6 @@
 ## I will be testing the ET in BioCro
 ## Date: Dec 17 2014
+library(BioCro)
 
 data(cmi04)
 res <- BioGro(cmi04)
