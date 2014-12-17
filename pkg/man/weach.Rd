@@ -12,8 +12,11 @@
 
 }
 \usage{
-weach(X,lat=40,ts=1, solar.units=c("MJ/m2"), temp.units=c("Fahrenheit","Celsius"),
-rh.units=c("percent","fraction"), ws.units=c("mph","mps"), pp.units=c("in","mm"),seed=1234,...)
+weach(X,lat=40,ts=1, solar.units=c("MJ/m2"),
+     temp.units=c("Fahrenheit","Celsius"),
+     rh.units=c("percent","fraction"),
+     ws.units=c("mph","mps"),
+     pp.units=c("in","mm"),seed=1234,...)
 
 is.leap(year)
 }
