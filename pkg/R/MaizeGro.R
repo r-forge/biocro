@@ -1,5 +1,5 @@
 ##
-##  BioCro/R/MaizeGro.R by Fernando Ezequiel Miguez  Copyright (C) 2012
+##  BioCro/R/MaizeGro.R by Fernando Ezequiel Miguez  Copyright (C) 2012-2014
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -126,7 +126,7 @@ MaizeGro <- function(WetDat, plant.day=NULL,
 
     if(centuryP$timestep == "year"){
         stop("Not developed yet")
-        centTimestep <- dayn - day1 ## This is really the growing season
+        centTimestep <- 365 ## This is really the growing season
     }
     if(centuryP$timestep == "week") centTimestep <- 7
     if(centuryP$timestep == "day") centTimestep <- 1

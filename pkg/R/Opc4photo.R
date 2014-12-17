@@ -90,16 +90,16 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
           if(op.level == 1){
             vec1 <- c4photo(data[,2],data[,3],data[,4],
                             coefs[1],ialpha,coefs[2],itheta,ibeta,
-                            iRd,Catm,ib0,ib1,iStomWS,ws=ws)
+                            iRd,Catm,ib0,ib1,istress,ws=ws)
           }else
           if(op.level == 2){
             vec1 <- c4photo(data[,2],data[,3],data[,4],
                             coefs[1],ialpha,coefs[2],itheta,ibeta,
-                            coefs[3],Catm,ib0,ib1,iStomWS,ws=ws)
+                            coefs[3],Catm,ib0,ib1,istress,ws=ws)
           }else{
             vec1 <- c4photo(data[,2],data[,3],data[,4],
                             coefs[1],ialpha,coefs[2],itheta,coefs[3],
-                            coefs[4],Catm,ib0,ib1,iStomWS,ws=ws)
+                            coefs[4],Catm,ib0,ib1,istress,ws=ws)
           }
         }
       }else
@@ -109,7 +109,7 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
                    should be mmol m-2 s-1\n")
          vec1 <- c4photo(data[,2],data[,3],data[,4],
                     ivmax,ialpha,ikparm,itheta,ibeta,
-                         iRd,Catm,coefs[1],coefs[2],iStomWS,ws)$Gs
+                         iRd,Catm,coefs[1],coefs[2],istress,ws)$Gs
       }
 
       if(response == "Assim"){
@@ -490,7 +490,7 @@ predict.Opc4photo <- function(object, newdata,...){
       }
     }
   }else{
-    stop("Stomatal conductance no implemented yet")
+    stop("Stomatal conductance not implemented yet")
   }
 
   if(x$curve.kind == "Q"){

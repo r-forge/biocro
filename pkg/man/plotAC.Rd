@@ -9,9 +9,12 @@ Plotting function for A/Ci curves
 A small helper function that can be used to easily plot multiple A/Ci curves
 }
 \usage{
-plotAC(data, fittd, id.col = 1, trt.col = 2, ylab = "CO2 Uptake", xlab = "Ci", by = c("trt", "ID"), type = c("p", "smooth"))
+plotAC(data, fittd, id.col = 1, trt.col = 2,
+       ylab = "CO2 Uptake", xlab = "Ci",
+       by = c("trt", "ID"),
+       type = c("p", "smooth"))
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{data}{
     Input data in the format needed for the \code{\link{mOpc4photo}}.

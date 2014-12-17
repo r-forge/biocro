@@ -10,7 +10,10 @@ Simulates canopy assimilation for C3 canopies
   multilayer canopy model \code{\link{sunML}}.
 }
 \usage{
-c3CanA(lai, doy, hr, solar, temp, rh, windspeed, lat = 40, nlayers = 8, kd = 0.1, heightFactor = 3, c3photoControl = list(), lnControl = list())
+c3CanA(lai, doy, hr, solar, temp, rh, windspeed,
+       lat = 40, nlayers = 8, kd = 0.1,
+       heightFactor = 3, c3photoControl = list(),
+       lnControl = list())
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -108,14 +111,14 @@ c3photoParms function
 \author{
 Fernando E. Miguez
 }
-\note{
+%\note{
 %%  ~~further notes~~
-}
+%}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+ \code{\link{CanA}}
 }
 \examples{
 data(doy124)

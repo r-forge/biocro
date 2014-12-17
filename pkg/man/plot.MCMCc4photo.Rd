@@ -8,9 +8,13 @@
   can be plotted.
 }
 \usage{
-\method{plot}{MCMCc4photo}(x, x2 = NULL, x3 = NULL, plot.kind = c("trace", "density"), type=c("l","p"),burnin=1, cols=c("blue","green", "purple"),prior=FALSE,pcol="black",\dots)
+\method{plot}{MCMCc4photo}(x, x2 = NULL, x3 = NULL,
+             plot.kind = c("trace", "density"),
+              type=c("l","p"),burnin=1,
+              cols=c("blue","green", "purple"),
+              prior=FALSE,pcol="black",\dots)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{x}{ \code{\link{MCMCc4photo}} object.}
   \item{x2}{ optional additional \code{\link{MCMCc4photo}} object.  }
