@@ -319,15 +319,16 @@ OpMaizeGro <- function(phen=1,iCoef=NULL,
                     maizephenoP=maizephenoP,laiP=laiP,soilP=soilP,nitroP=nitroP,
                     verbose=verbose,...)
     }else{
-      opar <- nlminb(iCoef[13:15],BioCro:::objFun,
-                    phenStage=4,
-                    iCoefs=iCoef,WetDat=WetDat,day1=day1,
-                    dayn=dayn0,lat=lat,ThermalP = ThermalP,
-                    irtl=irtl,iRhizome=iRhizome,timestep=timestep,
-                    canopyP=canopyP,seneP=seneP,photoP=photoP,
-                    phenoP=phenoP,soilP=soilP,nitroP=nitroP,
-                    data=data,verbose=verbose,...)
-      opar$value <- opar$objective
+        stop("not implemented yet")
+      ## opar <- nlminb(iCoef[13:15],BioCro:::objFun,
+      ##               phenStage=4,
+      ##               iCoefs=iCoef,WetDat=WetDat,day1=day1,
+      ##               dayn=dayn0,lat=lat,ThermalP = ThermalP,
+      ##               irtl=irtl,iRhizome=iRhizome,timestep=timestep,
+      ##               canopyP=canopyP,seneP=seneP,photoP=photoP,
+      ##               phenoP=phenoP,soilP=soilP,nitroP=nitroP,
+      ##               data=data,verbose=verbose,...)
+      ## opar$value <- opar$objective
     }
 
     iCoef[1:9] <- exp(iCoef[1:9])

@@ -63,7 +63,7 @@ S3method(print, MCMCBioGro)
 S3method(plot, MCMCBioGro)
 
 ## MaizeGro.R
-export(MaizeGro)
+export(MaizeGro, phenoConv)
 S3method(plot, MaizeGro)
 S3method(print, MaizeGro)
 

@@ -165,7 +165,7 @@ MaizeGro <- function(WetDat, plant.day=NULL,
 
     ## Transform the phenology
 
-    res$PhenoStage <- BioCro:::phenoConv(res$PhenoStage)
+    res$PhenoStage <- phenoConv(res$PhenoStage)
     res$LAImat <- t(res$LAImat)
 
     res$cwsMat <- t(res$cwsMat)
@@ -503,10 +503,6 @@ plot.MaizeGro <- function (x, obs = NULL, stem = TRUE, leaf = TRUE, root = TRUE,
   }
   
 }
-
-  
-  
-
       
 print.MaizeGro <- function(x,level=1,...){
 

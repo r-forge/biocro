@@ -5,6 +5,7 @@
 \alias{MaizePhenoParms}
 \alias{MaizePhotoParms}
 \alias{MaizeSeneParms}
+\alias{phenoConv}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
    Simulation of Maize, Growth, LAI, Photosynthesis and phenology
