@@ -123,13 +123,13 @@ Carbon allocation partitioning for maize. Similar to \code{\link{BioGro}}.
   }
 
   \item{soilControl}{
-%%     ~~Describe \code{soilControl} here~~
+ See function \code{\link{BioGro}} for details.
 }
-  \item{MaizeNitroControl}{
-%%     ~~Describe \code{nitroControl} here~~
+\item{MaizeNitroControl}{
+  See \code{MaizeNitroParms}
 }
   \item{centuryControl}{
-%%     ~~Describe \code{centuryControl} here~~
+  See function \code{\link{BioGro}} for details. 
 }
 
 \item{laiControl}{
@@ -141,14 +141,17 @@ Carbon allocation partitioning for maize. Similar to \code{\link{BioGro}}.
   time and the relevant parameters are TTcoef and max.lai.
 
   The method "ind-leaf-Lizaso" has been tested more and the reference
-  documentation is the Lizaso et al. (2003) paper.
+  documentation is the Lizaso et al. (2003) paper. It is currently the
+  default. At the moment it is not sensitive to stress. This need to be
+  fixed.
+  
   }
 
 }
 \details{
 
   The phenology follows the 'Corn Growth and Development' Iowa State Publication.
-%%  ~~ If necessary, more details than the description above ~~
+
 }
 \value{
 
@@ -206,22 +209,17 @@ Carbon allocation partitioning for maize. Similar to \code{\link{BioGro}}.
     (volumetric)}
 
   \item{SomatalCondCoefs}{Stomatal conductance coefficient (0-1)}
-    
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
 }
-\references{
+%\references{
 %% ~put references to the literature/web site here ~
-}
+%}
 \author{
 Fernando E Miguez
 }
-\note{
+%\note{
 %%  ~~further notes~~
-}
+%}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
@@ -234,14 +232,14 @@ Fernando E Miguez
   plot(x, plot.kind="cumET") for cummulative EvapoTranspiration
   plot(x, plot.kind="LAI") for Leaf Area Index
   plot(x, plot.kind="pheno") for phenology
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+
 }
 \examples{
 \dontrun{
-data(weather05)
-laiP <- laiParms(lai.method="ind-leaf-Lizaso", Aex=750, LLx=1000)
-res <- MaizeGro(weather05, plant.day = 110, emerge.day = 120, harvest.day=300,
-                laiControl = laiP)
+data(cmi05)
+res <- MaizeGro(cmi05, plant.day = 110,
+                emerge.day = 120, harvest.day=300)
+                
 
 ## Explore data with plots
 plot(res, plot.kind="DB") ## for dry biomass

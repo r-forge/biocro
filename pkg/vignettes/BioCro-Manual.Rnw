@@ -752,7 +752,17 @@ argument \code{iWatCont}. By default water moves from one layer to the
 next driven by soil water potential \code{hydrDist = TRUE} this can be
 turned off but it will likely not produce reasonable results.
 
+\subsection{Maize}
 
+There are is also a maize model 
+
+<<MaizeGro>>=
+data(cmi05)
+res <- MaizeGro(cmi05, plant.day=110, emerge.day=117, harvest.day=280)
+plot(res)
+plot(res, plot.kind="pheno")
+plot(res, plot.kind="LAI")
+@ 
 
 \end{document}
 

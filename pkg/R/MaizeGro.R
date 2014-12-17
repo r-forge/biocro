@@ -276,7 +276,7 @@ phenoConv <- function(x){
 }
 
 
-laiParms <- function(lai.method=c("spla","TT","ind-leaf-Lizaso","Birch-Discontinuous", "Birch-Continuous"),
+laiParms <- function(lai.method=c("ind-leaf-Lizaso","spla","TT","Birch-Discontinuous", "Birch-Continuous"),
                      TTcoef = 0.003, max.lai = 6, Aex = 650, LT = 20, a1 = -5.61,
                      a2 = -0.59, k0 = 0.23, L0 = 133, LLx = 800, Lx = LLx-L0,
                      LNl = NULL, Amax = NULL, c1 = 8.35, c2 = 5.4, c3 = 1.58,
