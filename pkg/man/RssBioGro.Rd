@@ -27,11 +27,13 @@ RssBioGro(obs, sim)
 % }
 \seealso{ See Also \code{\link{BioGro}}.}
 \examples{
+\dontrun{
 ## A simple example
 data(annualDB)
 data(EngWea94i)
 res <- BioGro(EngWea94i)
 RssBioGro(annualDB,res)
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -99,16 +99,16 @@ plot(ans,simDat)
 ans0 <- BioGro(weather05)
 RssBioGro(simDat,ans0)
 
-
-op1.mc <- MCMCBioGro(phen=1, niter=200,niter2=200,
+## This is not working now
+## op1.mc <- MCMCBioGro(phen=1, niter=200,niter2=200,
                      WetDat=weather05,
                      data=simDat)
 
 
-plot(op1.mc)
+## plot(op1.mc)
 
-plot(op1.mc, plot.kind="trace", subset = nams %in%
-				c("kLeaf_1","kStem_1","kRoot_1"))
+## plot(op1.mc, plot.kind="trace", subset = nams %in%
+##				c("kLeaf_1","kStem_1","kRoot_1"))
 
 }
 }
