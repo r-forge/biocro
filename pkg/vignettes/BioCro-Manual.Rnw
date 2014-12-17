@@ -691,6 +691,9 @@ summary(cmi05)
 soilP <- soilParms(wsFun='none')
 res <- BioGro(cmi05, soilControl=soilP)
 res
+wna <- which(is.na(res$Stem))[1]
+res$ThermalT[wna]
+res$DayofYear[wna]
 ##plot(res)
 ##plot(res, plot.kind="SW")
 ##plot(res, plot.kind="ET")
@@ -700,7 +703,8 @@ names(res)
 @ 
 
 The last command \code{names(res)} shows the list of objects available
-for further manipulation.
+for further manipulation. This code works fine on my desktop and two
+laptops but it fails in the R-forge build. Trying to find out why.
 
 \subsection{Soil information and parameters}
 
