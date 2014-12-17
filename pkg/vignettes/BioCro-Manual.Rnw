@@ -96,7 +96,7 @@ Besides some of the typical parameters for both functions there is the
 option of including stress. The argument is \code{stress}. The stress
 can be applied to stomatal conductance (default) or $V_{max}$. 
 
-<<c4photo-stress-gs>>=
+<<c4photo-stress-gs, fig.height=4.5>>=
 sws <- seq(0,1,0.01)
 
 assim <- numeric(length(sws))
@@ -115,7 +115,7 @@ xyplot(assim + cond ~ sws, type='l', main="stress on gs")
 
 % | 
 
-<<c4photo-stress-vmax>>=
+<<c4photo-stress-vmax, fig.height=4.5, include=FALSE>>=
 sws <- seq(0,1,0.01)
 
 assim <- numeric(length(sws))
@@ -649,7 +649,7 @@ names(tmp6) <- c("CanopyAssim","CanopyTrans",
                  "TranPen","TranEpries","CanopyCond")
 @ 
 
-<<canopy-stress-graphs,echo=FALSE, fig.width=5, fig.height=5>>=
+<<canopy-stress-graphs,echo=FALSE, fig.width=5, fig.height=4.5>>=
 xyplot(tmp6$CanopyTrans + tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans ~ 1:24,
        type='o', col=c(rep("blue",3),"green"), lty=4:1,
        key= list(text=list(c("stress=1","stress=0.8","stress=0.5","stress=0.3")),
@@ -690,11 +690,12 @@ data(cmi05)
 summary(cmi05)
 soilP <- soilParms(wsFun='none')
 res <- BioGro(cmi05, soilControl=soilP)
-plot(res)
-plot(res, plot.kind="SW")
-plot(res, plot.kind="ET")
-plot(res, plot.kind="cumET")
-plot(res, plot.kind="stress")
+res
+##plot(res)
+##plot(res, plot.kind="SW")
+##plot(res, plot.kind="ET")
+##plot(res, plot.kind="cumET")
+##plot(res, plot.kind="stress")
 names(res)
 @ 
 
