@@ -15,7 +15,7 @@
   It takes and returns hourly weather information only.
 }
 \usage{
-weach_imn(data, lati, ts = 1, temp.units = c("Fahrenheit", "Celsius"),
+weach_imn(data, ts = 1, temp.units = c("Fahrenheit", "Celsius"),
 rh.units = c("percent", "fraction"), ws.units = c("mph", "mps"),
 pp.units = c("in", "mm"), ...)
 
@@ -28,15 +28,10 @@ NULL
 \arguments{
   \item{data}{
     data as obtained from the Iowa Mesonet (see details)
-%%     ~~Describe \code{data} here~~
 }
-\item{lati}{
-  Latitude, not used at the moment
-%%     ~~Describe \code{lati} here~~
-}
+
 \item{ts}{
-  Time step, not used at the moment
-%%     ~~Describe \code{ts} here~~
+  Time step, at the moment it is assumed to be 1.
 }
 \item{temp.units}{
   Temperature units.
@@ -57,6 +52,7 @@ NULL
   \item{\dots}{
 %%     ~~Describe \code{\dots} here~~
 }
+\item{na.chr}{missing data character}
 }
 \details{
     The first function (weach_imn) should be used to transform data from the Iowa Mesonet
@@ -73,7 +69,7 @@ NULL
 
     You can read the data directly as it is downloaded making sure you
     skip the first 6 lines (This includes the title row).
-
+    
     The imported data frame should have 9 columns with:
     
 \enumerate{
@@ -96,7 +92,6 @@ data downloaded from:
 http://mesonet.agron.iastate.edu/agclimate/hist/hourly.php
 
 It might not work well at the moment. It still needs work.
-%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
 
@@ -111,14 +106,13 @@ It might not work well at the moment. It still needs work.
 \references{
   Iowa Mesonet
   http://mesonet.agron.iastate.edu/index.phtml
-%% ~put references to the literature/web site here ~
 }
 \author{
 Fernando E. Miguez
 }
-\note{
+%\note{
 %%  ~~further notes~~
-}
+%}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
@@ -128,10 +122,13 @@ Fernando E. Miguez
 }
 \examples{
 
+\dontrun{
 ## Read an example data set from my website
-url <- "http://www.agron.iastate.edu/miguezlab/teaching/CropSoilModel/ames_2010-iowamesonet.txt"
-ames.wea <- read.table(url, skip = 6)
-ames.wea2 <- weach_imn(ames.wea)
+## This can take a while as it processes data for the period 1986-2013
+url <- "http://www.agron.iastate.edu/miguezlab/research/biocro/data/ames-weather.csv"
+ams <- read.csv(url)
+ams2 <- weach_imn(ams)
+}
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

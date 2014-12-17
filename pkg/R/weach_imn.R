@@ -16,14 +16,10 @@
 ##
 ##
 
-weach_imn <- function(data, lati, ts=1, temp.units=c("Fahrenheit","Celsius"),
+weach_imn <- function(data, ts=1, temp.units=c("Fahrenheit","Celsius"),
                       rh.units=c("percent","fraction"),
                       ws.units=c("mph","mps"),
                       pp.units=c("in","mm"),...){
-
-
-  ## if(missing(lati))
-  ##   stop("latitude is missing")
   
   if((ts<1)||(24%%ts != 0))
     stop("ts should be a divisor of 24 (e.g. 1,2,3,4,6,etc.)")

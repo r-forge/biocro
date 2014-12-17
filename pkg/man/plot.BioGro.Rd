@@ -21,8 +21,7 @@
 \arguments{
   \item{x}{ \code{\link{BioGro}} object.}
   \item{obs}{ optional observed data object (format following the
-    \code{\link{OpBioGro}}
-    function .  }
+    \code{\link{OpBioGro}} function).}  
   \item{stem}{ whether to plot simulated stem (default = TRUE).  }
   \item{leaf}{ whether to plot simulated leaf (default = TRUE).  }
   \item{root}{ whether to plot simulated root (default = TRUE).  }
@@ -35,7 +34,11 @@
 \item{col}{ Control of colors.}
 \item{x1}{ position of the legend. x coordinate (0-1). }
 \item{y1}{ position of the legend. y coordinate (0-1). }
-\item{plot.kind}{ DB plots dry biomass and SW plots soil water. }
+\item{plot.kind}{ "DB" dry biomass, "SW" plots soil water, "ET"
+  evapotranspiration, "cumET" cummulative ET, "stress" stress indexes. }
+\item{ylim}{ as in \code{\link{xyplot}} }
+\item{xlab}{ as in \code{\link{xyplot}} }
+\item{ylab}{ as in \code{\link{xyplot}} } 
   \item{\dots}{ Optional arguments. }
 }
 \details{

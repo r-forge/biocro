@@ -47,13 +47,13 @@ isom(SC6=0.39, SC7=7.41, SC8=31.2, cc=0.5, depth=0.3, bd=1.3)
     soil organic carbon in microbes, second in slow and third in passive.}
 
   function isom
+
+  Some arguments are the same as somc
   
   \item{SC6}{microbial biomass (Mg/ha)}
   \item{SC7}{slow pool (Mg/ha)}
   \item{SC8}{passive pool (Mg/ha)}
-  \item{cc}{carbon content (proportion 0-1)}
-  \item{depth}{soil depth (meters)}
-  \item{bd}{bulk density (g/m3)}
+
 }
 \details{
  Most of the details can be found in the papers by Parton et al. (1987,

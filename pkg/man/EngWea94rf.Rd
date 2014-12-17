@@ -19,15 +19,16 @@
     \item{\code{precip}}{a numeric vector}
   }
 }
-\details{
-  ~~ If necessary, more details than the description above ~~
-}
+%\details{
+%  ~~ If necessary, more details than the description above ~~
+%}
 \source{
-  ~~ reference to a publication or URL from which the data were obtained ~~
+  At this time I do not remember where the data came from. It is
+  possible tha Clive Beale sent it to me by email.
 }
-\references{
-  ~~ possibly secondary sources and usages ~~
-}
+%\references{
+%  ~~ possibly secondary sources and usages ~~
+%}
 \examples{
 data(EngWea94rf)
 ## maybe str(EngWea94rf) ; plot(EngWea94rf) ...

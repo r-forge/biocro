@@ -18,23 +18,25 @@
 
 weach <- function(X,lat=40,ts=1,solar.units=c("MJ/m2"), temp.units=c("Fahrenheit","Celsius"),
                   rh.units=c("percent","fraction"),ws.units=c("mph","mps"),
-                  pp.units=c("in","mm"),...){
+                  pp.units=c("in","mm"),seed=1234,...){
 
-  if(missing(lat))
-    stop("latitude is missing")
+    set.seed(seed)
+    
+    if(missing(lat))
+        stop("latitude is missing")
   
-  if((ts<1)||(24%%ts != 0))
-    stop("ts should be a divisor of 24 (e.g. 1,2,3,4,6,etc.)")
+    if((ts<1)||(24%%ts != 0))
+        stop("ts should be a divisor of 24 (e.g. 1,2,3,4,6,etc.)")
   
-  if(dim(X)[2] != 11)
-    stop("X should have 11 columns")
+    if(dim(X)[2] != 11)
+        stop("X should have 11 columns")
 
-  if(nrow(X) == 366 || is.leap(X[1,1])){
-      warning("leap year")
-      year.days <- 366
-  }else{
-      year.days <- 365
-  }
+    if(nrow(X) == 366 || is.leap(X[1,1])){
+        warning("leap year")
+        year.days <- 366
+    }else{
+        year.days <- 365
+    }
   
   MPHTOMPERSEC <- 0.447222222222222
 
@@ -129,12 +131,23 @@ weach <- function(X,lat=40,ts=1,solar.units=c("MJ/m2"), temp.units=c("Fahrenheit
     WS <- temp3 * rep(WindSpeed,each=tint)
   }
 
-  ## Precipitation
-  if(pp.units == "in"){
-    precip <- rep(I((precip*2.54*10)/tint),each=tint)
-  }else{
-    precip <- rep(I(precip/tint),each=tint)
-  }
+  ## Precipitation Trying a binomial distribution to have rain
+  ## unequally spaced during the day
+    precip <- rep(precip, each = tint)
+    resC3 <- numeric(ltseq*year.days)
+
+    for(i in 1:year.days){
+        x <- rbinom(tint, 1, 0.35)
+        xp <- x/sum(x)
+        indx <- 1:ltseq + (i-1)*ltseq
+        resC3[indx] <- xp
+    }
+      
+    if(pp.units == "in"){
+        precip <- precip * resC3 * 2.54*10
+    }else{
+        precip <- precip * resC3 
+    }
   
   hour <- rep(tseq,year.days)
   DOY <- 1:year.days

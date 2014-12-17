@@ -25,7 +25,8 @@ c3photo(Qp, Tl, RH, vcmax = 100, jmax = 180, Rd = 1.1, Catm = 380,
   \item{theta}{ Curvature parameter }
 }
 \details{
-  ~~ If necessary, more details than the description above ~~
+  The details of the model and equations are here:
+  http://www.life.illinois.edu/plantbio/wimovac/leafgas.htm
 }
 \value{
   A list
@@ -40,10 +41,10 @@ c3photo(Qp, Tl, RH, vcmax = 100, jmax = 180, Rd = 1.1, Catm = 380,
 
 }
 \author{ Fernando E. Miguez }
-\note{ ~~further notes~~ 
-## Additional notes about assumptions
+%\note{ ~~further notes~~ 
+%## Additional notes about assumptions
 
-}
+%}
 \seealso{ See Also \code{\link{Opc3photo}}}
 \examples{
 

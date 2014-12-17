@@ -13,7 +13,7 @@
 }
 \usage{
 weach(X,lat=40,ts=1, solar.units=c("MJ/m2"), temp.units=c("Fahrenheit","Celsius"),
-rh.units=c("percent","fraction"), ws.units=c("mph","mps"), pp.units=c("in","mm"),...)
+rh.units=c("percent","fraction"), ws.units=c("mph","mps"), pp.units=c("in","mm"),seed=1234,...)
 
 is.leap(year)
 }
@@ -40,7 +40,9 @@ is.leap(year)
   \item{\ldots}{additional arguments to be passed to
     \code{\link{lightME}}}
   \item{year}{ input for the \code{is.leap} function. It checks
-  if a year is leap or not.}
+    if a year is leap or not.}
+  \item{seed}{seed used for the random generation of the distribution for
+    downscaling rainfall from daily to hourly.}
 }
 
 \details{

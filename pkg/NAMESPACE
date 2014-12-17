@@ -80,7 +80,6 @@ S3method(plot, Opc3photo)
 S3method(print, mOpc3photo)
 S3method(plot, mOpc3photo)
 
-
 ## Opc4photo.R
 export(Opc4photo, RsqC4photo, mOpc4photo, plotAQ)
 S3method(print, Opc4photo)

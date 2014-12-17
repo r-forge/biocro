@@ -17,15 +17,15 @@
     \item{\code{LAI}}{a numeric vector}
   }
 }
-\details{
-  ~~ If necessary, more details than the description above ~~
-}
-\source{
-  ~~ reference to a publication or URL from which the data were obtained ~~
-}
-\references{
-  ~~ possibly secondary sources and usages ~~
-}
+%\details{
+%  ~~ If necessary, more details than the description above ~~
+%}
+%\source{
+%  ~~ reference to a publication or URL from which the data were obtained ~~
+%}
+%\references{
+%  ~~ possibly secondary sources and usages ~~
+%}
 \examples{
 data(simDat2)
 ## maybe str(simDat2) ; plot(simDat2) ...
