@@ -45,7 +45,7 @@ SoilEvapo <- function(LAI, k, AirTemp, IRad,
 #/* Here LHV is given in MJ kg-1 and this needs to be converted
 #   to Joules kg-1  */
   SlopeFS = TempToSFS(AirTemp) * 1e-3;
-  SWVC = TempToSWVC(AirTemp) * 1e-3;
+  SWVC = TempToSWVC(AirTemp) * 1e-3; ## This converts from g/m3 to kg/m3
 
   PsycParam = (DdryA * SpecificHeat) / LHV;
   DeltaPVa = SWVC * (1 - RelH / 100);

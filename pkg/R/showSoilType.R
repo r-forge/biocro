@@ -31,7 +31,7 @@ if((soiltype < 0) || (soiltype > 10))
     air.entry <- -0.7
     b <- 1.7
     Ks <- 5.8e-3
-    satur <- 0.87
+    satur <- 0.4
     fieldc <- 0.09
     wiltp <-  0.03
 
@@ -45,7 +45,7 @@ if((soiltype < 0) || (soiltype > 10))
     air.entry <- -0.9
     b <- 2.1
     Ks <- 1.7e-3
-    satur <- 0.72
+    satur <- 0.4
     fieldc <- 0.13
     wiltp <- 0.06
 
@@ -59,7 +59,7 @@ if((soiltype < 0) || (soiltype > 10))
     air.entry <- -1.5
     b <- 3.1
     Ks <- 7.2e-4
-    satur <- 0.57
+    satur <- 0.4
     fieldc <- 0.21
     wiltp <- 0.10
 
@@ -73,7 +73,7 @@ if((soiltype < 0) || (soiltype > 10))
     air.entry <- -1.1
     b <- 4.5
     Ks <- 3.7e-4
-    satur <- 0.57
+    satur <- 0.4
     fieldc <- 0.27
     wiltp <- 0.12
 
@@ -87,7 +87,7 @@ if((soiltype < 0) || (soiltype > 10))
     air.entry <- -2.1
     b <- 4.7
     Ks <- 1.9e-4
-    satur <- 0.59
+    satur <- 0.5
     fieldc <- 0.33
     wiltp <- 0.13
 
@@ -198,7 +198,7 @@ switch(soiltype,
          cat("air entry = ",-0.7,"\n")
          cat("b = ", 1.7, "\n")
          cat("Ks = ", 5.8e-3, "\n")
-         cat("satur = ", 0.87, "\n")
+         cat("satur = ", 0.4, "\n")
          cat("fieldc = ", 0.09, "\n")
          cat("wiltp = ", 0.03, "\n")
        },
@@ -211,7 +211,7 @@ switch(soiltype,
          cat("air entry = ",-0.9,"\n")
          cat("b = ", 2.1, "\n")
          cat("Ks = ", 1.7e-3, "\n")
-         cat("satur = ", 0.72, "\n")
+         cat("satur = ", 0.4, "\n")
          cat("fieldc = ", 0.13, "\n")
          cat("wiltp = ", 0.06, "\n")
        },
@@ -224,7 +224,7 @@ switch(soiltype,
          cat("air entry = ",-1.5,"\n")
          cat("b = ", 3.1, "\n")
          cat("Ks = ", 7.2e-4, "\n")
-         cat("satur = ", 0.57, "\n")
+         cat("satur = ", 0.4, "\n")
          cat("fieldc = ", 0.21, "\n")
          cat("wiltp = ", 0.10, "\n")
        },
@@ -237,7 +237,7 @@ switch(soiltype,
          cat("air entry = ",-1.1,"\n")
          cat("b = ", 4.5, "\n")
          cat("Ks = ", 3.7e-4, "\n")
-         cat("satur = ", 0.57, "\n")
+         cat("satur = ", 0.4, "\n")
          cat("fieldc = ", 0.27, "\n")
          cat("wiltp = ", 0.12, "\n")
        },
@@ -250,7 +250,7 @@ switch(soiltype,
          cat("air entry = ",-2.1,"\n")
          cat("b = ", 4.7, "\n")
          cat("Ks = ", 1.9e-4, "\n")
-         cat("satur = ", 0.59, "\n")
+         cat("satur = ", 0.5, "\n")
          cat("fieldc = ", 0.33, "\n")
          cat("wiltp = ", 0.13, "\n")
        },

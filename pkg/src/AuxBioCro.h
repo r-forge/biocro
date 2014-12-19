@@ -123,3 +123,5 @@ struct rd_str{
 
 struct rd_str rootDist(int layer, double rootDepth, double *depths, double rfl);
 
+double leafboundarylayer(double windspeed, double leafwidth, double AirTemp,
+                         double deltat, double stomcond, double vappress);

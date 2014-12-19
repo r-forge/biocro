@@ -92,7 +92,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	struct Can_Str Canopy;
 
 /* Variables for canopy */
-        double Sp, SpD, nlayers, kd, chil, heightFactor;
+        double Sp, SpD, nlayers, kd, chil, heightFactor, leafw;
+	int eteq;
 	double mrc1, mrc2;
 
 	/* Variables needed for collecting litter */
@@ -201,6 +202,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
         mrc1 = REAL(CANOPYP)[5];
 	mrc2 = REAL(CANOPYP)[6];
         heightFactor = REAL(CANOPYP)[7];
+        leafw = REAL(CANOPYP)[8];
+	eteq = REAL(CANOPYP)[9];
 
 /* Extracting senescence parameters */
 	seneStem = REAL(SENEP)[0];
@@ -514,7 +517,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 				       theta,beta,Rd1,Ca,b01,b11,StomWS,
 				       ws, kd,
 				       chil, heightFactor,
-				       LeafN, kpLN, lnb0, lnb1, lnFun, 0.04, 1);
+				       LeafN, kpLN, lnb0, lnb1, lnFun, leafw, eteq);
 
 			/* Rprintf("LAI: %.4f, vmax: %.1f",LAI,vmax);  */
 

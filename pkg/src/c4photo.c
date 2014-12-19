@@ -1,5 +1,5 @@
 /*
- *  /src/c4photo.c by Fernando Ezequiel Miguez  Copyright (C) 2007-2010
+ *  /src/c4photo.c by Fernando Ezequiel Miguez  Copyright (C) 2007-2014
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ double ballBerry(double Amu, double Cappm, double Temp, double RelH, double beta
 	double hs;
 
 	leafTk = Temp + 273.15;
-	pwi = fnpsvp(leafTk);
+	pwi = fnpsvp(leafTk) * 1e2; /* fnpsvp returns in hPa, but Pa are needed here */
 	pwaPa = RelH * pwi;
 	Camf = Cappm * 1e-6;
 	assimn = Amu * 1e-6;
@@ -189,9 +189,9 @@ http://en.wikipedia.org/wiki/Arden_Buck_equation
 	u = (18.678 - tmp/234.5)*tmp;
 	v = 257.14 + tmp;
 	esat = 6.1121 * exp(u/v);
-	esat /= 10;
+	/* esat /= 10; */
 
-	return(esat);
+	return(esat); /* returns pressure in hPa */
 }
 
 
@@ -228,9 +228,6 @@ struct c4_str c4photoC(double Qp, double Tl, double RH, double vmax, double alph
 	double Assim0 = 0.0;
 	double Gs0 = 0.0;
 	double IntCO2 = 0.0;
-	/* partial pressure of CO2 at the leaf surface */
-  
-	/* if(StomaWS < 0.5) ws = 0; */
 
 	Csurface = (Ca * 1e-6) * AP ;
   
@@ -384,6 +381,8 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 	double b1 = REAL(B1)[0];
 	double StomWS = REAL(STOMWS)[0];
 	int ws = INTEGER(WS)[0];
+
+
 
 	double index;
 	double rnum , rden; 

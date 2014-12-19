@@ -27,12 +27,16 @@ engine='R',dev='pdf'
 \newcommand{\package}[1]{\textsf{\small{#1}}}
 \maketitle
 \begin{abstract}
-Simulation and parameter estimation of photosynthesis and crop growth.
+  Simulation and parameter estimation of photosynthesis and crop
+  growth. The interest in developing this model is to be able to
+  efficiently perform simulations of photosynthesis and crop
+  growth. Since often this requires running a model multiple times, R
+  provides a nice environment for optimization and plotting.
 \end{abstract}
 
 <<preliminaries,echo=FALSE>>=
-options(width=80)
-library(BioCro)
+options(width=68)
+library(BioCro, quietly=TRUE)
 @
 
 \section{Introduction}
@@ -43,6 +47,12 @@ Long and Steve Humphries
 (http://www.life.illinois.edu/plantbio/wimovac/) and there have been
 several publications using this model. I have used the model for some
 initial efforts at modeling \emph{Miscanthus} $\times$ \emph{giganteus}.
+
+This vignette was created using BioCro package version
+
+<<version>>=
+sessionInfo()$otherPkgs$BioCro$Version
+@ 
 
 \section{Leaf-level Photosynthesis}
  
@@ -76,7 +86,7 @@ based on the c3 photosynthesis model described in WIMOVAC. Notice that
 the parameters and interpretation are different from the
 \code{c4photo} function. 
 
-<<c4photo-aq-aci, warning=FALSE, fig.height=3.8>>=
+<<c4photo-aq-aci, warning=FALSE, fig.height=3.8, tidy=TRUE>>=
 pr <- seq(0,2000)
 temp <- rep(25, length(pr))
 rh <- rep(0.7, length(pr))
@@ -96,7 +106,7 @@ Besides some of the typical parameters for both functions there is the
 option of including stress. The argument is \code{stress}. The stress
 can be applied to stomatal conductance (default) or $V_{max}$. 
 
-<<c4photo-stress-gs, fig.height=4.5>>=
+<<c4photo-stress-gs, fig.height=4.5, tidy=TRUE, include=FALSE>>=
 sws <- seq(0,1,0.01)
 
 assim <- numeric(length(sws))
@@ -277,8 +287,7 @@ Some important assumption of the multi-layer canopy model are
 \item it distributes the LAI equally among layers, this is not
   necessarily a realistic assumption
 \item relative humidity increases with canopy depth which causes
-  stomatal conductance to increase as well (I don't know what is
-  going on in layer 1).
+  stomatal conductance to increase as well.
 \item by default photosynthetic parameters are constant in the profile
   but it is possible to make them depend on a profile of N
   concentration (see argument \code{lnControl})
@@ -301,8 +310,7 @@ input to this function so it is not really an adjustable parameter.
 \item \code{chi.l} is the ratio of horizontal to vertical projection
   of leaf area. Lower than 1 values for more erect canopies and less
   than 1 for canopies with higher proportion of flat leaves.
-\item \code{leafwidth} average leaf width. Today(12-12-2014) it does
-  not affect any results. Fixme
+\item \code{leafwidth} average leaf width. 
 \item \code{heightFactor} factor relating LAI to height. Adjust it to
   match reasonable height for a crop.
 \end{itemize}
@@ -362,9 +370,8 @@ xyplot(CanopyTrans + TranPen + TranEpries ~ 1:24, data = tmp2,
 apply(tmp2[,2:4], 2, sum)
 @ 
 
-The total transpiration for the day is estimated to be highest for the
-Priestly method, lowest for the Penman-Monteith and intermediate for
-Penman.
+At the moment Penman over estimates transpiration, Priestly and
+Penman-Monteith seem to be giving reasonable answers.
 
 \subsection{Effect of Ball-Berry slope parameter}
 
@@ -649,7 +656,7 @@ names(tmp6) <- c("CanopyAssim","CanopyTrans",
                  "TranPen","TranEpries","CanopyCond")
 @ 
 
-<<canopy-stress-graphs,echo=FALSE, fig.width=5, fig.height=4.5>>=
+<<canopy-stress-graphs,echo=FALSE, fig.width=5, fig.height=3.2>>=
 xyplot(tmp6$CanopyTrans + tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans ~ 1:24,
        type='o', col=c(rep("blue",3),"green"), lty=4:1,
        key= list(text=list(c("stress=1","stress=0.8","stress=0.5","stress=0.3")),
@@ -688,12 +695,8 @@ from daily data.
 <<BioGro>>=
 data(cmi05)
 summary(cmi05)
-soilP <- soilParms(wsFun='none')
+soilP <- soilParms(wsFun='linear')
 res <- BioGro(cmi05, soilControl=soilP)
-res
-wna <- which(is.na(res$Stem))[1]
-res$ThermalT[wna]
-res$DayofYear[wna]
 plot(res)
 plot(res, plot.kind="SW")
 plot(res, plot.kind="ET")
@@ -703,8 +706,80 @@ names(res)
 @ 
 
 The last command \code{names(res)} shows the list of objects available
-for further manipulation. This code works fine on my desktop and two
-laptops but it fails in the R-forge build. Trying to find out why.
+for further manipulation. 
+
+\subsection{Calculation of EvapoTranspiration}
+
+As in the CanA function transpiration can be calculated using
+Priestly, Penman or Penman-Monteith.
+
+<<BioGro-ET, echo=FALSE>>=
+data(cmi05)
+res.prs <- BioGro(cmi05, 
+                  canopyControl = canopyParms(eteq="Priestly"))
+res.pnm <- BioGro(cmi05, 
+                  canopyControl = canopyParms(eteq="Penman"))
+res.pnm.m <- BioGro(cmi05, 
+                    canopyControl = 
+                    canopyParms(eteq="Penman-Monteith"))
+
+et.prs <- cumsum(res.prs$CanopyTrans 
+                 + res.prs$SoilEvaporation)*0.1
+et.pnm <- cumsum(res.pnm$CanopyTrans 
+                 + res.pnm$SoilEvaporation)*0.1
+et.pnm.m <- cumsum(res.pnm.m$CanopyTrans 
+                   + res.pnm.m$SoilEvaporation)*0.1
+
+xyplot(et.prs + et.pnm + et.pnm.m ~ res.prs$ThermalT, type='l',
+       xlab = "Thermal time", ylab = "cummulative ET (mm)",
+       key=simpleKey(c("Priestly","Penman","Penman-Monteith"),
+           lines=TRUE, points=FALSE))
+
+
+@ 
+
+For Priestly and Penman the calculation of stomatal conductance does
+not affect the simulation, but for Penman-Monteith it does.
+
+<<BioGro-ET-b1-12, echo=FALSE>>=
+photoP <- photoParms(b1=12)
+soilP <- soilParms(soilDepth=1.5)
+res.pnm.m.b1.12 <- BioGro(cmi05, 
+                          photoControl = photoP,
+                          soilControl = soilP)
+
+et.pnm.m.b1.12 <- cumsum(res.pnm.m.b1.12$CanopyTrans 
+                   + res.pnm.m.b1.12$SoilEvaporation)*0.1
+
+xyplot(et.prs + et.pnm + et.pnm.m + et.pnm.m.b1.12 ~ res.prs$ThermalT, 
+       type='l', xlab = "Thermal time", ylab = "cummulative ET (mm)",
+       key=simpleKey(c("Priestly","Penman","PM b1=3",
+           "PM b1=12"), lines=TRUE, points=FALSE))
+@ 
+
+Penman-Moneith does not quite reach Priestly because there is
+stress. It is possible to perform simulations assuming that there is
+no stress but this will likely lead to unrealistic results because the
+crop is not limited at all by availability of soil
+moisture. Transpiration in the no-stress scenario is very high.
+
+<<BioGro-ET-no-stress, echo=FALSE>>=
+photoP <- photoParms(b1=12)
+soilP <- soilParms(wsFun='none')
+res.pnm.m.ns <- BioGro(cmi05, 
+                          photoControl = photoP,
+                          soilControl = soilP)
+
+et.pnm.m.ns <- cumsum(res.pnm.m.ns$CanopyTrans 
+                   + res.pnm.m.ns$SoilEvaporation)*0.1
+
+xyplot(et.prs + et.pnm + et.pnm.m.b1.12 + et.pnm.m.ns ~ res.prs$ThermalT, 
+       type='l', xlab = "Thermal time", ylab = "cummulative ET (mm)",
+       key=simpleKey(c("Priestly","Penman","Penman-Monteith",
+           "PM no stress"), lines=TRUE, points=FALSE))
+@ 
+
+
 
 \subsection{Soil information and parameters}
 
@@ -739,10 +814,13 @@ exploration. If the number of layers of soil is equal to 1 then the
 soil is treated as a simple bucket and the crop roots have access to
 the entire profile. If the number of layers is larger than one the
 roots will only have access to the layers in which they have grown
-into. An example of a simulation using 7 layers and a soil depth of 1.5m.
+into. An example of a simulation using 7 layers and a soil depth of 3m
+and an empirical leaf reduction factor (\code{lrf=0.3e-3}). This type
+of empirical approach to the effect of water stress on senescence is
+used in other models such as APSIM.
 
 <<soil-water>>=
-soilP <- soilParms(soilLayers = 7, soilDepth = 1.5)
+soilP <- soilParms(soilLayers = 7, soilDepth = 3, lrf=0.3e-3)
 res <- BioGro(cmi05, soilControl = soilP)
 plot(res, plot.kind="SW")
 @ 
@@ -756,14 +834,154 @@ argument \code{iWatCont}. By default water moves from one layer to the
 next driven by soil water potential \code{hydrDist = TRUE} this can be
 turned off but it will likely not produce reasonable results.
 
-\subsection{Maize}
+%\subsection{Testing against Miscanthus data}
+
+%BioCro was initially developed to simulate \emph{Miscanthus} $\time$
+%\emph{giganteus} biomass data. The first example is with data from
+%Clive Beale and Steve Long in England.
+
+<<Miscanthus>>=
+## data(EngWea94i) ## Load weather data
+## data(annualDB) ## Load biomass data
+## seneP <- seneParms(senLeaf = 1800)
+## photoP <- photoParms(alpha=0.05)
+## mxg <- BioGro(EngWea94i, day1=131, dayn=320,
+##               seneControl = seneP,
+##               photoControl = photoP)
+## plot(mxg, annualDB, ylim=c(0,30))
+@ 
+
+%% \section{Simulating Miscanthus ET}
+
+%% Some thoughts about simulating mxg ET at the moment.
+
+%% \begin{itemize}
+%%   \item The model seems to over predict especially for 2011
+%%   \item The number of layers might have a large impact on the estimate
+%%     of stress. I think I need to modify the model to only read stress
+%%     from layers where the roots are otherwise, soil depth has a large
+%%     impact on the estimate of stress. One test suggested that there is
+%%     more stress with more layers.
+%%   \item I need to allow different soil properties at different depths
+%%     of the soil. At the moment, all parameters are the same for all
+%%     layers.
+%%   \item The choice of function for estimating stress might have a
+%%     large effect on results.
+%%   \item It is very hard to adjust the model to these data without:
+%%       biomass, LAI, soil moisture, day of emergence, etc.
+%% \end{itemize}
+
+<<Mxg-ET, echo=FALSE, eval=FALSE>>=
+data(mxget2)
+url <- "http://www.agron.iastate.edu/miguezlab/research/biocro/data/cmi-weather.csv"                           
+cmi <- read.csv(url)                                                                                           
+
+cmi09 <- weach(subset(cmi, year == 2009), lat=40)                                                              
+cmi10 <- weach(subset(cmi, year == 2010), lat=40)                                                              
+cmi11 <- weach(subset(cmi, year == 2011), lat=40)
+cmi12 <- weach(subset(cmi, year == 2012), lat=40)
+
+cmi12$RH <- ifelse(cmi12$RH > 0.9999, 0.9999, cmi12$RH)
+
+day1 <- 110
+dayn <- 300
+
+b0 <- 0.08
+b1 <- 3
+phenoP <- phenoParms(kRhizome1=-2e-4, kRhizome2=-1e-4)
+soilP <- soilParms(soilDepth = 1.5, wsFun = "linear", scsf=1,
+                   soilLayers = 2, lrt=0.4, lrf=0.1e-3, rsec=0.5)
+canopyP <- canopyParms(eteq = "Penman-Monteith")
+
+## Simulations 2009
+seneP <- seneParms(senLeaf=1800)
+res09 <- BioGro(cmi09, day1=day1, dayn=dayn, iRhizome=3,
+                soilControl=soilP,
+                phenoControl=phenoP,
+                seneControl=seneP,
+                photoControl=photoParms(b0=b0, b1=b1),
+                canopyControl = canopyP)
+## 2010
+seneP <- seneParms(senLeaf=1800)
+res10 <- BioGro(cmi10, day1=day1, dayn=dayn, iRhizome=5,
+                soilControl=soilP,
+                phenoControl=phenoP,
+                seneControl=seneP,
+                photoControl=photoParms(b0=b0, b1=b1),
+                canopyControl = canopyP)
+## 2011
+seneP <- seneParms(senLeaf=1800)
+res11 <- BioGro(cmi11, day1=day1, dayn=dayn, iRhizome=7,
+              soilControl=soilP, 
+                phenoControl=phenoP,
+              seneControl=seneP,
+              photoControl=photoParms(b0=b0, b1=b1),
+              canopyControl = canopyP)
+## 2012
+seneP <- seneParms(senLeaf=1800)
+res12 <- BioGro(cmi12, day1=day1, dayn=dayn, iRhizome=7,
+                soilControl=soilP,
+                phenoControl=phenoP,
+                seneControl=seneP,
+                photoControl=photoParms(b0=b0, b1=b1),
+                canopyControl = canopyP)
+
+## Plot 2009
+mxget.2009 <- subset(mxget, yr == 2009 & doy > (day1-1) & doy < (dayn+1))
+mxget.2009$cET <- cumsum(mxget.2009$ET)
+
+sim.2009 <- data.frame(doy=res09$DayofYear, 
+                       cET=cumsum(res09$CanopyTrans+res09$SoilEvaporation)*0.1)
+
+xyplot(cET ~ doy , data = mxget.2009, ylim=c(0,700),
+       panel = function(x,y,...){
+         panel.xyplot(x,y,...)
+         panel.xyplot(sim.2009$doy,sim.2009$cET, ,type='l',col='black')
+       },key=simpleKey(c("obs","sim"),col=c('blue','black'),lines=FALSE,points=FALSE),
+       main = "2009")
+
+## Plot 2010
+mxget.2010 <- subset(mxget, yr == 2010 & doy > (day1-1) & doy < (dayn+1))
+mxget.2010$cET <- cumsum(mxget.2010$ET)
+
+sim.2010 <- data.frame(doy=res10$DayofYear, 
+                       cET=cumsum(res10$CanopyTrans+res10$SoilEvaporation)*0.1)
+
+xyplot(cET ~ doy , data = mxget.2010, ylim=c(0,700),
+       panel = function(x,y,...){
+         panel.xyplot(x,y,...)
+         panel.xyplot(sim.2010$doy, sim.2010$cET,type='l',col='black')
+       },key=simpleKey(c("obs","sim"),col=c('blue','black'),lines=FALSE,points=FALSE),
+       main="2010")
+
+## 2011
+mxget.2011 <- subset(mxget, yr == 2011 & doy > (day1-1) & doy < (dayn+1))
+mxget.2011$cET <- cumsum(mxget.2011$ET)
+
+sim.2011 <- data.frame(doy=res11$DayofYear, 
+                       cET=cumsum(res11$CanopyTrans+res11$SoilEvaporation)*0.1)
+
+xyplot(cET ~ doy , data = mxget.2011,
+       ylim=c(0,650),
+       panel = function(x,y,...){
+         panel.xyplot(x,y,...)
+         panel.xyplot(res11$DayofYear, cumsum(res11$CanopyTrans+res11$SoilEvaporation)*0.1,type='l',col='black')
+       },key=simpleKey(c("obs","sim"),col=c('blue','black'),lines=FALSE,points=FALSE),
+       main = "2011")
+@ 
+
+\section{Maize}
 
 There are is also a maize model 
 
-<<MaizeGro>>=
+<<MaizeGro, tidy=TRUE>>=
 data(cmi05)
-res <- MaizeGro(cmi05, plant.day=110, emerge.day=117, harvest.day=280)
+soilP <- soilParms(soilDepth=2)
+res <- MaizeGro(cmi05, plant.day=110, emerge.day=117, 
+                harvest.day=280, soilControl=soilP)
 plot(res)
+plot(res, plot.kind="ET")
+plot(res, plot.kind="cumET")
 plot(res, plot.kind="pheno")
 plot(res, plot.kind="LAI")
 @ 
@@ -1136,3 +1354,4 @@ ans1 <- BioGro(weather05, phenoControl = dbp.ll)
 
 \end{document}
 
+ 

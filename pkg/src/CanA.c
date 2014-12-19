@@ -184,8 +184,8 @@ layIdiff, layShade vectors. */
 	    CanHeight = layHeight[--sp8];
 	    Leafsun = LAIc * pLeafsun;
 	   
-	    tmpc40 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]); /* I ran this here to feed the EvapoTrans function stomatal conductance */
-	    tmp5_ET = EvapoTrans(IDir,Iave,maxIDir,Temp,rh,WindS,LAIc,CanHeight,tmpc40.Gs,leafwidth,0);
+	    tmpc40 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]); 
+	    tmp5_ET = EvapoTrans(IDir,Iave,maxIDir,Temp,rh,WindS,LAIc,CanHeight,tmpc40.Gs,leafwidth,0); /* eteq is always zero because it reports PM */
 	    TempIdir = Temp + tmp5_ET.Deltat;
 	    tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
 	    AssIdir = tmpc4.Assim;
@@ -194,7 +194,7 @@ layIdiff, layShade vectors. */
 	    pLeafshade = layFshade[--sp7];
 	    Leafshade = LAIc * pLeafshade;
 	    tmpc420 = c4photoC(IDiff,TempIdiff,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
-	    tmp6_ET = EvapoTrans(IDiff,Iave,maxIDiff,Temp,rh,WindS,LAIc,CanHeight,tmpc420.Gs,leafwidth,0);
+	    tmp6_ET = EvapoTrans(IDiff,Iave,maxIDiff,Temp,rh,WindS,LAIc,CanHeight,tmpc420.Gs,leafwidth,0); /* eteq is always zero because it reports PM */
 	    TempIdiff = Temp + tmp6_ET.Deltat;
 	    tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
 	    AssIdiff = tmpc42.Assim;
@@ -210,8 +210,8 @@ layIdiff, layShade vectors. */
 	    REAL(mat1)[7 + i*17] = AssIdiff;
 	    REAL(mat1)[8 + i*17] = tmp5_ET.Deltat;
 	    REAL(mat1)[9 + i*17] = tmp6_ET.Deltat;
-	    REAL(mat1)[10 + i*17] = tmp5_ET.LayerCond; 
-	    REAL(mat1)[11 + i*17] = tmp6_ET.LayerCond; 
+	    REAL(mat1)[10 + i*17] = tmpc4.Gs; 
+	    REAL(mat1)[11 + i*17] = tmpc42.Gs; 
 	    REAL(mat1)[12 + i*17] = leafN_lay; 
 	    REAL(mat1)[13 + i*17] = vmax1;
 	    REAL(mat1)[14 + i*17] = rh; 
@@ -224,7 +224,7 @@ layIdiff, layShade vectors. */
 	    CanopyT += Leafsun * tmp5_ET.TransR + Leafshade * tmp6_ET.TransR; 
 	    CanopyPe += Leafsun * tmp5_ET.EPenman + Leafshade * tmp6_ET.EPenman;
 	    CanopyPr += Leafsun * tmp5_ET.EPriestly + Leafshade * tmp6_ET.EPriestly;
-	    CanopyC += Leafsun * tmp5_ET.LayerCond + Leafshade * tmp6_ET.LayerCond;     
+	    CanopyC += Leafsun * tmpc4.Gs + Leafshade * tmpc42.Gs;     
 
     }
  /*## These are micro mols of CO2 per m2 per sec
@@ -238,7 +238,7 @@ layIdiff, layShade vectors. */
     REAL(trans)[0] = cf2 * CanopyT ;
     REAL(epen)[0] = cf2 * CanopyPe ;
     REAL(epries)[0] = cf2 * CanopyPr ;
-    REAL(cond)[0] = CanopyC; /*Layer conductance from EvapoTrans is in mmol /m2/s */
+    REAL(cond)[0] = CanopyC; /*Layer conductance from c4photo is in mmol /m2/s */
 
     SET_VECTOR_ELT(lists,0,growth);
     SET_VECTOR_ELT(lists,1,trans);
