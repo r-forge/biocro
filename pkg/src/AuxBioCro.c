@@ -277,7 +277,7 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 	const double StefanBoltzmann = 5.67037e-8; /* J m^-2 s^-1 K^-4 */
 
 	double Tair, WindSpeedTopCanopy;
-	double DdryA, LHV, SlopeFS, SWVC;
+	double DdryA, LHV, SlopeFS, SWVC, SWVP;
 	double LayerRelativeHumidity, LayerWindSpeed, totalradiation;
 	double LayerConductance, DeltaPVa, PsycParam, ga;
 	double BoundaryLayerThickness, DiffCoef,LeafboundaryLayer;
@@ -317,15 +317,14 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 
 	/* In the original code in WIMOVAC this is used in J kg-1
 but Thornley and Johnson use it as MJ kg-1  */
-	LHV = TempToLHV(Tair); /* This should be MJ kg-1*/
-	LHV = LHV * 1e6; /* Now it is converted to Joules */
+	LHV = TempToLHV(Tair); /* This should be MJ kg^-1*/
+	LHV = LHV * 1e6; /* Now it is converted to Joules kg^-1*/
 	SlopeFS = TempToSFS(Tair) * 1e-3; /* kg m^-3 K^-1 */
-	SWVC = TempToSWVC(Tair); /* this is hecto Pascals */
+	SWVP = TempToSWVC(Tair); /* this is hecto Pascals */
         /* Convert to kg/m3 */
-	SWVC = (DdryA * 0.622 * SWVC)/1013.25; /* This last number is atmospheric pressure in hecto pascals */
+	SWVC = (DdryA * 0.622 * SWVP)/1013.25; /* This last number is atmospheric pressure in hecto pascals */
+/* SWVC is saturated water vapor concentration (or density) in kg/m3 */
 
-	if(SWVC < 0) error("SWVC < 0");
- 
 	/* RHprof returns relative humidity in the 0-1 range */
 	LayerRelativeHumidity = RH * 100;
 	if(LayerRelativeHumidity > 100) 
@@ -333,9 +332,9 @@ but Thornley and Johnson use it as MJ kg-1  */
 
 	PsycParam =(DdryA * SpecificHeat) / LHV; /* This is in kg m-3 K-1 */
 
-	DeltaPVa = SWVC * (1 - RH); /* hecto Pascals */
+	DeltaPVa = SWVC * (1 - RH); /* kg/m3 */
 
-	ActualVaporPressure = RH * SWVC; /* hecto Pascals */
+	ActualVaporPressure = RH * SWVP; /* hecto Pascals */
 
         /* SOLAR RADIATION COMPONENT*/
 
@@ -399,7 +398,7 @@ but Thornley and Johnson use it as MJ kg-1  */
 	gvc = gvc0/(gvc1*gvc2);
 
 	if(gvc < 0)
-		error("ga is less than zero");
+		error("gvc is less than zero");
 
 	/* Calculation of ga, leaf boundary layer conductance */
         /* The calculation of ga in WIMOVAC follows */
@@ -414,7 +413,6 @@ but Thornley and Johnson use it as MJ kg-1  */
 
         ga = gbclW; /* I'm testing now using the original WIMOVAC formula */
                     /* For this to work ga should be in m/s */
-
 
 /* There are two ways of calculating ga in this code
  One method is taken from Thornley and Johnson, but this method

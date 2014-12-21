@@ -1,6 +1,6 @@
 ########################################################################
 #
-# Updated 12-11-2014
+# Updated 12-20-2014
 #
 #
 ########################################################################
@@ -10,10 +10,15 @@ Immediate priorities
  o Keep working on the testing of EvapoTranspiration. It seems now
    Priestly works well. Penman depends on the bulk conductance so it
    is affected by 'ga' in the model. Penman-Monteith is affected by
-   both 'ga' and 'gc' or stomatal conductance. I might want to
-   do an experiment where I test all possible combinations of
-   calculations of ga using the WIMOVAC method, the Thornley method
-   and possible side effects of leaf temperature. 
+   both 'ga' and 'gc' or stomatal conductance. PM and Priestly seem to
+   be working ok. With no stress PM might be too high. I should
+   compare it to the EvapoTrans R function.
+
+ o Need to work on soil. Allow the possibility of determining
+   different soil properties for different layers.
+
+ o Create a simple model of soil temperature.
+
 
 Less immediate priorities
 
