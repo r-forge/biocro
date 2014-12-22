@@ -1075,7 +1075,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 			/* For this section see Campbell and Norman "Environmental BioPhysics" Chapter 9*/
 			/* First compute the matric potential */
 			psim1 = soTexS.air_entry * pow((cws[j]/theta_s),-soTexS.b) ; /* This is matric potential of current layer */
-			tmp.psim[j];
+			tmp.psim[j] = psim1;
 			psim2 = soTexS.air_entry * pow((cws[j+1]/theta_s),-soTexS.b) ; /* This is matric potential of next layer */
 			dPsim = psim1 - psim2;
 			/* The substraction is from the layer j - (j+1). If this last term is positive then it will move downwards. If it is negative it will move upwards. */
