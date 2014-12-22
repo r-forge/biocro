@@ -566,6 +566,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 				cwsVec[i4] = soilMLS.cws[i4];
 				cwsVecSum += cwsVec[i4];
 				REAL(cwsMat)[i4 + i*soillayers] = soilMLS.cws[i4];
+				REAL(psimMat)[i4 + i*soillayers] = soilMLS.psim[i4];
 				REAL(rdMat)[i4 + i*soillayers] = soilMLS.rootDist[i4];
 			}
 

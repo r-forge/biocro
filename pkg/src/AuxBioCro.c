@@ -278,7 +278,7 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 
 	double Tair, WindSpeedTopCanopy;
 	double DdryA, LHV, SlopeFS, SWVC, SWVP;
-	double LayerRelativeHumidity, LayerWindSpeed, totalradiation;
+	double LayerWindSpeed, totalradiation;
 	double LayerConductance, DeltaPVa, PsycParam, ga;
 	double BoundaryLayerThickness, DiffCoef,LeafboundaryLayer;
 	double d, Zeta, Zetam;
@@ -295,10 +295,6 @@ struct ET_Str EvapoTrans(double Rad, double Iave, double Imax, double Airtempera
 	double EPen, TransR,EPries; 
 	double OldDeltaT, ChangeInLeafTemp;
 	double rlc; /* Long wave radiation for iterative calculation */
-	double rlc1; /* Long wave radiation first guess */
-	double f; /* cloudiness function */
-	double eprime; /* Apparent net clear sky emissivity */ 
-	double rels;
 	int Counter;
 
 	WindSpeedTopCanopy = WindSpeed;
@@ -324,11 +320,6 @@ but Thornley and Johnson use it as MJ kg-1  */
         /* Convert to kg/m3 */
 	SWVC = (DdryA * 0.622 * SWVP)/1013.25; /* This last number is atmospheric pressure in hecto pascals */
 /* SWVC is saturated water vapor concentration (or density) in kg/m3 */
-
-	/* RHprof returns relative humidity in the 0-1 range */
-	LayerRelativeHumidity = RH * 100;
-	if(LayerRelativeHumidity > 100) 
-		error("LayerRelativehumidity > 100"); 
 
 	PsycParam =(DdryA * SpecificHeat) / LHV; /* This is in kg m-3 K-1 */
 
@@ -357,29 +348,6 @@ but Thornley and Johnson use it as MJ kg-1  */
 
         /* The value below is only for leaf temperature */
 	Ja2 = (2 * Iave * 0.235 * ((1 - LeafReflectance - tau) / (1 - tau)));
-
-        /* Non iterative calculation of longwave radiation */
-	if(Imax < 1){
-		rels = 0.3;
-	}else{
-		rels = Rad / (Imax * 0.8); /* This is an empirical way of detrmining how sunny it was */
-	}
-	if(rels > 1) rels = 1;
-	if(rels < 0.3) rels = 0.3;
-
-	f = 1.35 * rels - 0.35;
-	if(f < 0.6) f = 0.6;
-
-	eprime = (0.34 - 0.14 * sqrt(ActualVaporPressure));
-
-        /* I might end up not using the expression below */
-	rlc1 = StefanBoltzmann * pow(273 + Tair, 4) * eprime * f;
-
-        /* Net radiation */
-	PhiN = Ja - rlc;
-
-        /* PhiN 2 for leaf temperature */
-	PhiN2 = Ja2 - rlc;
 
         /* AERODYNAMIC COMPONENT */
         /* This is needed to calculate canopy conductance */
@@ -431,11 +399,6 @@ but Thornley and Johnson use it as MJ kg-1  */
 	if(gvs <=0.001)
 		gvs = 0.001;
 
-        /* This is a first estimate of leaf temperature */
-	TopValue = PhiN2 * (1 / ga + 1 / gvs) - LHV * DeltaPVa;
-	BottomValue = LHV * (SlopeFS + PsycParam * (1 + ga / gvs));
-	Deltat = TopValue / BottomValue;
-
 	/* This is the original from WIMOVAC*/
 	Deltat = 0.01;
 	ChangeInLeafTemp = 10;
@@ -476,7 +439,7 @@ but Thornley and Johnson use it as MJ kg-1  */
 		Counter++;
 	}
 
-	gh = ga * 0.924;
+	gh = ga * 0.924; /* Not used at the moment */
 
         /* Net radiation */
 	PhiN = Ja - rlc;
@@ -487,7 +450,7 @@ but Thornley and Johnson use it as MJ kg-1  */
 	TransR = (SlopeFS * PhiN + (LHV * PsycParam * ga * DeltaPVa)) / (LHV * (SlopeFS + PsycParam * (1 + ga / gvs)));
 
         /* Penman will use the WIMOVAC conductance */
-	EPen = (((SlopeFS * PhiN) + LHV * PsycParam * gbclW * DeltaPVa)) / (LHV * (SlopeFS + PsycParam));
+	EPen = (((SlopeFS * PhiN) + LHV * PsycParam * ga * DeltaPVa)) / (LHV * (SlopeFS + PsycParam));
 
 	EPries = 1.26 * ((SlopeFS * PhiN) / (LHV * (SlopeFS + PsycParam)));
 
@@ -526,9 +489,9 @@ double leafboundarylayer(double windspeed, double leafwidth, double AirTemp,
 	double gsv = stomcond * 1e-3 / 41.4; /* Converts from mmol/m2/s to m/s */
 	double Tak = AirTemp + 273.15; /* Converts from C to K */
 	double Tlk = leaftemp + 273.15;  /* Converts from C to K */
-	double ea = vappress;
-	double ws = windspeed;
-	double lw = leafwidth;
+	double ea = vappress * 1e2; /* From hPa to Pa */
+	double ws = windspeed; /* m s^-1 */
+	double lw = leafwidth; /* meters */
 
 	double esTl, eb;
 	double gbv_forced, gbv_free, gbv, gbh;
@@ -539,8 +502,8 @@ double leafboundarylayer(double windspeed, double leafwidth, double AirTemp,
         /* Forced convection */ 
 	gbv_forced = cf *  pow(Tak,0.56) * pow((Tak+120)*((ws/lw)/Pa),0.5);
 	gbv_free = gbv_forced;
-	eb = (gsv * esTl + gbv_free * ea)/(gsv + gbv_free); /*# Eq 35 */
-	Tvdiff = (Tlk / (1 - 0.378 * eb/Pa)) - (Tak / (1-0.378*ea/Pa)); /*# Eq 34*/
+	eb = (gsv * esTl + gbv_free * ea)/(gsv + gbv_free); /* Eq 35 */
+	Tvdiff = (Tlk / (1 - 0.378 * eb/Pa)) - (Tak / (1-0.378*ea/Pa)); /* Eq 34*/
 
 	if(Tvdiff < 0) Tvdiff = -Tvdiff;
 
@@ -1112,6 +1075,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 			/* For this section see Campbell and Norman "Environmental BioPhysics" Chapter 9*/
 			/* First compute the matric potential */
 			psim1 = soTexS.air_entry * pow((cws[j]/theta_s),-soTexS.b) ; /* This is matric potential of current layer */
+			tmp.psim[j];
 			psim2 = soTexS.air_entry * pow((cws[j+1]/theta_s),-soTexS.b) ; /* This is matric potential of next layer */
 			dPsim = psim1 - psim2;
 			/* The substraction is from the layer j - (j+1). If this last term is positive then it will move downwards. If it is negative it will move upwards. */

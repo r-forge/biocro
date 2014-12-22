@@ -74,6 +74,7 @@ struct soilML_str {
   double rcoefPhoto;
   double rcoefSpleaf;
   double cws[MAXLAY];
+  double psim[MAXLAY];
   double drainage;
   double Nleach;
   double SoilEvapo;

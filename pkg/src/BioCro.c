@@ -371,6 +371,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 				cwsVec[i3] = soilMLS.cws[i3];
 				cwsVecSum += cwsVec[i3];
 				REAL(cwsMat)[i3 + i*soillayers] = soilMLS.cws[i3];
+				REAL(psimMat)[i3 + i*soillayers] = soilMLS.psim[i3];
 				REAL(rdMat)[i3 + i*soillayers] = soilMLS.rootDist[i3];
 			}
 
