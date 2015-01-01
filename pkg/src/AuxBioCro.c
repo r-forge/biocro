@@ -420,7 +420,7 @@ but Thornley and Johnson use it as MJ kg-1  */
 
                 ga = leafboundarylayer(LayerWindSpeed, leafw, 
 				       Airtemperature, Deltat,
-                                       LayerConductance, ActualVaporPressure);
+                                       gvs, ActualVaporPressure);
 /* This returns leaf-level boundary layer conductance */ 
 /* In WIMOVAC this was added to the canopy conductance */
 		/* ga = (ga * gbcW)/(ga + gbcW);  */
@@ -430,8 +430,8 @@ but Thornley and Johnson use it as MJ kg-1  */
 		TopValue = PhiN2 * (1 / ga + 1 / gvs) - LHV * DeltaPVa;
 		BottomValue = LHV * (SlopeFS + PsycParam * (1 + ga / gvs));
 		Deltat = TopValue / BottomValue; /* This equation is from Thornley and Johnson pg. 418 */
-		if(Deltat > 7)	Deltat = 7;
-		if(Deltat < -7)	Deltat = -7;
+		if(Deltat > 10)	Deltat = 10;
+		if(Deltat < -10)	Deltat = -10;
 
 		ChangeInLeafTemp = OldDeltaT - Deltat;
 		if(ChangeInLeafTemp <0)
@@ -486,7 +486,7 @@ double leafboundarylayer(double windspeed, double leafwidth, double AirTemp,
 	const double cf = 1.6361e-3;
 
 	double leaftemp = AirTemp + deltat;
-	double gsv = stomcond * 1e-3 / 41.4; /* Converts from mmol/m2/s to m/s */
+	double gsv = stomcond; /* input is in m/s */
 	double Tak = AirTemp + 273.15; /* Converts from C to K */
 	double Tlk = leaftemp + 273.15;  /* Converts from C to K */
 	double ea = vappress * 1e2; /* From hPa to Pa */

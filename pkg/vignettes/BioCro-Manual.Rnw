@@ -86,7 +86,7 @@ based on the c3 photosynthesis model described in WIMOVAC. Notice that
 the parameters and interpretation are different from the
 \code{c4photo} function. 
 
-<<c4photo-aq-aci, warning=FALSE, fig.height=3.8, tidy=TRUE>>=
+<<c4photo-aq-aci, warning=FALSE, fig.height=3.8, tidy=TRUE, echo=FALSE>>=
 pr <- seq(0,2000)
 temp <- rep(25, length(pr))
 rh <- rep(0.7, length(pr))
@@ -102,11 +102,13 @@ plot(res$Ci, res$Assim, type = 'l', ylab = "CO2 uptake", xlab = "Ci")
 
 % |
 
+\subsubsection{Effect of stress on photosynthesis}
+
 Besides some of the typical parameters for both functions there is the
 option of including stress. The argument is \code{stress}. The stress
 can be applied to stomatal conductance (default) or $V_{max}$. 
 
-<<c4photo-stress-gs, fig.height=4.5, tidy=TRUE, include=FALSE>>=
+<<c4photo-stress-gs, fig.height=4.5, tidy=TRUE, echo=FALSE>>=
 sws <- seq(0,1,0.01)
 
 assim <- numeric(length(sws))
@@ -125,7 +127,7 @@ xyplot(assim + cond ~ sws, type='l', main="stress on gs")
 
 % | 
 
-<<c4photo-stress-vmax, fig.height=4.5, include=FALSE>>=
+<<c4photo-stress-vmax, fig.height=4.5, echo=FALSE>>=
 sws <- seq(0,1,0.01)
 
 assim <- numeric(length(sws))
@@ -141,6 +143,156 @@ for(i in 1:length(sws)){
 xyplot(assim + cond ~ sws, type='l', main="stress on vmax")
 
 @ 
+
+\subsection{Estimating photosynthesis parameters}
+
+The \code{c4photo} function has three main parameters that can be adjusted for
+different species or environments. These three parameters are $V_{max}$
+(light-saturated rate of photosynthesis which for C$_4$ plants is equivalent to
+the maximum rate of carboxylation, $\mu \; mol \; m^{-2} \; s^{-1}$), $alpha$
+(quantum efficiency, $mol \; mol^-1$) and dark respiration (net CO$_2$ exchange
+at zero light, $\mu \; mol \; m^{-2} \; s^{-1}$). 
+
+Options for adjusting the parameters for simulation of biomass crops:
+
+\begin{itemize}
+  \item Use values from the literature
+    \item Optimize parameter values based on observed data
+      \end{itemize}
+      
+      Using values from the literature can work well most of the time, but the source
+      of the values should be carefully assessed. For example, an important
+      consideration is whether the values were reported at the same reference
+      temperature. In BioCro these values are assumed to be at 25 $C$. Another
+      consideration is that different models might have different parameterization of
+      photosynthesis and what might work well in a different model might not work well
+      in BioCro. 
+      
+      For optimization of these parameters based on observed data BioCro offers the
+      ability to optimize these three parameters using different techniques. The first
+      one is based on the \code{optim} function in R which will minimize the residual
+      sum of squares (obs - sim). The first column has the curve ID, the second one
+      the treatment which in this case is either Miscanthus (mxg) or switchgrass
+      (swg). The third column is CO$_2$ assimilation, then photosynthetic active
+      radiation in (PARin), temperature (Tleaf) and relative humidity (RH\_S).
+      
+<<aq-data>>=
+data(aq)
+head(aq)
+plotAQ(aq, pch="p")
+@ 
+
+We could find out what the `best' parameters are for the first curve.
+
+<<Opc4photo-curve1>>=
+curve1 <- subset(aq, ID == 1)
+op <- Opc4photo(curve1[,3:6])
+op
+@ 
+
+By default only $V_{max}$ and $alpha$ are optimized. $Rd$ can also be optimized
+by setting the optimization level to 2.
+
+<<Opc4photo-curve1-op2>>=
+op <- Opc4photo(curve1[,3:6], op.level=2)
+op
+@ 
+
+
+There is also a plotting function for the \code{op} object which is of class
+``Opc4photo''. This allows for examination of residuals and also comparing
+observed and simulated.
+
+<<Opc4photo-plot>>=
+plot(op)
+plot(op, plot.kind="OandF", type="o")
+@ 
+
+The previous example was for optimizing and analyzing a single curve. If we want
+to optimize several curves in parallel then the \code{mOpc4photo} function is
+available. For the following example we need to also supply a column with
+ambient CO$_2$ levels (in this case 390 ppm).
+
+<<mOpc4photo>>=
+aq2 <- data.frame(aq[,-2], Catm=390)
+mop <- mOpc4photo(aq2, verbose=TRUE)
+mop
+@ 
+
+As with the previous example there are plotting methods. In this case the
+plotting functions are useful for visualizing the mean point estimate and the
+confidence intervals. 
+
+<<mOpc4photo-plot>>=
+plot(mop)
+plot(mop, parm="alpha")
+@ 
+
+As with the \code{Opc4photo} the optimization level can be changed to also
+optimize $Rd$.
+
+<<mOpc4photo-op2>>=
+mop2 <- mOpc4photo(aq2, verbose=TRUE, op.level=2)
+mop2
+@ 
+
+Yet another approach to optimizing photosynthetic parameters is to use a
+Bayesian approach where a prior distribution for the parameters can be
+specified. This approach might work better when there is limited data or when
+the previous approaches fail. The results are very similar to the example using
+\code{Opc4photo} for a single curve. In particular because in this case very
+diffuse priors were specified. The scale can be increased to reduce the
+acceptance rate. The function can also be run more than once to check the
+results.
+
+<<MCMCc4photo>>=
+op.mc1 <- MCMCc4photo(curve1[,3:6], scale=1.5)
+op.mc2 <- MCMCc4photo(curve1[,3:6], scale=1.5)
+op.mc1
+plot(op.mc1, op.mc2)
+plot(op.mc1, op.mc2, plot.kind="density", burnin=1e4)
+plot(op.mc1, plot.kind="density", prior=TRUE, burnin=1e4)
+@ 
+
+\code{prior=TRUE} plots the prior along side the results from the MCMC run.  In
+this case the prior is very diffuse, but tighter priors would affect the
+results. If more stringent priors are set the results will tend to be closer to
+the prior distributions (the prior distributions are the black lines in the
+graph). In many cases a Bayesian approach is more reasonable as fitting
+individual curves in isolation can lead to values outside the range of
+reasonable results. The influence of the prior will lead the estimation closer
+to 'known' values for a species.
+
+<<MCMCc4photo-priors>>=
+op.mc1 <- MCMCc4photo(curve1[,3:6], scale=1.5, prior=c(20, 1, 0.045, 0.0025))
+plot(op.mc1, plot.kind = "density", prior = TRUE, burnin=1e3, lwd=2)
+@ 
+
+TODO: I haven't implemented the possibility of fitting Rd using the Bayesian
+approach. This is something I'd like to implement soon. Two other additions
+would be including the correlation between parameters and the estimation of the
+residual variance. These last features are low priority as the function as it is
+should work for most purposes.
+
+To be complete there is even the option of using \code{nls}.
+
+<<nls-photo>>=
+c4photo2 <- function(A,T,RH, vmax=39, alpha=0.04){
+      
+      res <- c4photo(A,T,RH, vmax=vmax, alpha=alpha)$Assim
+        res
+      }
+fit <- nls(A ~ c4photo2(PARi, Tleaf, RH_S, vmax, alpha),
+                       start=list(vmax=39, alpha=0.04), data = curve1)
+@ 
+
+TODO: run an example using \code{nlme}. Until I get this to work, the best
+option is to do a linear mixed model analysis using \code{lme}.
+
+This concludes the section about estimating photosynthesis parameters in the
+context of simulating biomass crops. Although this is the first step, and it is
+important, there are many other aspects that influence the simulation of biomass,
+transpiration, etc. 
 
 The previous functions are relevant for leaf-level
 photosynthesis. Scaling up to the canopy level is not trivial since it
