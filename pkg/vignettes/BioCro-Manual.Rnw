@@ -8,6 +8,7 @@
 \usepackage{bm}
 \usepackage[american]{babel}
 \usepackage[authoryear,round]{natbib}
+\usepackage{hyperref}
 \bibliographystyle{plainnat}
   
 \title{Simulation and Parameter Estimation for Biomass Crops}
@@ -49,7 +50,7 @@ library(BioCro, quietly=TRUE)
 The package \package{BioCro} started as a way to continue work on the
 ideas developed in the WIMOVAC model. WIMOVAC was developed by Stephen
 Long and Steve Humphries
-(http://www.life.illinois.edu/plantbio/wimovac/) and there have been
+\url{http://www.life.illinois.edu/plantbio/wimovac/} and there have been
 several publications using this model. I have used the model for some
 initial efforts at modeling \emph{Miscanthus} $\times$ \emph{giganteus}.
 
@@ -967,8 +968,8 @@ showSoilType(10)
 This shows a range of soils from clay (10) to sand (0) and an
 intermediate sandy clay loam.
 
-Another important information is the soil depth. Typically crops have
-access to anywhere from 1 to 2.5 m of soil through their soil
+Another important property is the soil depth. Typically crops have
+access to anywhere from 1 to 2.5 m of soil through their root
 exploration. If the number of layers of soil is equal to 1 then the
 soil is treated as a simple bucket and the crop roots have access to
 the entire profile. If the number of layers is larger than one the
@@ -992,6 +993,37 @@ layer down and so on. All the layers started at the same level on day
 argument \code{iWatCont}. By default water moves from one layer to the
 next driven by soil water potential \code{hydrDist = TRUE} this can be
 turned off but it will likely not produce reasonable results.
+
+\subsubsection{Soil Carbon: Century model}
+
+The modeling of soil carbon is based on the century model. In BioCro
+this can be simulated using the \code{Century} function (see
+\code{?Century}). Some important first considerations for a given soil
+can be explored using the \code{somc} function which can be used to
+determine the amount of SOM in microbial, slow and passive pools.  See
+the Century documentation
+\url{https://www.nrel.colostate.edu/projects/century/MANUAL/html_manual/man96.html}
+
+<<somc>>=
+somc()
+@ 
+
+The main components of the soil organic matter are pools 6 (microbe),
+7 (slow) and 8 (passive).
+
+When conducting a simulation using \code{BioGro} the properties can be
+supplied using \code{centuryParms}.
+
+<<BioGro-Century>>=
+centP <- centuryParms(om = 2.5, pp=c(0.02, 0.18, 0.8))
+res <- BioGro(cmi05, centuryControl = centP)
+names(res)
+@ 
+
+The vector \code{RespVec} represents the soil microbial
+respiration. \code{SCpools} represents the soil carbon pools (some are
+actually surface carbon pools such as litter. Similarly \code{SNpools}
+are the corresponding nitrogen pools.
 
 %\subsection{Testing against Miscanthus data}
 
