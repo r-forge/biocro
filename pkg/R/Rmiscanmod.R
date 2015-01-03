@@ -63,7 +63,7 @@ Rmiscanmod <- function(data,RUE=2.4,LER=0.01,Tb=10,k=0.67,
   ## At this point the vairables are selected by their position (i.e. column)
   ## in the data.frame or matrix
 
-  if(!inherits(data,"data.frame") || !inherits(data,"matrix"))
+  if(!inherits(data,"data.frame") && !inherits(data,"matrix"))
     stop("data should be a data.frame or matrix")
 
   if(dim(data)[2] != 9)

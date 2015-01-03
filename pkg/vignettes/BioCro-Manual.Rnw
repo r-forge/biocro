@@ -31,7 +31,12 @@ engine='R',dev='pdf'
   growth. The interest in developing this model is to be able to
   efficiently perform simulations of photosynthesis and crop
   growth. Since often this requires running a model multiple times, R
-  provides a nice environment for optimization and plotting.
+  provides a nice environment for optimization and plotting. The
+  package also has a soil carbon and nitrogen model based on the
+  Century model and a simple multilayered water soil model. As with
+  many crop models the objective is to improve our understanding of
+  productivity and carbon, water and nitrogen cycles in
+  agro-ecosystems.
 \end{abstract}
 
 <<preliminaries,echo=FALSE>>=
@@ -54,7 +59,7 @@ This vignette was created using BioCro package version
 sessionInfo()$otherPkgs$BioCro$Version
 @ 
 
-\section{Leaf-level Photosynthesis}
+\section{Carbon: Leaf-level Photosynthesis}
  
 There is a large range in the complexity of models that have been used
 to simulate photosynthesis. \package{BioCro} offers functions
@@ -156,30 +161,31 @@ at zero light, $\mu \; mol \; m^{-2} \; s^{-1}$).
 Options for adjusting the parameters for simulation of biomass crops:
 
 \begin{itemize}
-  \item Use values from the literature
-    \item Optimize parameter values based on observed data
-      \end{itemize}
+\item Use values from the literature
+\item Optimize parameter values based on observed data
+\end{itemize}
       
-      Using values from the literature can work well most of the time, but the source
-      of the values should be carefully assessed. For example, an important
-      consideration is whether the values were reported at the same reference
-      temperature. In BioCro these values are assumed to be at 25 $C$. Another
-      consideration is that different models might have different parameterization of
-      photosynthesis and what might work well in a different model might not work well
-      in BioCro. 
+Using values from the literature can work well most of the time, but
+the source of the values should be carefully assessed. For example, an
+important consideration is whether the values were reported at the
+same reference temperature. In BioCro these values are assumed to be
+at 25 $C$. Another consideration is that different models might have
+different parameterization of photosynthesis and what might work well
+in a different model might not work well in BioCro.
       
-      For optimization of these parameters based on observed data BioCro offers the
-      ability to optimize these three parameters using different techniques. The first
-      one is based on the \code{optim} function in R which will minimize the residual
-      sum of squares (obs - sim). The first column has the curve ID, the second one
-      the treatment which in this case is either Miscanthus (mxg) or switchgrass
-      (swg). The third column is CO$_2$ assimilation, then photosynthetic active
-      radiation in (PARin), temperature (Tleaf) and relative humidity (RH\_S).
+For optimization of these parameters based on observed data BioCro
+offers the ability to optimize these three parameters using different
+techniques. The first one is based on the \code{optim} function in R
+which will minimize the residual sum of squares (obs - sim). The first
+column has the curve ID, the second one the treatment which in this
+case is either Miscanthus (mxg) or switchgrass (swg). The third column
+is CO$_2$ assimilation, then photosynthetic active radiation in
+(PARin), temperature (Tleaf) and relative humidity (RH\_S).
       
-<<aq-data>>=
+<<aq-data, fig.height=3.8>>=
 data(aq)
 head(aq)
-plotAQ(aq, pch="p")
+plotAQ(aq, type="p")
 @ 
 
 We could find out what the `best' parameters are for the first curve.
@@ -203,7 +209,7 @@ There is also a plotting function for the \code{op} object which is of class
 ``Opc4photo''. This allows for examination of residuals and also comparing
 observed and simulated.
 
-<<Opc4photo-plot>>=
+<<Opc4photo-plot, fig.height=3.5>>=
 plot(op)
 plot(op, plot.kind="OandF", type="o")
 @ 
@@ -223,7 +229,7 @@ As with the previous example there are plotting methods. In this case the
 plotting functions are useful for visualizing the mean point estimate and the
 confidence intervals. 
 
-<<mOpc4photo-plot>>=
+<<mOpc4photo-plot, fig.height=3.5>>=
 plot(mop)
 plot(mop, parm="alpha")
 @ 
@@ -231,7 +237,7 @@ plot(mop, parm="alpha")
 As with the \code{Opc4photo} the optimization level can be changed to also
 optimize $Rd$.
 
-<<mOpc4photo-op2>>=
+<<mOpc4photo-op2, fig.height=3.5>>=
 mop2 <- mOpc4photo(aq2, verbose=TRUE, op.level=2)
 mop2
 @ 
@@ -245,7 +251,7 @@ diffuse priors were specified. The scale can be increased to reduce the
 acceptance rate. The function can also be run more than once to check the
 results.
 
-<<MCMCc4photo>>=
+<<MCMCc4photo, fig.height=3.5>>=
 op.mc1 <- MCMCc4photo(curve1[,3:6], scale=1.5)
 op.mc2 <- MCMCc4photo(curve1[,3:6], scale=1.5)
 op.mc1
@@ -263,7 +269,7 @@ individual curves in isolation can lead to values outside the range of
 reasonable results. The influence of the prior will lead the estimation closer
 to 'known' values for a species.
 
-<<MCMCc4photo-priors>>=
+<<MCMCc4photo-priors, fig.height=3.8>>=
 op.mc1 <- MCMCc4photo(curve1[,3:6], scale=1.5, prior=c(20, 1, 0.045, 0.0025))
 plot(op.mc1, plot.kind = "density", prior = TRUE, burnin=1e3, lwd=2)
 @ 
@@ -278,12 +284,12 @@ To be complete there is even the option of using \code{nls}.
 
 <<nls-photo>>=
 c4photo2 <- function(A,T,RH, vmax=39, alpha=0.04){
-      
-      res <- c4photo(A,T,RH, vmax=vmax, alpha=alpha)$Assim
-        res
-      }
+    res <- c4photo(A,T,RH, vmax=vmax, alpha=alpha)$Assim
+    res
+}
 fit <- nls(A ~ c4photo2(PARi, Tleaf, RH_S, vmax, alpha),
-                       start=list(vmax=39, alpha=0.04), data = curve1)
+           start=list(vmax=39, alpha=0.04), 
+           data = curve1)
 @ 
 
 TODO: run an example using \code{nlme}. Until I get this to work, the best
@@ -307,7 +313,7 @@ TODO
   \item Discuss meaning and relationship among parameters
 \end{itemize}
 
-\section{Canopy Photosynthesis}
+\section{Carbon and Water: Canopy Photosynthesis and Transpiration}
 
 The function \code{CanA} integrates the previous functions
 to simulate canopy CO$_2$ assimilation for a complete canopy. This
@@ -319,7 +325,6 @@ inputs should all be of length 1. As with other canopy models the
 canopy is discretized in layers and each layer has unique conditions
 in terms of light levels, leaf temperature, wind and relative
 humidity. See \code{?CanA} for details.
-
 
 <<CanA-onetime>>=
 nlay <- 8
@@ -467,10 +472,10 @@ input to this function so it is not really an adjustable parameter.
   match reasonable height for a crop.
 \end{itemize}
 
-\subsection{Calculation of Transpiration}
+\subsection{Water: Calculation of Canopy Transpiration}
 
 \code{CanA} simulates transpiration using Priestly (driven by solar
-radiation and temperature), Penman (adjusted for the aerodynamic
+radiation and temperature), Penman-Potential (adjusted for the aerodynamic
 component) and Penman-Monteith (adjusted for the aerodynamic plus
 stomatal component).
 
@@ -514,7 +519,7 @@ names(tmp2) <- c("CanopyAssim","CanopyTrans",
 
 xyplot(CanopyTrans + TranPen + TranEpries ~ 1:24, data = tmp2,
        type='o',
-       key= simpleKey(text=c("Penman-Monteith","Penman","Priestly"),
+       key= simpleKey(text=c("Penman-Monteith","Penman-Potential","Priestly"),
            lines=TRUE, points=FALSE),
            xlab='hour',
            ylab="Transpiration (mm/h)")
@@ -525,7 +530,7 @@ apply(tmp2[,2:4], 2, sum)
 At the moment Penman over estimates transpiration, Priestly and
 Penman-Monteith seem to be giving reasonable answers.
 
-\subsection{Effect of Ball-Berry slope parameter}
+\subsection{Water: Effect of Ball-Berry slope parameter}
 
 The slope of the Ball-Berry model can have a significant effect on the
 results, but only for the Penman-Monteith method. The parameters for
@@ -657,7 +662,7 @@ xyplot(tmp5$CanopyTrans + tmp4$CanopyTrans + tmp3$CanopyTrans + tmp3$TranEpries 
            ylab="Transpiration (mm/h)")
 @ 
 
-\subsection{Effect of stress on diurnal transpiration}
+\subsection{Water: Effect of stress on diurnal transpiration}
 
 Another significant component that will affect transpiration during a
 day is the level of water stress the plant is experiencing.
@@ -836,7 +841,7 @@ TODO
 \item Include an example in which I see the effect of changing chi.l
 \end{itemize}
 
-\section{Biomass Crop Simulation}
+\section{Carbon and Water: Biomass Crop Simulation}
 
 When the interest is to perform a simulation for a whole growing
 season, the function \code{BioGro} can be used. This function has as
@@ -860,10 +865,10 @@ names(res)
 The last command \code{names(res)} shows the list of objects available
 for further manipulation. 
 
-\subsection{Calculation of EvapoTranspiration}
+\subsection{Water: Calculation of EvapoTranspiration}
 
-As in the CanA function transpiration can be calculated using
-Priestly, Penman or Penman-Monteith.
+As in the \code{CanA} function transpiration can be calculated using
+Priestly, Penman-Potential or Penman-Monteith.
 
 <<BioGro-ET, echo=FALSE>>=
 data(cmi05)
@@ -884,13 +889,13 @@ et.pnm.m <- cumsum(res.pnm.m$CanopyTrans
 
 xyplot(et.prs + et.pnm + et.pnm.m ~ res.prs$ThermalT, type='l',
        xlab = "Thermal time", ylab = "cummulative ET (mm)",
-       key=simpleKey(c("Priestly","Penman","Penman-Monteith"),
+       key=simpleKey(c("Priestly","Penman-Potential","Penman-Monteith"),
            lines=TRUE, points=FALSE))
 
 
 @ 
 
-For Priestly and Penman the calculation of stomatal conductance does
+For Priestly and Penman-Potential the calculation of stomatal conductance does
 not affect the simulation, but for Penman-Monteith it does.
 
 <<BioGro-ET-b1-12, echo=FALSE>>=
@@ -905,15 +910,17 @@ et.pnm.m.b1.12 <- cumsum(res.pnm.m.b1.12$CanopyTrans
 
 xyplot(et.prs + et.pnm + et.pnm.m + et.pnm.m.b1.12 ~ res.prs$ThermalT, 
        type='l', xlab = "Thermal time", ylab = "cummulative ET (mm)",
-       key=simpleKey(c("Priestly","Penman","PM b1=3",
+       key=simpleKey(c("Priestly","Penman-Potential","PM b1=3",
            "PM b1=12"), lines=TRUE, points=FALSE))
 @ 
 
-Penman-Moneith does not quite reach Priestly because there is
+Penman-Moneith does not quite reach Priestly in this case because of
 stress. It is possible to perform simulations assuming that there is
-no stress but this will likely lead to unrealistic results because the
-crop is not limited at all by availability of soil
-moisture. Transpiration in the no-stress scenario is very high.
+no stress but this will lead to results which approach
+Penman-Potential. When the no-stress option is selected the crop
+transpires freely unconstrained by soil water availability. This is
+not realistic but it is useful for testing and understanding
+transpiration processes.
 
 <<BioGro-ET-no-stress, echo=FALSE>>=
 photoP <- photoParms(b1=12)
@@ -927,13 +934,13 @@ et.pnm.m.ns <- cumsum(res.pnm.m.ns$CanopyTrans
 
 xyplot(et.prs + et.pnm + et.pnm.m.b1.12 + et.pnm.m.ns ~ res.prs$ThermalT, 
        type='l', xlab = "Thermal time", ylab = "cummulative ET (mm)",
-       key=simpleKey(c("Priestly","Penman","Penman-Monteith",
+       key=simpleKey(c("Priestly","Penman-Potential","Penman-Monteith",
            "PM no stress"), lines=TRUE, points=FALSE))
 @ 
 
 
 
-\subsection{Soil information and parameters}
+\subsection{Carbon and Water: Soil properties and parameters}
 
 Given that the model has been adequately described at the leaf and
 canopy level, when doing a simulation for the whole growing season the
@@ -1124,7 +1131,7 @@ xyplot(cET ~ doy , data = mxget.2011,
 
 \section{Maize}
 
-There are is also a maize model 
+A maize model is under development. 
 
 <<MaizeGro, tidy=TRUE>>=
 data(cmi05)
@@ -1231,54 +1238,6 @@ ans1 <- BioGro(weather05, phenoControl = dbp.ll)
 @ 
 
 
-% \section{Simulating Photosynthesis}
-% \label{sec:simphoto}
-
-% The package has only two functions at the time. The first one of interest is
-% \texttt{c3photo}. Let us see what the arguments for this function are
-
-% <<<argC3photo>>=
-% args(c3photo)
-% @ 
-
-% \texttt{Qp} is the quantum flux, \texttt{Tl} is the temperature of the
-% leaf, \texttt{RH} is the relative humidity, \texttt{vcmax} is the
-% maximum rate of carboxylation, \texttt{jmax} is the maximum rate of
-% electron transport, \texttt{Rd} is the dark respiration, \texttt{Catm}
-% is the atmospheric $CO_2$ concentration, \texttt{O2} is the
-% atmospheric oxygen concentration, \texttt{b0} is the intercept of the
-% Ball-Berry model, \texttt{b1} is the slope of the Ball-Berry model for
-% stomatal conductance and \texttt{theta} is the curvature parameter for
-% the light response. For more information see the function
-% documentation (i.e. ?c3photo).
-
-% <<C3photo,fig=TRUE,include=FALSE,echo=FALSE>>=
-% Qps <- seq(0,2000,10)
-% Tls <- seq(0,50,5)
-% rhs <- c(0.7)
-% dat1 <- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs))
-% res1 <- c3photo(dat1$Qp,dat1$Tl,dat1$RH) 
-% res2 <- c3photo(dat1$Qp,dat1$Tl,dat1$RH,vcmax=120)
-
-% plot1 <- xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,
-%                type="l",col=c("blue","green"),lwd=2,
-%                ylab=expression(paste("Assimilation (",
-%                    mu,mol," ",m^-2," ",s^-1,")")),
-%                xlab=expression(paste("Quantum flux (",
-%                    mu,mol," ",m^-2," ",s^-1,")")),
-%                key=list(text=list(c("Vcmax 100","Vcmax 120")),
-%                  lines=TRUE,col=c("blue","green"),lwd=2))
-% print(plot1)
-% @
-% \begin{figure}[htbp!]
-%   \centering
-%   \includegraphics{Intro-C3photo}
-%   \caption{Assimilation response to light levels for different
-%     temperatures (in Celsius).  Each panel is a different level of
-%     temperature. The two lines within a panel show different values
-%     for $Vcmax$.}
-%   \label{fig:C3photo}
-% \end{figure}
 
 % \section{Optimizing Parameters for a single A/Ci curve}
 
@@ -1490,20 +1449,12 @@ ans1 <- BioGro(weather05, phenoControl = dbp.ll)
 
 % \vspace*{0.5cm}
 
-% <<TvsEparms3,fig=TRUE>>=
-% plot(parms[,3],op.all2[,3],xlab="Obs (true)",ylab="Sim (est)",main="Rd")
-% abline(0,1)
-% @
-% \begin{figure}[htbp!]
-%   \centering
-%   \includegraphics{Intro-TvsEparms3}
-%   \caption{Agreement between true and estimated values for Rd}
-%   \label{fig:tvseparms3}
-% \end{figure}
 
 
 
 
-\end{document}
+
+
+
 
  
