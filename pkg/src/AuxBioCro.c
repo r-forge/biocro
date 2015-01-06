@@ -868,17 +868,15 @@ struct ws_str watstr(double precipit, double evapo, double cws, double soildepth
 	/* unit conversion for precip */
 	precipM = precipit * 1e-3; /* convert precip in mm to m*/
 
-	/*    cws is current water status */
-	/*    available water */
+	/*    cws is current water status, which is normally in the wiltp-satur range */
+	/*    aw available water (full profile) */
 
-	aw = precipM + cws;
-
-/* These equations are not correct as runoff would only occur when it exceeds
-   saturation, but from the point of view of a crop only field capacity matters */
-/* I'm not sure about what to do about this */
+	aw = precipM + cws * soildepth; /* aw in meters */
+	aw = aw / soildepth; /* available water in the wiltp-satur range */
 
 	if(aw > theta_s){ 
-		runoff = aw - theta_s; /* Here runoff is interpreted as water content exceeding saturation level */
+		runoff = (aw - theta_s) * soildepth; /* This is in meters */ 
+/* Here runoff is interpreted as water content exceeding saturation level */
 		/* Need to convert to units used in the Parton et al 1988 paper. */
 		/* The data comes in mm/hr and it needs to be in cm/month */
 		runoff2 = runoff * 0.10 * (1/24*30);
@@ -886,24 +884,25 @@ struct ws_str watstr(double precipit, double evapo, double cws, double soildepth
 		aw = theta_s;
 	}
 
-
-	/* Tipping bucket need to collect it if want to estimate runoff */ 
-	/* plant available water per hectare (pawha) */
-	pawha = (aw - wiltp) * 1e4 * soildepth;
+	/* plant available water per ha (pawha) */
+	pawha = (aw - wiltp) * soildepth * 1e4;
 	/* The density of water is 998.2 kg/m3 at 20 degrees Celsius */
-	/* or 0.9882 Mg/m3 */
+	/* or 0.9982 Mg/m3 */
 	/* pawha is plant available water (m3) per hectare */
 	/* evapo is demanded water (Mg) per hectare */
 
-	Newpawha = pawha - evapo / 0.9882; /* New version 04-27-2009 */
+	Newpawha = pawha - evapo / 0.9982; 
 
 	/*  Here both are in m3 of water per ha-1 so this */
 	/*  subtraction should be correct */
 	/* go back to original units of water in the profile */
 
-	npaw = Newpawha * 1e-4 * (1/soildepth); /* New 04-27-2009 */
+	npaw = Newpawha * 1e-4 * (1/soildepth); 
 
-	if(npaw < 0) npaw = 0.0;
+/* If demand exceeds supply the crop is getting close to wilting point 
+   and transpiration will be over estimated. In this one layer model though
+the crop is practically dead */
+	if(npaw < 0){ npaw = 0.0; }
 
 	naw = npaw + wiltp;
 
@@ -917,9 +916,9 @@ struct ws_str watstr(double precipit, double evapo, double cws, double soildepth
 	/* This is drainage */
 	if(naw > fieldc){
 	  K_psim = soTexS.Ks * pow((soTexS.air_entry/tmp.psim),2+3/soTexS.b); /* This is hydraulic conductivity */
-	  J_w = -K_psim * (-tmp.psim/(soildepth*0.25)) - g * K_psim ; /*  Campbell, pg 129 do not ignore the graviational effect. I multiply soil depth by 0.5 to calculate the average depth*/
-	  drainage = J_w * 3600 * 0.9882 * 1e-3; /* This is flow in m3 / (m^2 * hr). */
-	  naw = naw + drainage;
+	  J_w = -K_psim * (-tmp.psim/(soildepth*0.5)) - g * K_psim ; /*  Campbell, pg 129 do not ignore the graviational effect. I multiply soil depth by 0.5 to calculate the average depth*/
+	  drainage = J_w * 3600 * 0.9982 * 1e-3; /* This is flow in m3 / (m^2 * hr). */
+	  naw = naw + drainage / soildepth;
 	}
 
 	/* three different type of equations for modeling the effect of water stress on vmax and leaf area expansion. 
@@ -968,9 +967,9 @@ struct ws_str watstr(double precipit, double evapo, double cws, double soildepth
 	tmp.rcoefPhoto = wsPhoto;
 	tmp.rcoefSpleaf = wsSpleaf;
 	tmp.awc = naw;
-	tmp.runoff = runoff;
+	tmp.runoff = runoff * 1e3; /* convert from m to mm */
 	tmp.Nleach = Nleach;
-	tmp.drainage = drainage;
+	tmp.drainage = -drainage * 1e3; /* convert from m to mm */
 	return(tmp);
 }
 
@@ -991,7 +990,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
    is available water content as a fraction of the soil section being investigated.
    paw is plant available water aw - wiltp */
 	double aw, paw, awc, awc2, Newpawha, raw, cw;
-	double drainage = 0.0;
+	double drainage = 0.0, runoff = 0.0;
 	double wsPhoto = 0.0, wsSpleaf = 0.0, phi10;
 	double wsPhotoCol = 0.0, wsSpleafCol = 0.0;
 	double slp = 0.0, intcpt = 0.0, theta = 0.0; 
@@ -1053,8 +1052,15 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 
 	    if(diffw < 0){
 	      /* This means that precipitation exceeded the capacity of the first layer */
+              /* This is considered runoff */
 	      /* Save this amount of water for the next layer */
-	      oldWaterIn = -diffw;
+		    if(i == 0){
+			    runoff = -diffw;
+			    cws[i] = theta_s;
+			    oldWaterIn = 0.0;
+		    }else{
+			    oldWaterIn = -diffw;
+		    }
 	    }else{
 	      oldWaterIn = 0.0;
 	    }
@@ -1085,26 +1091,17 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 			/* This last result should be in kg/(m2 * s)*/
 			 J_w *= 3600 * 0.9882 * 1e-3 ; /* This is flow in m3 / (m^2 * hr). */
 			/* Rprintf("J_w %.10f \n",J_w);  */
-			if(j == (layers-1) && J_w < 0){
-					/* cws[i] = cws[i] + J_w /
-					 * layerDepth; Although this
-					 * should be done it drains
-					 * the last layer too much.*/
-					drainage += J_w;
+			if(j == (layers-1)){
+				cws[j] = cws[j] + J_w * layerDepth;
+				drainage = J_w;
 			}else{
-			  if(j < (layers -1)){
-			    cws[j] = cws[j] +  J_w / layerDepth;
-			    cws[j + 1] =  cws[j+1] -  J_w / layerDepth;
-			  }else{
-			    cws[j] = cws[j] +  J_w / layerDepth;
-			  }
+			    cws[j] = cws[j] +  J_w * layerDepth;
+			    cws[j+1] =  cws[j+1] -  J_w * layerDepth;
 			}
 		}
 
-		 if(cws[j] > theta_s) cws[j] = theta_s; 
-		/* if(cws[i+1] > fieldc) cws[i+1] = fieldc; */
-		 if(cws[j] < wiltp) cws[j] = wiltp; 
-		/* if(cws[i+1] < wiltp) cws[i+1] = wiltp;  */
+/*		 if(cws[j] > theta_s) cws[j] = theta_s; */
+/*		 if(cws[j] < wiltp) cws[j] = wiltp; */
 
 		aw = cws[j] * layerDepth;
 /* Available water (for this layer) is the current water status times the layer depth */
@@ -1202,6 +1199,7 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 /* returning the structure */
 	tmp.rcoefPhoto = (wsPhotoCol/layers);
 	tmp.drainage = drainage;
+	tmp.runoff = runoff;
 	tmp.Nleach = Nleach;
 	tmp.rcoefSpleaf = (wsSpleafCol/layers);
 	tmp.SoilEvapo = Sevap;

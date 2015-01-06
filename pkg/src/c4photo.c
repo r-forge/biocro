@@ -442,7 +442,7 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 /* In the previous expression we can take  the log and have instead the 
    log metropolis ratio and have a simpler calculation. We then need to compare this to
    the log of a uniform. */
-		lmr = -RSS + oldRSS + lratio;
+		lmr = -0.5*RSS + 0.5*oldRSS + lratio;
 
 		U = runif(0,1);
 		if(lmr > log(U)){

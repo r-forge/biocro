@@ -352,7 +352,12 @@ when it was applied.
 
   \item{SNpools}{Vector of length 9 with soil nitrogen pools at the end of the simulation. The 9 nitrogen pools are described in the \code{centuryControl} above.}		
 
-  \item{LeafPsimVec}{Leaf water potential (kPa). It will be zero unless the simulation os water stress is \code{"lwp"}} 
+  \item{LeafPsimVec}{Leaf water potential (kPa). It will be zero unless
+    the simulation os water stress is \code{"lwp"}} 
+
+  \item{Drainage}{Drainage below the soil depth (mm)}
+
+  \item{Runoff}{Runoff or water exceeding the storage capacity of the soil (mm)}
 
 }    
 

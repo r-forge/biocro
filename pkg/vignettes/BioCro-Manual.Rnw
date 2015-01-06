@@ -16,6 +16,8 @@
   Iowa State University}
 \begin{document}
 
+
+
 <<include=FALSE>>=
 library(knitr)
 opts_chunk$set(include=TRUE,
@@ -27,6 +29,7 @@ engine='R',dev='pdf'
 \newcommand{\code}[1]{\texttt{\small{#1}}}
 \newcommand{\package}[1]{\textsf{\small{#1}}}
 \maketitle
+
 \begin{abstract}
   Simulation and parameter estimation of photosynthesis and crop
   growth. The interest in developing this model is to be able to
@@ -39,6 +42,8 @@ engine='R',dev='pdf'
   productivity and carbon, water and nitrogen cycles in
   agro-ecosystems.
 \end{abstract}
+
+\tableofcontents
 
 <<preliminaries,echo=FALSE>>=
 options(width=68)
@@ -256,7 +261,7 @@ results.
 op.mc1 <- MCMCc4photo(curve1[,3:6], scale=1.5)
 op.mc2 <- MCMCc4photo(curve1[,3:6], scale=1.5)
 op.mc1
-plot(op.mc1, op.mc2)
+## plot(op.mc1, op.mc2) try this at home
 plot(op.mc1, op.mc2, plot.kind="density", burnin=1e4)
 plot(op.mc1, plot.kind="density", prior=TRUE, burnin=1e4)
 @ 
@@ -939,7 +944,50 @@ xyplot(et.prs + et.pnm + et.pnm.m.b1.12 + et.pnm.m.ns ~ res.prs$ThermalT,
            "PM no stress"), lines=TRUE, points=FALSE))
 @ 
 
+\subsection{Water: Balance for a growing season}
 
+The example below shows a water balance which consists of taking into
+account precipitation, evapotranspiration, drainage, runoff and change
+in water storage.
+
+\[ P - (ET + RO + DR + \Delta \Theta) = 0 \]
+
+where 
+
+$P$ is precipitation (mm)
+$ET$ is evapotranspiration (mm)
+$RO$ is runoff (mm)
+$DR$ is drainage (mm)
+$\Delta \Theta$ is change in soil water storage.
+
+<<water-balance>>=
+## Simple water budget
+## P - ET + RO + DR + DeltaTheta = 0
+data(cmi05)
+day1 <- 100
+dayn <- 270
+cmi05.s <- subset(cmi05, doy > 99 & doy < 271)
+P <- sum(cmi05.s$precip) ## in mm
+iwc <- 0.29
+soildepth <- 2
+soilP <- soilParms(iWatCont=iwc, soilDepth=soildepth, soilLayers=1)
+res <- BioGro(cmi05, day1=100, dayn=270, soilControl = soilP)
+et <- res$CanopyTrans + res$SoilEvaporation
+ET <- sum(et) * (1/0.9982) *0.1 
+## in mm, 0.9982 accounts for density of water
+RO <- sum(res$Runoff) ## in mm
+DR <- sum(res$Drainage) ## in mm 
+iTheta <- iwc * soildepth 
+fswc <- res$SoilWatCont[length(res$SoilWatCont)]
+fswc
+fTheta <- fswc * soildepth 
+DeltaTheta <- (fTheta - iTheta) * 1e3 ## from m to mm
+cbind(P, ET, DeltaTheta, RO, DR)
+P - (ET + DeltaTheta + RO + DR)
+@ 
+
+In this example there is no runoff and little drainage. There is a
+small numerical error, but the result is extremely close to zero.
 
 \subsection{Carbon and Water: Soil properties and parameters}
 

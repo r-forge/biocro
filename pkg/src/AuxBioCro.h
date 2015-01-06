@@ -76,6 +76,7 @@ struct soilML_str {
   double cws[MAXLAY];
   double psim[MAXLAY];
   double drainage;
+  double runoff;
   double Nleach;
   double SoilEvapo;
   double rootDist[MAXLAY];

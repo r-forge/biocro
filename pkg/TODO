@@ -1,34 +1,41 @@
 ########################################################################
 #
-# Updated 12-20-2014
+# Updated 1-5-2015
 #
 #
 ########################################################################
 
 Immediate priorities
 
- o Keep working on the testing of EvapoTranspiration. It seems now
-   Priestly works well. Penman depends on the bulk conductance so it
-   is affected by 'ga' in the model. Penman-Monteith is affected by
-   both 'ga' and 'gc' or stomatal conductance. PM and Priestly seem to
-   be working ok. With no stress PM might be too high. I should
-   compare it to the EvapoTrans R function.
+ o Water: there is a small error in the water balance of 16mm. I don't
+   know where to look for this error at the moment.
+
+ o After I fix the water balance problem I will work on the multiple
+   layer model
+
+ o Include Hamze's work on simulating root respiration
+
+ o Include the EvapoTrans function and example comparing to BioGro 
+   in the vignette
 
  o Need to work on soil. Allow the possibility of determining
    different soil properties for different layers.
 
  o Create a simple model of soil temperature.
 
+ o Possibly get rid of some redundancy such as SoilWatCont and cwsMat
+   in BioGro output
+
+ o Include 0.9882 in the conversion of evapotranspiration in mass to volume
+
+Nitrogen
+
+ o Determine the N demand from the crop
 
 Less immediate priorities
 
- o Test the Century model and implement the possibility of running it
-   at an hourly and yearly time step
-
- o Incorporate Century in MaizeGro
-
- o In the Century model the Min N needs to be looked at. I just
-   changed the demand to be dependent on the new Leaf and Stem.
+ o Add the possibility of computing water stress using a supply and
+   demand approach instead of the soil water content approach 
 
  o There is a known 'bug' that is not that easy to fix. It is related
    to CosZenithAngle which can cause very high photosynthesis late in

@@ -216,10 +216,11 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	SEXP SNpools;
 	SEXP LeafPsimVec;
 	SEXP Drainage;
+	SEXP Runoff;
 
 	vecsize = length(DOY);
-	PROTECT(lists = allocVector(VECSXP,30));
-	PROTECT(names = allocVector(STRSXP,30));
+	PROTECT(lists = allocVector(VECSXP,31));
+	PROTECT(names = allocVector(STRSXP,31));
 
 	PROTECT(DayofYear = allocVector(REALSXP,vecsize));
 	PROTECT(Hour = allocVector(REALSXP,vecsize));
@@ -251,6 +252,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	PROTECT(SNpools = allocVector(REALSXP,9));
 	PROTECT(LeafPsimVec = allocVector(REALSXP,vecsize));
 	PROTECT(Drainage = allocVector(REALSXP,vecsize));
+	PROTECT(Runoff = allocVector(REALSXP,vecsize));
 
 	/* Picking vmax, alpha and kparm */
 	vmax1 = REAL(VMAX)[0];
@@ -716,6 +718,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 		REAL(SoilEvaporation)[i] = soilEvap;
 		REAL(LeafPsimVec)[i] = LeafPsim;
 		REAL(Drainage)[i] = WaterS.drainage;
+		REAL(Runoff)[i] = WaterS.runoff;
 
 	}
 
@@ -771,6 +774,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	SET_VECTOR_ELT(lists,27,SNpools);
 	SET_VECTOR_ELT(lists,28,LeafPsimVec);
 	SET_VECTOR_ELT(lists,29,Drainage);
+	SET_VECTOR_ELT(lists,30,Runoff);
 
 	SET_STRING_ELT(names,0,mkChar("DayofYear"));
 	SET_STRING_ELT(names,1,mkChar("Hour"));
@@ -802,8 +806,9 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	SET_STRING_ELT(names,27,mkChar("SNpools"));
 	SET_STRING_ELT(names,28,mkChar("LeafPsimVec"));
 	SET_STRING_ELT(names,29,mkChar("Drainage"));
+	SET_STRING_ELT(names,30,mkChar("Runoff"));
 	setAttrib(lists,R_NamesSymbol,names);
-	UNPROTECT(32);
+	UNPROTECT(33);
 	return(lists);
 }
 
