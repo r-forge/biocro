@@ -1082,7 +1082,11 @@ struct soilML_str soilML(double precipit, double transp, double *cws, double soi
 			/* First compute the matric potential */
 			psim1 = soTexS.air_entry * pow((cws[j]/theta_s),-soTexS.b) ; /* This is matric potential of current layer */
 			tmp.psim[j] = psim1;
-			psim2 = soTexS.air_entry * pow((cws[j+1]/theta_s),-soTexS.b) ; /* This is matric potential of next layer */
+			if(j == (layers - 1)){
+				psim2 = soTexS.air_entry; /* Assumes below the last layer there is saturation */
+			}else{
+				psim2 = soTexS.air_entry * pow((cws[j+1]/theta_s),-soTexS.b) ; /* This is matric potential of next layer */
+			}
 			dPsim = psim1 - psim2;
 			/* The substraction is from the layer j - (j+1). If this last term is positive then it will move downwards. If it is negative it will move upwards. */
 

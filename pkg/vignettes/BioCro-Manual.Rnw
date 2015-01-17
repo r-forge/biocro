@@ -853,13 +853,14 @@ When the interest is to perform a simulation for a whole growing
 season, the function \code{BioGro} can be used. This function has as
 minimum input weather data for the whole year (365 days) at hourly
 time steps. The data can be generated using the \code{weach} function
-from daily data.
+from daily data. One of the built-in datasets is \code{cmi04} which is
+weather data for Champaign, IL for 2004.
 
 <<BioGro>>=
-data(cmi05)
-summary(cmi05)
+data(cmi04)
+summary(cmi04)
 soilP <- soilParms(wsFun='linear')
-res <- BioGro(cmi05, soilControl=soilP)
+res <- BioGro(cmi04, soilControl=soilP)
 plot(res)
 plot(res, plot.kind="SW")
 plot(res, plot.kind="ET")
@@ -877,12 +878,12 @@ As in the \code{CanA} function transpiration can be calculated using
 Priestly, Penman-Potential or Penman-Monteith.
 
 <<BioGro-ET, echo=FALSE>>=
-data(cmi05)
-res.prs <- BioGro(cmi05, 
+data(cmi04)
+res.prs <- BioGro(cmi04, 
                   canopyControl = canopyParms(eteq="Priestly"))
-res.pnm <- BioGro(cmi05, 
+res.pnm <- BioGro(cmi04, 
                   canopyControl = canopyParms(eteq="Penman"))
-res.pnm.m <- BioGro(cmi05, 
+res.pnm.m <- BioGro(cmi04, 
                     canopyControl = 
                     canopyParms(eteq="Penman-Monteith"))
 
@@ -907,7 +908,7 @@ not affect the simulation, but for Penman-Monteith it does.
 <<BioGro-ET-b1-12, echo=FALSE>>=
 photoP <- photoParms(b1=12)
 soilP <- soilParms(soilDepth=1.5)
-res.pnm.m.b1.12 <- BioGro(cmi05, 
+res.pnm.m.b1.12 <- BioGro(cmi04, 
                           photoControl = photoP,
                           soilControl = soilP)
 
@@ -931,7 +932,7 @@ transpiration processes.
 <<BioGro-ET-no-stress, echo=FALSE>>=
 photoP <- photoParms(b1=12)
 soilP <- soilParms(wsFun='none')
-res.pnm.m.ns <- BioGro(cmi05, 
+res.pnm.m.ns <- BioGro(cmi04, 
                           photoControl = photoP,
                           soilControl = soilP)
 
@@ -963,15 +964,15 @@ $\Delta \Theta$ is change in soil water storage.
 <<water-balance>>=
 ## Simple water budget
 ## P - ET + RO + DR + DeltaTheta = 0
-data(cmi05)
+data(cmi04)
 day1 <- 100
 dayn <- 270
-cmi05.s <- subset(cmi05, doy > 99 & doy < 271)
-P <- sum(cmi05.s$precip) ## in mm
+cmi04.s <- subset(cmi04, doy > 99 & doy < 271)
+P <- sum(cmi04.s$precip) ## in mm
 iwc <- 0.29
 soildepth <- 2
 soilP <- soilParms(iWatCont=iwc, soilDepth=soildepth, soilLayers=1)
-res <- BioGro(cmi05, day1=100, dayn=270, soilControl = soilP)
+res <- BioGro(cmi04, day1=100, dayn=270, soilControl = soilP)
 et <- res$CanopyTrans + res$SoilEvaporation
 ET <- sum(et) * (1/0.9982) *0.1 
 ## in mm, 0.9982 accounts for density of water
@@ -1029,7 +1030,7 @@ used in other models such as APSIM.
 
 <<soil-water>>=
 soilP <- soilParms(soilLayers = 7, soilDepth = 3, lrf=0.3e-3)
-res <- BioGro(cmi05, soilControl = soilP)
+res <- BioGro(cmi04, soilControl = soilP)
 plot(res, plot.kind="SW")
 @ 
 
@@ -1064,7 +1065,7 @@ supplied using \code{centuryParms}.
 
 <<BioGro-Century>>=
 centP <- centuryParms(om = 2.5, pp=c(0.02, 0.18, 0.8))
-res <- BioGro(cmi05, centuryControl = centP)
+res <- BioGro(cmi04, centuryControl = centP)
 names(res)
 @ 
 
@@ -1113,8 +1114,7 @@ are the corresponding nitrogen pools.
 <<Mxg-ET, echo=FALSE, eval=FALSE>>=
 data(mxget2)
 url <- "http://www.agron.iastate.edu/miguezlab/research/biocro/data/cmi-weather.csv"                           
-cmi <- read.csv(url)                                                                                           
-
+cmi <- read.csv(url)                                                                                          
 cmi09 <- weach(subset(cmi, year == 2009), lat=40)                                                              
 cmi10 <- weach(subset(cmi, year == 2010), lat=40)                                                              
 cmi11 <- weach(subset(cmi, year == 2011), lat=40)
@@ -1214,9 +1214,9 @@ xyplot(cET ~ doy , data = mxget.2011,
 A maize model is under development. 
 
 <<MaizeGro, tidy=TRUE>>=
-data(cmi05)
+data(cmi04)
 soilP <- soilParms(soilDepth=2)
-res <- MaizeGro(cmi05, plant.day=110, emerge.day=117, 
+res <- MaizeGro(cmi04, plant.day=110, emerge.day=117, 
                 harvest.day=280, soilControl=soilP)
 plot(res)
 plot(res, plot.kind="ET")

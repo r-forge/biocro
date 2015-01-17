@@ -1,5 +1,5 @@
 ##
-##  BioCro/R/Opc4photo.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2009
+##  BioCro/R/Opc4photo.R by Fernando Ezequiel Miguez  Copyright (C) 2007-2014
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -30,21 +30,26 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
   ncol.data <- ncol(data)
   
 ## I might need some kind of sanity check here
-  stopifnot(op.level == 1 || op.level == 2 || op.level == 3)
-  
+  stopifnot(op.level == 0 || op.level == 1 || op.level == 2 || op.level == 3)
+
   response <- match.arg(response)
   curve.kind <- match.arg(curve.kind)
   if(response == "Assim"){
     if(curve.kind == "Q"){
-      if(op.level == 1){
-        cfs <- c(ivmax,ialpha)
-      }else
-      if(op.level == 2){
-        cfs <- c(ivmax,ialpha,iRd)
-      }else{
-        cfs <- c(ivmax,ialpha,itheta,iRd)
-      }
+        if(op.level == 0){
+            cfs <- ivmax
+        }else
+            if(op.level == 1){
+                cfs <- c(ivmax,ialpha)
+            }else
+                if(op.level == 2){
+                    cfs <- c(ivmax,ialpha,iRd)
+                }else{
+                    cfs <- c(ivmax,ialpha,itheta,iRd)
+                }
     }else{
+        if(op.level == 0) stop("op.level 0 not implemented for A/Ci curves")
+            
       if(op.level == 1){
         cfs <- c(ivmax,ikparm)
       }else
@@ -72,20 +77,25 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
                    should be micro mol m-2 s-1\n")
 
         if(curve.kind == "Q"){
-          if(op.level == 1){
+            if(op.level == 0){
             vec1 <- c4photo(data[,2],data[,3],data[,4],
-                            coefs[1],coefs[2],ikparm,itheta,ibeta,
+                            coefs,ialpha,ikparm,itheta,ibeta,
                             iRd,Catm,ib0,ib1,istress,ws=ws)
-          }else
-          if(op.level == 2){
-            vec1 <- c4photo(data[,2],data[,3],data[,4],
-                            coefs[1],coefs[2],ikparm,itheta,ibeta,
-                            coefs[3],Catm,ib0,ib1,istress,ws=ws)
-          }else{
-            vec1 <- c4photo(data[,2],data[,3],data[,4],
-                            coefs[1],coefs[2],ikparm,coefs[3],ibeta,
-                            coefs[4],Catm,ib0,ib1,istress,ws=ws)
-          }
+            }else
+                if(op.level == 1){
+                    vec1 <- c4photo(data[,2],data[,3],data[,4],
+                                    coefs[1],coefs[2],ikparm,itheta,ibeta,
+                                    iRd,Catm,ib0,ib1,istress,ws=ws)
+                }else
+                    if(op.level == 2){
+                        vec1 <- c4photo(data[,2],data[,3],data[,4],
+                                        coefs[1],coefs[2],ikparm,itheta,ibeta,
+                                        coefs[3],Catm,ib0,ib1,istress,ws=ws)
+                    }else{
+                        vec1 <- c4photo(data[,2],data[,3],data[,4],
+                                        coefs[1],coefs[2],ikparm,coefs[3],ibeta,
+                                        coefs[4],Catm,ib0,ib1,istress,ws=ws)
+                    }
         }else{
           if(op.level == 1){
             vec1 <- c4photo(data[,2],data[,3],data[,4],
@@ -151,21 +161,44 @@ Opc4photo <- function(data,ivmax=39,ialpha=0.04,iRd=0.8,ikparm=0.7,
   def <- nrow(data)-length(coef)
   sigm <- ReSumS/def
   varcov <- sigm * iHess
-  corVA <- varcov[1,2]/sqrt(varcov[1,1]*varcov[2,2])
+  if(op.level == 0){
+      varcov <- matrix(c(varcov, 0, 0, 0), 2,2)
+      corVA <- NA
+  }else{
+      corVA <- varcov[1,2]/sqrt(varcov[1,1]*varcov[2,2])
+  }
 ## Calculating confidence intervals
   alp <- (1 - level)/2
   
   if(response == "Assim"){
     if(curve.kind == "Q"){
-      if(op.level == 1){
-        ## Vcmax
-        lcVmax <- bestParms[1] + qt(alp,def)*sqrt(varcov[1,1])
-        ucVmax <- bestParms[1] + qt(1-alp,def)*sqrt(varcov[1,1])
-        ## alpha
-        lcAlpha <- bestParms[2] + qt(alp,def)*sqrt(varcov[2,2])
-        ucAlpha <- bestParms[2] + qt(1-alp,def)*sqrt(varcov[2,2])
-        ret <- structure(list(bestVmax=bestParms[1],
-                              bestAlpha=bestParms[2],
+        if(op.level == 0){
+            ## Vcmax
+            lcVmax <- bestParms[1] + qt(alp,def)*sqrt(varcov[1,1])
+            ucVmax <- bestParms[1] + qt(1-alp,def)*sqrt(varcov[1,1])
+            ret <- structure(list(bestVmax=bestParms[1],
+                                  bestAlpha=ialpha,
+                                  ReSumS=as.numeric(ReSumS),
+                                  Convergence=conv,
+                                  VarCov=varcov,df=def,
+                                  ciVmax=c(lcVmax,ucVmax),
+                                  ciAlpha=c(NA,NA),
+                                  corVA=NA,
+                                  level=level,data=data,
+                                  xparms=xparms,ncold=ncol.data,
+                                  op.level=op.level,
+                                  response="Assim",
+                                  curve.kind=curve.kind), class = "Opc4photo")
+        }else
+        if(op.level == 1){
+            ## Vcmax
+            lcVmax <- bestParms[1] + qt(alp,def)*sqrt(varcov[1,1])
+            ucVmax <- bestParms[1] + qt(1-alp,def)*sqrt(varcov[1,1])
+            ## alpha
+            lcAlpha <- bestParms[2] + qt(alp,def)*sqrt(varcov[2,2])
+            ucAlpha <- bestParms[2] + qt(1-alp,def)*sqrt(varcov[2,2])
+            ret <- structure(list(bestVmax=bestParms[1],
+                                  bestAlpha=bestParms[2],
                               ReSumS=as.numeric(ReSumS),
                               Convergence=conv,
                               VarCov=varcov,df=def,
@@ -373,7 +406,7 @@ print.Opc4photo <- function(x,digits=2,...){
 
   if(x$response == "Assim"){
     if(x$curve.kind == "Q"){
-      if(opl == 1){
+      if(opl == 1 || opl == 0){
         mat <- matrix(nrow=2,ncol=3)
         dimnames(mat) <- list(c("Vmax","alpha"),c("best","lower","upper"))
         mat[,1] <- c(x$bestVmax,x$bestAlpha)
@@ -453,7 +486,7 @@ predict.Opc4photo <- function(object, newdata,...){
 
   if(x$response == "Assim"){
     if(x$curve.kind == "Q"){
-      if(x$op.level == 1){
+      if(x$op.level == 1 || x$op.level == 0){
         vmax <- x$bestVmax
         alpha <- x$bestAlpha
         theta <- x$xparms$theta
