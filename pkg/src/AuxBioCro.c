@@ -778,7 +778,7 @@ struct Can_Str CanAC(double LAI, int DOY, int hr, double solarR, double Temp,
 		pLeafsun = layFsun[--sp6];
 		CanHeight = layHeight[--sp8];
 		Leafsun = LAIc * pLeafsun;
-		tmpc40 = c4photoC(IDir,TempIdir,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
+		tmpc40 = c4photoC(IDir,Temp,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
 		tmp5_ET = EvapoTrans(IDir,Iave,maxIDir,Temp,rh,WS,LAIc,CanHeight,tmpc40.Gs,leafwidth,eteq);
 		TempIdir = Temp + tmp5_ET.Deltat;
 		tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
@@ -787,7 +787,7 @@ struct Can_Str CanAC(double LAI, int DOY, int hr, double solarR, double Temp,
 		IDiff = layIdiff[--sp2];
 		pLeafshade = layFshade[--sp7];
 		Leafshade = LAIc * pLeafshade;
-		tmpc420 = c4photoC(IDiff,TempIdiff,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
+		tmpc420 = c4photoC(IDiff,Temp,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);
 		tmp6_ET = EvapoTrans(IDiff,Iave,maxIDiff,Temp,rh,WS,LAIc,CanHeight,tmpc420.Gs,leafwidth,eteq);
 		TempIdiff = Temp + tmp6_ET.Deltat;
 		tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws);

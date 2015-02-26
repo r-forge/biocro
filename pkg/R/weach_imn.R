@@ -1,5 +1,5 @@
 ##
-##  BioCro/R/weach_imn.R by Fernando Ezequiel Miguez  Copyright (C) 2011-2014
+##  BioCro/R/weach_imn.R by Fernando Ezequiel Miguez  Copyright (C) 2011-2015
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,9 @@
 ##
 ##
 
-weach_imn <- function(data, ts=1, temp.units=c("Fahrenheit","Celsius"),
+weach_imn <- function(data, ts=1,
+                      rad.units=c("kilocalories"),
+                      temp.units=c("Fahrenheit","Celsius"),
                       rh.units=c("percent","fraction"),
                       ws.units=c("mph","mps"),
                       pp.units=c("in","mm"),...){
@@ -34,6 +36,7 @@ weach_imn <- function(data, ts=1, temp.units=c("Fahrenheit","Celsius"),
 
   MPHTOMPERSEC <- 0.447222222222222
 
+  rad.units <- match.arg(rad.units)
   temp.units <- match.arg(temp.units)
   rh.units <- match.arg(rh.units)
   ws.units <- match.arg(ws.units)
@@ -58,13 +61,19 @@ weach_imn <- function(data, ts=1, temp.units=c("Fahrenheit","Celsius"),
   doy <- as.numeric(format(date, "%j"))
   hour <- as.numeric(as.vector(sapply(as.character(hour),
                                       function(x) strsplit(x, ":")[[1]][1])))
+
+##  temp <- ifelse(temp == -99, NA, temp)
+  
   if(temp.units == "Fahrenheit"){
     temp <- (temp - 32) * (5/9)
   }
+
   ## the solar radiation is given in kilo calories per hour per meter squared
   ## To convert from kilocalories to joules
   ## 1 kilocalorie = 4184 joules
   ## To convert to Mega Joules
+  solarR <- ifelse(solarR == -99, NA, solarR)
+##  solarR <- solarR * 0.86
   solarR0 <- (solarR * 4184) * 1e-6 ## This is in MJ/hr/m2
   solarR <- solarR0 * 2.07 * 1e6 / 3600 ## Look for comments in the
                                         ## source code of the weach function
@@ -89,7 +98,9 @@ weach_imn <- function(data, ts=1, temp.units=c("Fahrenheit","Celsius"),
 }
 
 
-weach_imn2 <- function(data, temp.units=c("Fahrenheit","Celsius"),
+weach_imn2 <- function(data,
+                       rad.units = c("Watt/m2"),
+                       temp.units=c("Fahrenheit","Celsius"),
                       rh.units=c("percent","fraction"),
                       ws.units=c("mph","mps"),
                       pp.units=c("in","mm"),na.chr=-99){
@@ -127,6 +138,7 @@ weach_imn2 <- function(data, temp.units=c("Fahrenheit","Celsius"),
   hour <- as.numeric(as.vector(sapply(as.character(hour0),
                                       function(x) strsplit(x, ":")[[1]][1])))
 
+  rad.units <- match.arg(rad.units)
   temp.units <- match.arg(temp.units)
   rh.units <- match.arg(rh.units)
   ws.units <- match.arg(ws.units)
@@ -141,6 +153,8 @@ weach_imn2 <- function(data, temp.units=c("Fahrenheit","Celsius"),
   
   ## Transform them in to needed input
 
+  temp <- ifelse(temp == -99, NA, temp)
+  
   if(temp.units == "Fahrenheit"){
     temp <- (temp - 32) * (5/9)
   }
@@ -151,28 +165,28 @@ weach_imn2 <- function(data, temp.units=c("Fahrenheit","Celsius"),
   ## To convert from kilocalories to joules
   ## 1 kilocalorie = 4184 joules
   ## To convert to Mega Joules
-  solaR <- ifelse(solarR == -99, NA, solarR)
+  solarR <- ifelse(solarR == -99, NA, solarR)
   
   solarR <- solarR * 0.86
   solarR0 <- (solarR * 4184) * 1e-6 ## This is in MJ/hr/m2
   solarR <- solarR0 * 2.07 * 1e6 / 3600 ## Look for comments in the
                                         ## source code of the weach function
                                         ## For details
-  cat("solarR length",length(solarR),"\n")
+##  cat("solarR length",length(solarR),"\n")
   
   if(pp.units == "in"){
     precip <- precip*2.54*10
-    cat("precip length",length(precip),"\n")
+##    cat("precip length",length(precip),"\n")
   }
 
   if(rh.units == "percent"){
     RH <- RH / 100
-    cat("RH length",length(RH),"\n")
+##    cat("RH length",length(RH),"\n")
   }
   
   if(ws.units == "mph"){
     windS <- windS * MPHTOMPERSEC
-    cat("windS length",length(windS),"\n")
+##    cat("windS length",length(windS),"\n")
   }
 
   res <- data.frame(year = year, doy = doy,
@@ -215,11 +229,3 @@ weach_imn2 <- function(data, temp.units=c("Fahrenheit","Celsius"),
 
 }
 
-## example
-## setwd('/home/femiguez/Dropbox/Agron525X_2014/SpecialProject/Roby')
-
-## boo13 <- read.csv('boone13.csv')
-
-## boo132 <- weach_imn2(boo13)
-
-## boo14 <- read.csv('

@@ -184,7 +184,7 @@ layIdiff, layShade vectors. */
 	    CanHeight = layHeight[--sp8];
 	    Leafsun = LAIc * pLeafsun;
 	   
-	    tmpc40 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]); 
+	    tmpc40 = c4photoC(IDir,Temp,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]); 
 	    tmp5_ET = EvapoTrans(IDir,Iave,maxIDir,Temp,rh,WindS,LAIc,CanHeight,tmpc40.Gs,leafwidth,0); /* eteq is always zero because it reports PM */
 	    TempIdir = Temp + tmp5_ET.Deltat;
 	    tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
@@ -193,7 +193,7 @@ layIdiff, layShade vectors. */
 	    IDiff = layIdiff[--sp2];
 	    pLeafshade = layFshade[--sp7];
 	    Leafshade = LAIc * pLeafshade;
-	    tmpc420 = c4photoC(IDiff,TempIdiff,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
+	    tmpc420 = c4photoC(IDiff,Temp,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);
 	    tmp6_ET = EvapoTrans(IDiff,Iave,maxIDiff,Temp,rh,WindS,LAIc,CanHeight,tmpc420.Gs,leafwidth,0); /* eteq is always zero because it reports PM */
 	    TempIdiff = Temp + tmp6_ET.Deltat;
 	    tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0]);

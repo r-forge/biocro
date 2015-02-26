@@ -93,6 +93,7 @@ If it is a leap year it will be 8784 rows.
 }    
 
 \examples{
+\donotrun{
 ## The data typically used can be obtained from
 ## http://www.isws.illinois.edu/warm/weather/
 ## I have downloaded and cleaned up the data
@@ -101,6 +102,6 @@ url <- "http://www.agron.iastate.edu/miguezlab/research/biocro/data/cmi-weather.
 cmi <- read.csv(url)
 
 cmi05 <- weach(subset(cmi, year == 2005), lat=40)
-
+}
 }
 \keyword{datagen}

@@ -1,5 +1,5 @@
 /*
- *  BioCro/src/maizeGro.c by Fernando Ezequiel Miguez  Copyright (C) 2014
+ *  BioCro/src/maizeGro.c by Fernando Ezequiel Miguez  Copyright (C) 2015
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -47,10 +47,11 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	      SEXP SOILP2,                /* Soil parameters 2                19 */
 	      SEXP SOILDEPTHS,            /* Soil depths                      20 */
 	      SEXP CWS,                    /* Current water status             21 */
-	      SEXP SENEP,                   /* Maize senescence parameteres     22*/
-	      SEXP CENTCOEFS,              /* Century coefficients              23 */
-              SEXP CENTTIMESTEP,           /* Century timestep                   24 */
-              SEXP CENTKS                  /* Century decomp rates               25 */
+	      SEXP RESPCOEFS,              /* Respiration coefficients         22 */
+	      SEXP SENEP,                   /* Maize senescence parameteres     23 */
+	      SEXP CENTCOEFS,              /* Century coefficients              24 */
+              SEXP CENTTIMESTEP,           /* Century timestep                   25 */
+              SEXP CENTKS                  /* Century decomp rates               26 */
 	      )
 
 {
@@ -151,6 +152,17 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	double transpRes; /* Resistance to transpiration from soil to leaf */
 	double leafPotTh; /* Leaf water potential threshold */
 	double smthresh; /* soil moisture threshold */
+
+/* Variables for root respiration */
+        double Yg_canopy = REAL(RESPCOEFS)[0];
+        double Yg_root = REAL(RESPCOEFS)[1];
+	double m_root = REAL(RESPCOEFS)[2];
+	double m_canopy = REAL(RESPCOEFS)[3];
+
+	double canopyresp = 0;
+	double soilresp = 0;
+	double rootresp = 0;
+	double microbresp = 0;
 
         /* Parameters for calculating leaf water potential */
 	double LeafPsim = 0.0;
@@ -330,9 +342,11 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SEXP Drainage;
 	SEXP MinNitroVec;
 	SEXP mRespVec; /* This is for soil microbial respiration */
+	SEXP SoilResp;
+	SEXP RootResp;
 
-	PROTECT(lists = allocVector(VECSXP,26)); /* 1 */
-	PROTECT(names = allocVector(STRSXP,26)); /* 2 */  
+	PROTECT(lists = allocVector(VECSXP,28)); /* 1 */
+	PROTECT(names = allocVector(STRSXP,28)); /* 2 */  
 
 	PROTECT(DayofYear = allocVector(REALSXP,vecsize)); /* 3 */
 	PROTECT(Hour = allocVector(REALSXP,vecsize)); /* 4 */
@@ -360,6 +374,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	PROTECT(Drainage = allocVector(REALSXP,vecsize)); /* 26 */
 	PROTECT(MinNitroVec = allocVector(REALSXP,vecsize)); /* 27 */
 	PROTECT(mRespVec = allocVector(REALSXP,vecsize)); /* 28 */
+	PROTECT(SoilResp = allocVector(REALSXP,vecsize)); /* 29 */
+	PROTECT(RootResp = allocVector(REALSXP,vecsize)); /* 30 */
 
 	int *pt_doy = INTEGER(DOY);
 	int *pt_hr = INTEGER(HR);
@@ -766,6 +782,39 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 			m++;
 		}
 
+               /*--------------------------------------------------------------------------------
+		 Soil Respiration - Written by Hamze Dokoohaki
+		 it has two Root and microb components
+		 --------------------------------------------------------------------------------*/
+               /*--------------------------
+		 Canopy Respiration 
+		 ---------------------------*/
+		m_canopy = m_canopy / (24/timestep) ; 
+               /* m 's dimension is (1/day) but now we are dealing with hour
+               I didn't change Y_g because it's dimnesion less and it just 
+               represent the conversion efficiency of crop. 
+               The new root synthesized by plant in return to total photosynthesis in given time step */
+		canopyresp = (((1-Yg_canopy)/(Yg_canopy))*(newRoot+newStem+newLeaf+newGrain)) 
+                              + ((m_canopy)*(Root+Stem+Leaf+Grain));
+
+               /*--------------------------
+                 Root Respiration 
+                 ---------------------------*/
+
+		m_root = m_root / (24/timestep);
+		rootresp =(((1-Yg_root)/(Yg_root))*(newRoot)) + ((m_root)*(Root));
+		if (rootresp < 0) rootresp *=-1;
+               /*--------------------------
+                 Microb Respiration 
+                 ---------------------------*/
+
+		microbresp = Resp / (24.0*centTimestep);
+
+/*--------------------------
+ Accumulation of Respirations 
+ ---------------------------*/
+		soilresp = rootresp + microbresp;
+
                 /* Collecting results */
 		REAL(DayofYear)[i] =  *(pt_doy+i);
 		REAL(Hour)[i] =  *(pt_hr+i);
@@ -784,7 +833,9 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 		REAL(StomatalCondCoefs)[i] = StomWS;
 		REAL(Drainage)[i] = WaterS.drainage;
 		REAL(MinNitroVec)[i] = MinNitro / (24.0*centTimestep); 
-		REAL(mRespVec)[i] = Resp / (24.0*centTimestep); /* Mg/ha/hr */
+		REAL(mRespVec)[i] = microbresp; /* Mg/ha/hr */
+		REAL(SoilResp)[i] = soilresp;
+		REAL(RootResp)[i] = rootresp;
 
 	}
 
@@ -837,6 +888,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SET_VECTOR_ELT(lists, 23, Drainage);
 	SET_VECTOR_ELT(lists, 24, MinNitroVec);
 	SET_VECTOR_ELT(lists, 25, mRespVec);
+	SET_VECTOR_ELT(lists, 26, SoilResp);
+	SET_VECTOR_ELT(lists, 27, RootResp);
 
 	SET_STRING_ELT(names,0,mkChar("DayofYear"));
 	SET_STRING_ELT(names,1,mkChar("Hour"));
@@ -864,9 +917,11 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SET_STRING_ELT(names,23,mkChar("Drainage"));
 	SET_STRING_ELT(names,24,mkChar("MinNitroVec"));
 	SET_STRING_ELT(names,25,mkChar("mRespVec"));
+	SET_STRING_ELT(names,26,mkChar("SoilResp"));
+	SET_STRING_ELT(names,27,mkChar("RootResp"));
 
 	setAttrib(lists,R_NamesSymbol,names);
-	UNPROTECT(28);
+	UNPROTECT(30);
 	return(lists);
 
 }

@@ -1,3 +1,12 @@
+2015-01-17  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
+
+	* BioCro_0.266-9
+
+	Added Hamze's work on root and soil respiration.
+	
+	Mostly changes to the vignette since the last version and fixes to
+	the water balance.
+
 2015-01-03  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
 
 	* BioCro_0.266-3

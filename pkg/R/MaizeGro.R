@@ -1,5 +1,5 @@
 ##
-##  BioCro/R/MaizeGro.R by Fernando Ezequiel Miguez  Copyright (C) 2012-2014
+##  BioCro/R/MaizeGro.R by Fernando Ezequiel Miguez  Copyright (C) 2012-2015
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -157,10 +157,11 @@ MaizeGro <- function(WetDat, plant.day=NULL,
                  as.integer(soilP[c(7,8,10,14)]), ## Soil type and number of layers      19
                  as.double(soilP$soilDepths), ## Soil depths                       20
                  as.double(soilP$iWatCont), ## initial water status                 21
-                 as.double(seneP), ## senescence parameters                         22
-                 as.double(centCoefs), ## Century coefficients                      23
-                 as.double(centTimestep), ## Century timestep                      24
-                 as.double(centuryP$Ks) ## Century rate parameters                  25
+                 as.double(soilP$respcoef), ## respiration coefs                    22
+                 as.double(seneP), ## senescence parameters                         23
+                 as.double(centCoefs), ## Century coefficients                      24
+                 as.double(centTimestep), ## Century timestep                      25
+                 as.double(centuryP$Ks) ## Century rate parameters                  26
                  )
 
     ## Transform the phenology
