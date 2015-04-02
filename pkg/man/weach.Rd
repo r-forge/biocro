@@ -93,7 +93,7 @@ If it is a leap year it will be 8784 rows.
 }    
 
 \examples{
-\donotrun{
+\dontrun{
 ## The data typically used can be obtained from
 ## http://www.isws.illinois.edu/warm/weather/
 ## I have downloaded and cleaned up the data
