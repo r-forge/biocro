@@ -25,7 +25,7 @@ c4photo <- function(Qp,Tl,RH,vmax=39,alpha=0.04,kparm=0.7,theta=0.83,
     if(any(Catm < 150))
         warning("Stomatal conductance is not reliable for values of Catm lower than 150\n")
     if(any(Catm < 15))
-        stop("Assimilation is not reliable for low (<15) Catm values")
+        warning("Assimilation is not reliable for low (<15) Catm values")
     ws <- match.arg(ws)
     if(ws == "gs") ws <- 1
     else ws <- 0
