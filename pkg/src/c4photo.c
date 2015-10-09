@@ -356,7 +356,8 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 		 SEXP iTHETA, SEXP iBETA,
 		 SEXP iRD,
                  SEXP CATM, SEXP B0, SEXP B1, SEXP STOMWS,
-                 SEXP SCALE, SEXP SD1, SEXP SD2, SEXP WS, SEXP PRIOR){
+                 SEXP SCALE, SEXP SDS, SEXP WS, SEXP PRIOR,
+		 SEXP OPLEVEL){
 	/* First manipulate R objects */
 	extern int nObs;
 	int niter;
@@ -370,7 +371,7 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 	int i;
 
 	double scale = REAL(SCALE)[0];
-	double sd1, sd2;
+	int oplevel = INTEGER(OPLEVEL)[0];
 
 	double Rd = REAL(iRD)[0];
 	double ikparm = REAL(iKPARM)[0];
@@ -381,8 +382,9 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 	double b1 = REAL(B1)[0];
 	double StomWS = REAL(STOMWS)[0];
 	int ws = INTEGER(WS)[0];
-
-
+        double sd1 = REAL(SDS)[0];
+	double sd2 = REAL(SDS)[1];
+	double sd3 = REAL(SDS)[2];
 
 	double index;
 	double rnum , rden; 
@@ -394,10 +396,12 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 	double psdVmax = REAL(PRIOR)[1];
 	double pmuAlpha = REAL(PRIOR)[2];
 	double psdAlpha = REAL(PRIOR)[3];
+	double pmuRd = REAL(PRIOR)[4];
+	double psdRd = REAL(PRIOR)[5];
 
 	double RSS;
-	double rnewVcmax, rnewAlpha;
-	double oldAlpha, oldVcmax;
+	double rnewVcmax, rnewAlpha, rnewRd;
+	double oldAlpha, oldVcmax, oldRd;
 
 	SEXP lists;
 	SEXP names;
@@ -407,36 +411,67 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 
 	PROTECT(lists = allocVector(VECSXP,2));
 	PROTECT(names = allocVector(STRSXP,2));
-	PROTECT(mat1 = allocMatrix(REALSXP,3,niter));
+	PROTECT(mat1 = allocMatrix(REALSXP,4,niter));
 	PROTECT(accept = allocVector(REALSXP,1));
 
 	GetRNGstate();
 
 	oldVcmax = REAL(iVCMAX)[0];
 	oldAlpha = REAL(iALPHA)[0];
+	oldRd = Rd;
 
-	sd1 = REAL(SD1)[0] * scale;
-	sd2 = REAL(SD2)[0] * scale;
+	rnewRd = oldRd; /* In case of oplevel = 1, we do not optimize rd so the new one is always the old one */
+
+	sd1 = sd1 * scale;
+	sd2 = sd2 * scale;
+	sd3 = sd3 * scale;
 
 	for(i = 0; i < niter; i++){
 
 		/* Replacing the rnormC4 function */
-		index = runif(0,1); 
-		if(index < 0.5){ 
-			rnewVcmax = oldVcmax + rnorm(0,sd1);
-			rnewAlpha = oldAlpha;
-		}else{ 
-			rnewAlpha = oldAlpha +  rnorm(0, sd2);
-			rnewVcmax = oldVcmax;
-		} 
+		if(oplevel == 1){
+
+			index = runif(0,1); 
+			if(index < 0.5){ 
+				rnewVcmax = oldVcmax + rnorm(0,sd1);
+				rnewAlpha = oldAlpha;
+			}else{ 
+				rnewAlpha = oldAlpha +  rnorm(0, sd2);
+				rnewVcmax = oldVcmax;
+			} 
+		}
+
+		if(oplevel == 2){
+			index = runif(0,1); 
+			if(index < 0.3333){ 
+				rnewVcmax = oldVcmax + rnorm(0,sd1);
+				rnewAlpha = oldAlpha;
+				rnewRd = oldRd;
+			}else{ 
+				if(index > 0.3333 && index < 0.6666){
+					rnewAlpha = oldAlpha +  rnorm(0, sd2);
+					rnewVcmax = oldVcmax;
+					rnewRd = oldRd;
+				}else{
+					rnewRd = oldRd + rnorm(0, sd3);
+					rnewAlpha = oldAlpha;
+					rnewVcmax = oldVcmax;
+				}
+			} 
+		}
 		/* This is the end of the random generation */
 
-		rnum = dnorm(rnewVcmax,pmuVmax,psdVmax,0)*dnorm(rnewAlpha,pmuAlpha,psdAlpha,0); 
-		rden = dnorm(oldVcmax,pmuVmax,psdVmax,0)*dnorm(oldAlpha,pmuAlpha,psdAlpha,0); 
+		if(oplevel == 1){
+			rnum = dnorm(rnewVcmax,pmuVmax,psdVmax,0)*dnorm(rnewAlpha,pmuAlpha,psdAlpha,0); 
+			rden = dnorm(oldVcmax,pmuVmax,psdVmax,0)*dnorm(oldAlpha,pmuAlpha,psdAlpha,0); 
+		}else{
+			rnum = dnorm(rnewVcmax,pmuVmax,psdVmax,0)*dnorm(rnewAlpha,pmuAlpha,psdAlpha,0)*dnorm(rnewRd,pmuRd,psdRd,0); 
+			rden = dnorm(oldVcmax,pmuVmax,psdVmax,0)*dnorm(oldAlpha,pmuAlpha,psdAlpha,0)*dnorm(oldRd,pmuRd,psdRd,0); 
+		}
 	  
 		lratio = log(rnum) - log(rden); 
 
-		RSS = RSS_C4photo(REAL(ASSIM),REAL(QP),REAL(TEMP),REAL(RH),rnewVcmax,rnewAlpha, ikparm, itheta, ibeta, Rd, Catm, b0, b1, StomWS, ws);
+		RSS = RSS_C4photo(REAL(ASSIM),REAL(QP),REAL(TEMP),REAL(RH),rnewVcmax,rnewAlpha, ikparm, itheta, ibeta, rnewRd, Catm, b0, b1, StomWS, ws);
 
 /*       mr = (exp(-RSS) / exp(-oldRSS)) * ratio; */
 /* In the previous expression we can take  the log and have instead the 
@@ -448,13 +483,15 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 		if(lmr > log(U)){
 			oldVcmax = rnewVcmax;
 			oldAlpha = rnewAlpha;
+			oldRd = rnewRd;
 			oldRSS = RSS;
 			n1++;
 		}
 
-		REAL(mat1)[i*3] = oldVcmax ;
-		REAL(mat1)[i*3 + 1] = oldAlpha ;
-		REAL(mat1)[i*3 + 2] = oldRSS;
+		REAL(mat1)[i*4] = oldVcmax;
+		REAL(mat1)[i*4 + 1] = oldAlpha;
+		REAL(mat1)[i*4 + 2] = oldRd;
+		REAL(mat1)[i*4 + 3] = oldRSS;
 	}
      
 	PutRNGstate();    

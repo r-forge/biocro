@@ -16,7 +16,7 @@
  }
 
  \usage{
-MCMCc4photo(data, niter = 20000, ivmax = 39, ialpha = 0.04, ikparm =
+MCMCc4photo(data, niter = 20000, op.level=1, ivmax = 39, ialpha = 0.04, ikparm =
            0.7, itheta = 0.83, ibeta = 0.93, iRd = 0.8, Catm = 380, b0 = 0.08,
            b1 = 3, stress = 1, ws = c("gs", "vmax"), scale = 1,
            sds = c(1, 0.005), prior=c(39,10,0.04,0.02)) 
@@ -37,7 +37,10 @@ MCMCc4photo(data, niter = 20000, ivmax = 39, ialpha = 0.04, ikparm =
   The fourth column should be the observed relative humidity
   in proportion (e.g. 0.7).}
   
-\item{niter}{number of iterations to run the chain for (default = 20000).}
+\item{niter}{number of iterations to run the chain for (default =
+  20000).}
+\item{op.level}{should be 1 (default) for optimization of vmax and alpha
+  and 2 for optimization of vmax, alpha and rd.}
 \item{ivmax}{initial value for Vcmax (default = 39).}
 \item{ialpha}{initial value for alpha (default = 0.04).}
 \item{ikparm}{initial value for kparm (default = 0.7). Not optimized at

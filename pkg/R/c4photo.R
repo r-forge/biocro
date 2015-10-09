@@ -48,18 +48,19 @@ c4photo <- function(Qp,Tl,RH,vmax=39,alpha=0.04,kparm=0.7,theta=0.83,
 }
 
 
-MCMCc4photo <- function(data, niter = 20000, ivmax = 39,
+MCMCc4photo <- function(data, niter = 20000, op.level=1, ivmax = 39,
                         ialpha = 0.04, ikparm = 0.7, itheta=0.83,
                         ibeta=0.93, iRd = 0.8, Catm = 380,
                         b0 = 0.08, b1 = 3, stress=1, ws=c("gs","vmax"), scale = 1,
-                        sds=c(1,0.005),prior=c(39,10,0.04,0.02)){
+                        sds=c(1,0.005,0.5),prior=c(39,10,0.04,0.02,3,1)){
 
     if(ncol(data) != 4)
         stop("ncol data should be 4")
 
-    if(length(prior) != 4)
-        stop("length of prior should be 4")
-
+    if(op.level == 2 && length(prior) != 6){
+            stop("length of prior should be 6")
+    }
+    
     if(niter < 2)
         stop("niter should be at least 2")
     
@@ -71,17 +72,20 @@ MCMCc4photo <- function(data, niter = 20000, ivmax = 39,
     ws <- match.arg(ws)
     if(ws == "gs") ws <- 1
     else ws <- 0
+
+    if(op.level != 1 && op.level != 2) stop("op.level should be either 1 or 2")
     
     res <- .Call(McMCc4photo, as.double(assim), as.double(qp),
                  as.double(temp), as.double(rh), as.integer(niter),
                  as.double(ivmax), as.double(ialpha), as.double(ikparm),
                  as.double(itheta), as.double(ibeta),
                  as.double(iRd), as.double(Catm), as.double(b0), as.double(b1),
-                 as.double(stress), as.double(scale), as.double(sds[1]),
-                 as.double(sds[2]), as.integer(ws), as.double(prior))
+                 as.double(stress), as.double(scale), as.double(sds),
+                 as.integer(ws), as.double(prior), as.integer(op.level))
     res$resuMC <- t(res$resuMC)
+    res$op.level <- op.level
     res$niter <- niter
-    colnames(res$resuMC) <- c("Vcmax","Alpha","RSS")
+    colnames(res$resuMC) <- c("Vcmax","Alpha","Rd","RSS")
     res$prior <- prior
     structure(res, class = "MCMCc4photo")
 }
@@ -93,32 +97,49 @@ MCMCc4photo <- function(data, niter = 20000, ivmax = 39,
 
 print.MCMCc4photo <- function(x,burnin=1,level=0.95,digits=1,...){
 
+    op.level <- x$op.level
     ul <- 1 - (1-level)/2
     ll <- (1 - level)/2
-    xMat <- x$resuMC[burnin:x$niter,1:2]
-    colnames(xMat) <- c("Vmax","alpha")
+    if(op.level == 1){
+        xMat <- x$resuMC[burnin:x$niter,1:2]
+        colnames(xMat) <- c("Vmax","alpha")
+    }else{
+        xMat <- x$resuMC[burnin:x$niter,1:3]
+        colnames(xMat) <- c("Vmax","alpha","Rd")
+    }
     cat("\n Markov chain Monte Carlo for the Collatz C4 photosynthesis model")
     
     cat("\n Summary of the chain")
     cat("\n Moves:",x$accept,"Prop:",x$accept/x$niter,"\n")
-    cat("\n Summaries for vmax and alpha:\n")
+    if(op.level == 1){
+        cat("\n Summaries for vmax and alpha:\n")
+    }else{
+        cat("\n Summaries for vmax, alpha and rd:\n")
+    }
     sum1 <- summary(x$resuMC[burnin:x$niter,1])
     sum2 <- summary(x$resuMC[burnin:x$niter,2])
+    if(op.level == 2) sum3 <- summary(x$resuMC[burnin:x$niter,3])
     nm <- names(sum1)
-    mat <- matrix(rbind(sum1,sum2),nrow=2,ncol=6)
+    if(op.level == 1) mat <- matrix(rbind(sum1,sum2),nrow=2,ncol=6)
+    if(op.level == 2) mat <- matrix(rbind(sum1,sum2,sum3),nrow=3,ncol=6)
     colnames(mat) <- nm
-    rownames(mat) <- c("vmax","alpha")
+    if(op.level == 1) rownames(mat) <- c("vmax","alpha")
+    if(op.level == 2) rownames(mat) <- c("vmax","alpha","rd")
     print(mat,...)
-    cat("\n",level*100,"% Quantile Intervals for vmax and alpha:\n")
+    if(op.level == 1) cat("\n",level*100,"% Quantile Intervals for vmax and alpha:\n")
+    if(op.level == 2) cat("\n",level*100,"% Quantile Intervals for vmax, alpha and rd:\n")
     qua1 <- quantile(x$resuMC[burnin:x$niter,1],c(ll,ul))
     qua2 <- quantile(x$resuMC[burnin:x$niter,2],c(ll,ul))
-    mat2 <- rbind(qua1,qua2)
-    rownames(mat2) <- c("vmax","alpha")
+    if(op.level == 2) qua3 <- quantile(x$resuMC[burnin:x$niter,3],c(ll,ul))
+    if(op.level == 1) mat2 <- rbind(qua1,qua2)
+    if(op.level == 2) mat2 <- rbind(qua1,qua2,qua3)
+    if(op.level == 1) rownames(mat2) <- c("vmax","alpha")
+    if(op.level == 2) rownames(mat2) <- c("vmax","alpha","rd")
     colnames(mat2) <- c(ll,ul)
     print(mat2,...)
     cat("\n correlation matrix:\n")
     print(cor(xMat),...)
-    cat("\n RSS range:",range(x$resuMC[burnin:x$niter,3]),"\n")
+    cat("\n RSS range:",range(x$resuMC[burnin:x$niter,4]),"\n")
     invisible(x)
     
 }
