@@ -280,7 +280,17 @@ op.mc1 <- MCMCc4photo(curve1[,3:6], scale=1.5, prior=c(20, 1, 0.045, 0.0025))
 plot(op.mc1, plot.kind = "density", prior = TRUE, burnin=1e3, lwd=2)
 @ 
 
-Two other additions would be including the correlation between
+It is also possible to estimate \texttt{Rd} by using the argument
+\texttt{op.level = 2}.
+
+<<MCMCc4photo-priors-Rd, fig.height=3.8>>=
+op.mc1 <- MCMCc4photo(curve1[,3:6], scale=1.5, op.level=2)
+plot(op.mc1, plot.kind = "density", burnin=1e3, lwd=2)
+@
+
+
+
+TODO: Two other additions would be including the correlation between
 parameters and the estimation of the residual variance. These last
 features are low priority as the function as it is should work for
 most purposes.

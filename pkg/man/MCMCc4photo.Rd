@@ -19,7 +19,7 @@
 MCMCc4photo(data, niter = 20000, op.level=1, ivmax = 39, ialpha = 0.04, ikparm =
            0.7, itheta = 0.83, ibeta = 0.93, iRd = 0.8, Catm = 380, b0 = 0.08,
            b1 = 3, stress = 1, ws = c("gs", "vmax"), scale = 1,
-           sds = c(1, 0.005), prior=c(39,10,0.04,0.02)) 
+           sds = c(1, 0.005, 0.5), prior=c(39,10,0.04,0.02,3,1)) 
 }
 
 \arguments{
@@ -56,12 +56,13 @@ MCMCc4photo(data, niter = 20000, op.level=1, ivmax = 39, ialpha = 0.04, ikparm =
 \item{ws}{see \code{\link{c4photo}} function. }
  \item{scale}{ This scale parameter controls the size of the standard
     deviations which generate the moves in the chain. }
-\item{sds}{ Finer control for the standard deviations of the prior
-  normals.
-  The first element is for vmax and the second for alpha. }
-\item{prior}{ Vector of length 4 with first element prior mean for vmax,
+\item{sds}{Finer control for the standard deviations of the proposal distribution.
+  The first element is for vmax, the second for alpha and the third for rd. }
+\item{prior}{ Vector of length 6 with first element prior mean for vmax,
   second element prior standard deviation for vmax, third element prior
-  mean for alpha and fourth element prior standard deviation for alpha.}
+  mean for alpha, fourth element prior standard deviation for alpha,
+fifth element prior mean for rd and sixth element for prior standard
+  deviation for rd.}
 }
 
 \value{
@@ -95,6 +96,15 @@ resB3 <- MCMCc4photo(obsBea, 100000, ivmax=45, ialpha=0.02, scale=1.5)
 ## Use the plot function to examine results
 plot(resB1,resB2,resB3)
 plot(resB1,resB2,resB3,plot.kind="density",burnin=1e4)
+
+## It is possible to plot the predicted and observed for one object
+
+data(aq)
+aq5 <- subset(aq, ID == 5)
+res.aq5 <- MCMCc4photo(aq5[,3:6], 1e4, scale=1.5)
+## The line below takes a long time because it runs a prediction
+## for each of the possible values for the parameters
+plot(res.aq5, plot.kind = "OandF", burnin=1e3)
 
 }
 

@@ -87,6 +87,7 @@ MCMCc4photo <- function(data, niter = 20000, op.level=1, ivmax = 39,
     res$niter <- niter
     colnames(res$resuMC) <- c("Vcmax","Alpha","Rd","RSS")
     res$prior <- prior
+    res$obs <- data
     structure(res, class = "MCMCc4photo")
 }
 
@@ -146,11 +147,12 @@ print.MCMCc4photo <- function(x,burnin=1,level=0.95,digits=1,...){
 
 
 plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
-                             plot.kind=c("trace","density"),type=c("l","p"),
+                             plot.kind=c("trace","density","OandF"),type=c("l","p"),
                              burnin=1,cols=c("blue","green","purple"),prior=FALSE,pcol="black",...){
 
     plot.kind <- match.arg(plot.kind)
     type <- match.arg(type)
+    op.level <- x$op.level
     ## This first code is to plot the first object only
     ## Ploting the trace
     if(missing(x2) && missing(x3)){
@@ -163,8 +165,20 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
                              xlab = "Iterations", type = type, col=cols[1],
                              ylab = expression(paste("alpha (",mol," ",m^-1,")")),
                              ...)
-            print(plot1,position=c(0,0,0.5,1),more=TRUE)
-            print(plot2,position=c(0.5,0,1,1))
+            if(op.level == 2){
+                plot3 <-  xyplot(x$resuMC[burnin:x$niter,3] ~ burnin:x$niter ,
+                                 xlab = "Iterations", type = type, col=cols[1],
+                                 ylab = expression(paste("Rd (",mu,mol," ",m^-2," ",s^-1,")")),
+                                 ...)
+            }
+            if(op.level == 1){
+                print(plot1,position=c(0,0,0.5,1),more=TRUE)
+                print(plot2,position=c(0.5,0,1,1))
+            }else{
+                print(plot1,position=c(0,0,0.3333,1),more=TRUE)
+                print(plot2,position=c(0.3333,0,0.6666,1),more=TRUE)
+                print(plot3,position=c(0.6666,0,1,1))
+            }
         } else
         ## Ploting the density
         if(plot.kind == "density"){
@@ -175,6 +189,11 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
                 plot2 <-  densityplot(~x$resuMC[burnin:x$niter,2],xlab="alpha",
                                       col=cols[1],
                                       plot.points=FALSE,...)
+                if(op.level == 2){
+                    plot3 <-  densityplot(~x$resuMC[burnin:x$niter,3],xlab="rd",
+                                          col=cols[1],
+                                          plot.points=FALSE,...)
+                }
             }else{
                 plot1 <-  densityplot(~x$resuMC[burnin:x$niter,1],xlab="Vmax",
                                       col=cols[1],
@@ -190,9 +209,40 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
                                           panel.densityplot(xi,...)
                                           panel.mathdensity(dmath=dnorm, args=list(mean = x$prior[3], sd = x$prior[4]), col=pcol)
                                       },...)
+                if(op.level == 2){
+                    plot3 <-  densityplot(~x$resuMC[burnin:x$niter,3],xlab="rd",
+                                          col=cols[1],
+                                          plot.points=FALSE,
+                                          panel = function(xi,...){
+                                              panel.densityplot(xi,...)
+                                              panel.mathdensity(dmath=dnorm, args=list(mean = x$prior[5], sd = x$prior[6]), col=pcol)
+                                          },...)
+                }
             }
-            print(plot1,position=c(0,0,0.5,1),more=TRUE)
-            print(plot2,position=c(0.5,0,1,1))
+            if(op.level == 1){
+                print(plot1,position=c(0,0,0.5,1),more=TRUE)
+                print(plot2,position=c(0.5,0,1,1))
+            }else{
+                print(plot1,position=c(0,0,0.3333,1),more=TRUE)
+                print(plot2,position=c(0.3333,0,0.6666,1),more=TRUE)
+                print(plot3,position=c(0.6666,0,1,1))
+            }
+        }
+        if(plot.kind == "OandF"){
+            if(!missing(x2)) stop("This option only works for one object")
+            obs <- x$obs
+            obs.o <- obs[order(obs[,2]),]
+            prds <- predict(x, obs = obs.o, burnin = burnin)
+            plt <- xyplot(assim ~ qp, data = prds, col = "grey",
+                          ylab = "CO2 uptake",
+                          xlab = "Quantum flux",
+                          groups = niter,
+                          panel = function(x,y,...){
+                              panel.xyplot(x,y,type = 'l',...)
+                              panel.xyplot(x,y,type = 'a')
+                              panel.xyplot(x = obs.o[,2], y = obs.o[,1], col = "red", type = "o")
+                          })
+            plot(plt)
         }
     } else
     ## This part of the code is to plot objects x and x2
@@ -205,6 +255,12 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
         tmpvec12 <- x2$resuMC[burnin:n2,1]
         tmpvec21 <- x$resuMC[burnin:n1,2]
         tmpvec22 <- x2$resuMC[burnin:n2,2]
+        if(op.level == 2){
+            tmpvec31 <- x$resuMC[burnin:n1,3]
+            tmpvec32 <- x2$resuMC[burnin:n2,3]
+            ymin3 <- min(c(tmpvec31,tmpvec31))*0.95
+            ymax3 <- max(c(tmpvec32,tmpvec32))*1.05
+        }
         ymin1 <- min(c(tmpvec11,tmpvec12))*0.95
         ymax1 <- max(c(tmpvec11,tmpvec12))*1.05
         ymin2 <- min(c(tmpvec21,tmpvec22))*0.95
@@ -227,9 +283,26 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
                              panel = function(x,y,...){
                                  panel.xyplot(x,y,col=cols[1],...)
                                  panel.xyplot(burnin:n2,tmpvec22,col=cols[2],...)
-                             },...)                       
-            print(plot1,position=c(0,0,0.5,1),more=TRUE)
-            print(plot2,position=c(0.5,0,1,1))
+                             },...)
+            if(op.level == 2){
+                plot3 <-  xyplot(tmpvec31 ~ burnin:n2 ,
+                                 xlim=c(I(burnin-0.05*maxchainLength),I(maxchainLength*1.05)),
+                                 ylim=c(ymin3,ymax3),
+                                 xlab = "Iterations", type = "l",
+                                 ylab = expression(paste("Rd (",mu,mol," ",m^-2," ",s^-1,")")),
+                                 panel = function(x,y,...){
+                                     panel.xyplot(x,y,col=cols[1],...)
+                                     panel.xyplot(burnin:n2,tmpvec32,col=cols[2],...)
+                                 },...)
+            }
+            if(op.level == 1){
+                print(plot1,position=c(0,0,0.5,1),more=TRUE)
+                print(plot2,position=c(0.5,0,1,1))
+            }else{
+                print(plot1,position=c(0,0,0.3333,1),more=TRUE)
+                print(plot2,position=c(0.3333,0,0.6666,1),more=TRUE)
+                print(plot3,position=c(0.6666,0,1,1))
+            }
         } else
         ## ploting the density
         if(plot.kind == "density"){
@@ -237,8 +310,18 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
                                   plot.points=FALSE,col=cols[1:2],...)
             plot2 <-  densityplot(~ tmpvec21 + tmpvec22 ,xlab="alpha",
                                   plot.points=FALSE,col=cols[1:2],...)
-            print(plot1,position=c(0,0,0.5,1),more=TRUE)
-            print(plot2,position=c(0.5,0,1,1))
+            if(op.level == 2){
+                plot3 <-  densityplot(~ tmpvec31 + tmpvec32 ,xlab="rd",
+                                      plot.points=FALSE,col=cols[1:2],...)
+            }
+            if(op.level == 1){
+                print(plot1,position=c(0,0,0.5,1),more=TRUE)
+                print(plot2,position=c(0.5,0,1,1))
+            }else{
+                print(plot1,position=c(0,0,0.3333,1),more=TRUE)
+                print(plot2,position=c(0.3333,0,0.6666,1),more=TRUE)
+                print(plot3,position=c(0.6666,0,1,1))
+            }            
         }
     }else
 {
@@ -252,6 +335,13 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
     tmpvec21 <- x$resuMC[burnin:n1,2]
     tmpvec22 <- x2$resuMC[burnin:n2,2]
     tmpvec23 <- x3$resuMC[burnin:n3,2]
+    if(op.level == 2){
+        tmpvec31 <- x$resuMC[burnin:n1,3]
+        tmpvec32 <- x2$resuMC[burnin:n2,3]
+        tmpvec33 <- x3$resuMC[burnin:n3,3]
+        ymin3 <- min(c(tmpvec31,tmpvec32,tmpvec33))*0.95
+        ymax3 <- max(c(tmpvec31,tmpvec32,tmpvec33))*1.05
+    }
     ymin1 <- min(c(tmpvec11,tmpvec12,tmpvec13))*0.95
     ymax1 <- max(c(tmpvec11,tmpvec12,tmpvec13))*1.05
     ymin2 <- min(c(tmpvec21,tmpvec22,tmpvec23))*0.95
@@ -277,18 +367,74 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
                              panel.xyplot(x,y,col=cols[1],...)
                              panel.xyplot(burnin:n2,tmpvec22,col=cols[2],...)
                              panel.xyplot(burnin:n3,tmpvec23,col=cols[3],...)
-                         },...)                       
-        
-        print(plot1,position=c(0,0,0.5,1),more=TRUE)
-        print(plot2,position=c(0.5,0,1,1))
+                         },...)
+        if(op.level == 2){
+            plot3 <-  xyplot(tmpvec31 ~ burnin:n1 ,
+                             xlim=c(I(burnin-0.05*maxchainLength),I(maxchainLength*1.05)),
+                             ylim=c(ymin3,ymax3),
+                             xlab = "Iterations", type = "l",
+                             ylab = expression(paste("Rd (",mu,mol," ",m^-2," ",s^-1,")")),
+                             panel = function(x,y,...){
+                                 panel.xyplot(x,y,col=cols[1],...)
+                                 panel.xyplot(burnin:n2,tmpvec32,col=cols[2],...)
+                                 panel.xyplot(burnin:n3,tmpvec33,col=cols[3],...)
+                             },...)
+        }
+            if(op.level == 1){
+                print(plot1,position=c(0,0,0.5,1),more=TRUE)
+                print(plot2,position=c(0.5,0,1,1))
+            }else{
+                print(plot1,position=c(0,0,0.3333,1),more=TRUE)
+                print(plot2,position=c(0.3333,0,0.6666,1),more=TRUE)
+                print(plot3,position=c(0.6666,0,1,1))
+            }         
     } else
     if(plot.kind == "density"){
         plot1 <-  densityplot(~ tmpvec11 + tmpvec12 + tmpvec13
                               ,xlab="Vmax", plot.points=FALSE,col=cols,...)
         plot2 <-  densityplot(~ tmpvec21 + tmpvec22 + tmpvec23
                               ,xlab="alpha", plot.points=FALSE,col=cols,...)
-        print(plot1,position=c(0,0,0.5,1),more=TRUE)
-        print(plot2,position=c(0.5,0,1,1))
+        if(op.level == 2){
+            plot3 <-  densityplot(~ tmpvec31 + tmpvec32 + tmpvec33 ,xlab="rd",
+                                  plot.points=FALSE,col=cols,...)
+        }
+        if(op.level == 1){
+            print(plot1,position=c(0,0,0.5,1),more=TRUE)
+            print(plot2,position=c(0.5,0,1,1))
+        }else{
+            print(plot1,position=c(0,0,0.3333,1),more=TRUE)
+            print(plot2,position=c(0.3333,0,0.6666,1),more=TRUE)
+            print(plot3,position=c(0.6666,0,1,1))
+        }            
     }
 }
+}
+
+
+predict.MCMCc4photo <- function(x, obs, burnin=1e3){
+
+    ## The assumption is that x is an object of class "MCMCc4photo"
+    ## obs is assumed to be in the same format as the input for the MCMCc4photo function
+    niter <- x$niter
+
+    parm <- x$resuMC[burnin:niter,]
+    
+    nro <- nrow(obs)
+    idx1s <- seq(1, niter * nro, nro)
+    resd <- data.frame(assim = rep(NA, (niter - burnin) * nro), qp = NA, niter = NA)
+    
+    for(i in 1:(niter - burnin)){
+
+        vmax <- parm[i,1]
+        alpha <- parm[i,2]
+        rd <- parm[i,3]
+        assim <- c4photo(obs[,2], obs[,3], obs[,4],
+                            vmax=vmax, alpha=alpha, Rd = rd)$Assim
+        tmp <- data.frame(assim = assim, qp = obs[,2], iter = i)
+        idx1 <- idx1s[i]
+        idx2 <- idx1 + (nro - 1)
+        resd[idx1:idx2,] <- tmp
+
+    }
+    resd
 }
