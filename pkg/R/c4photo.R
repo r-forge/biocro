@@ -233,6 +233,7 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
         }
         if(plot.kind == "OandF"){
             if(!missing(x2)) stop("This option only works for one object")
+            if(x$niter > 1e4) stop("Too slow for this number of iterations")
             obs <- x$obs
             xpar <- x$xpar
             obs.o <- obs[order(obs[,2]),]
