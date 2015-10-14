@@ -69,6 +69,7 @@ MCMCc4photo <- function(data, niter = 20000, op.level=1, ivmax = 39,
     temp <- data[,3]
     rh <- data[,4]
 
+    ws1 <- ws
     ws <- match.arg(ws)
     if(ws == "gs") ws <- 1
     else ws <- 0
@@ -88,6 +89,8 @@ MCMCc4photo <- function(data, niter = 20000, op.level=1, ivmax = 39,
     colnames(res$resuMC) <- c("Vcmax","Alpha","Rd","RSS")
     res$prior <- prior
     res$obs <- data
+    res$xpar <- list(kparm = ikparm, theta = itheta, beta = ibeta,
+                     Catm = Catm, b0 = b0, b1 = b1, stress = stress, ws=ws1)
     structure(res, class = "MCMCc4photo")
 }
 
@@ -231,8 +234,13 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
         if(plot.kind == "OandF"){
             if(!missing(x2)) stop("This option only works for one object")
             obs <- x$obs
+            xpar <- x$xpar
             obs.o <- obs[order(obs[,2]),]
-            prds <- predict(x, obs = obs.o, burnin = burnin)
+            prds <- predict(x, obs = obs.o, burnin = burnin,
+                            kparm = xpar$kparm, theta = xpar$theta,
+                            beta = xpar$beta, Catm = xpar$Catm,
+                            b0 = xpar$b0, b1 = xpar$b1, stress = xpar$stress,
+                            ws = xpar$ws)
             plt <- xyplot(assim ~ qp, data = prds, col = "grey",
                           ylab = "CO2 uptake",
                           xlab = "Quantum flux",
@@ -411,7 +419,9 @@ plot.MCMCc4photo <- function(x,x2=NULL,x3=NULL,
 }
 
 
-predict.MCMCc4photo <- function(x, obs, burnin=1e3){
+predict.MCMCc4photo <- function(x, obs, burnin=1e3, kparm = 0.7, theta = 0.83,
+                                beta = 0.93, Catm = 380, b0 = 0.08, b1 = 3,
+                                stress = 1, ws = "gs"){
 
     ## The assumption is that x is an object of class "MCMCc4photo"
     ## obs is assumed to be in the same format as the input for the MCMCc4photo function
@@ -422,15 +432,22 @@ predict.MCMCc4photo <- function(x, obs, burnin=1e3){
     nro <- nrow(obs)
     idx1s <- seq(1, niter * nro, nro)
     resd <- data.frame(assim = rep(NA, (niter - burnin) * nro), qp = NA, niter = NA)
-    
+
+    tmp <- data.frame(assim = NA, qp = rep(NA, nro), iter = NA)
+
     for(i in 1:(niter - burnin)){
 
         vmax <- parm[i,1]
         alpha <- parm[i,2]
         rd <- parm[i,3]
         assim <- c4photo(obs[,2], obs[,3], obs[,4],
-                            vmax=vmax, alpha=alpha, Rd = rd)$Assim
-        tmp <- data.frame(assim = assim, qp = obs[,2], iter = i)
+                         vmax=vmax, alpha=alpha, Rd = rd,
+                         kparm = kparm, theta = theta, beta = beta,
+                         Catm = Catm, b0 = b0, b1 = b1,
+                         stress = stress, ws = ws)$Assim
+        tmp$assim <- assim
+        tmp$qp <- obs[,2]
+        tmp$iter <- i
         idx1 <- idx1s[i]
         idx2 <- idx1 + (nro - 1)
         resd[idx1:idx2,] <- tmp
