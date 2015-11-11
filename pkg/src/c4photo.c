@@ -434,9 +434,11 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 			index = runif(0,1); 
 			if(index < 0.5){ 
 				rnewVcmax = oldVcmax + rnorm(0,sd1);
+				if(rnewVcmax < 0) rnewVcmax = -rnewVcmax;
 				rnewAlpha = oldAlpha;
 			}else{ 
 				rnewAlpha = oldAlpha +  rnorm(0, sd2);
+				if(rnewAlpha < 0) rnewAlpha = -rnewAlpha;
 				rnewVcmax = oldVcmax;
 			} 
 		}
@@ -445,15 +447,20 @@ SEXP McMCc4photo(SEXP ASSIM, SEXP QP, SEXP TEMP,
 			index = runif(0,1); 
 			if(index < 0.3333){ 
 				rnewVcmax = oldVcmax + rnorm(0,sd1);
+				if(rnewVcmax < 0) rnewVcmax = -rnewVcmax;
 				rnewAlpha = oldAlpha;
 				rnewRd = oldRd;
 			}else{ 
 				if(index > 0.3333 && index < 0.6666){
 					rnewAlpha = oldAlpha +  rnorm(0, sd2);
+					if(rnewAlpha < 0) rnewAlpha = -rnewAlpha;
 					rnewVcmax = oldVcmax;
 					rnewRd = oldRd;
 				}else{
 					rnewRd = oldRd + rnorm(0, sd3);
+					if(rnewRd < 0) rnewRd = -rnewRd;
+/* This is to constrain the proposal distribution so that no negative Rds
+   are proposed */
 					rnewAlpha = oldAlpha;
 					rnewVcmax = oldVcmax;
 				}

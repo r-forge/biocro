@@ -56,8 +56,11 @@ MCMCc4photo(data, niter = 20000, op.level=1, ivmax = 39, ialpha = 0.04, ikparm =
 \item{ws}{see \code{\link{c4photo}} function. }
  \item{scale}{ This scale parameter controls the size of the standard
     deviations which generate the moves in the chain. }
-\item{sds}{Finer control for the standard deviations of the proposal distribution.
-  The first element is for vmax, the second for alpha and the third for rd. }
+\item{sds}{Finer control for the standard deviations of the proposal distributions.
+  The first element is for vmax, the second for alpha and the third for
+  rd. The proposed elements are forced to be positive as negative
+  parameters are not meaningful.
+}
 \item{prior}{ Vector of length 6 with first element prior mean for vmax,
   second element prior standard deviation for vmax, third element prior
   mean for alpha, fourth element prior standard deviation for alpha,
@@ -110,3 +113,4 @@ plot(res.aq5, plot.kind = "OandF", burnin=1e3)
 
 }
 \keyword{optimize}
+
