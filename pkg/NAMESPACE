@@ -127,6 +127,9 @@ export(SoilType, showSoilType)
 export(SoilEvapo)
 ##exportPattern("^TempTo")
 
+## soil temperature (stemp.R)
+export(stemp)
+
 ## soilML.R
 export(soilML, rootDist)
 
@@ -143,4 +146,5 @@ export(wtrstr, wsRcoef)
 export(weach, is.leap)
 
 ## weach_imn.R
-export(weach_imn)
+export(weach_imn, weach_imn2)
+

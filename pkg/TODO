@@ -7,16 +7,10 @@
 
 Immediate priorities
 
- o Water: there is a small error in the water balance of 16mm. I don't
-   know where to look for this error at the moment.
-
  o After I fix the water balance problem I will work on the multiple
    layer model
 
  o Include Hamze's work on simulating root respiration
-
- o Include the EvapoTrans function and example comparing to BioGro 
-   in the vignette
 
  o Need to work on soil. Allow the possibility of determining
    different soil properties for different layers.

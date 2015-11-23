@@ -25,6 +25,7 @@
 #include "Century.h"
 #include "maizeGro.h" 
 #include "AuxMaizeGro.h"
+#include "soiltemp.h"
 
 SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1 */
               SEXP HR,                    /* Hour                              2 */
@@ -158,6 +159,9 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
         double Yg_root = REAL(RESPCOEFS)[1];
 	double m_root = REAL(RESPCOEFS)[2];
 	double m_canopy = REAL(RESPCOEFS)[3];
+
+/* Variables for soil temperature */
+	double soiltemperature = 0.0;
 
 	double canopyresp = 0;
 	double soilresp = 0;
@@ -344,9 +348,10 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SEXP mRespVec; /* This is for soil microbial respiration */
 	SEXP SoilResp;
 	SEXP RootResp;
+	SEXP soilTemp;
 
-	PROTECT(lists = allocVector(VECSXP,28)); /* 1 */
-	PROTECT(names = allocVector(STRSXP,28)); /* 2 */  
+	PROTECT(lists = allocVector(VECSXP,29)); /* 1 */
+	PROTECT(names = allocVector(STRSXP,29)); /* 2 */  
 
 	PROTECT(DayofYear = allocVector(REALSXP,vecsize)); /* 3 */
 	PROTECT(Hour = allocVector(REALSXP,vecsize)); /* 4 */
@@ -376,6 +381,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	PROTECT(mRespVec = allocVector(REALSXP,vecsize)); /* 28 */
 	PROTECT(SoilResp = allocVector(REALSXP,vecsize)); /* 29 */
 	PROTECT(RootResp = allocVector(REALSXP,vecsize)); /* 30 */
+	PROTECT(soilTemp = allocVector(REALSXP,vecsize)); /* 31 */
 
 	int *pt_doy = INTEGER(DOY);
 	int *pt_hr = INTEGER(HR);
@@ -654,6 +660,13 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 			Nfert = 0;
 		}                
 
+/* Here is the place to calculate soil temperature */
+		if(i > 48){
+			soiltemperature = stemp(*(pt_hr+i),&pt_temp[0],i);
+		}else{
+			soiltemperature = *(pt_temp+i);
+		} 
+						
 
 		/* Here I will insert the Century model */
 
@@ -836,6 +849,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 		REAL(mRespVec)[i] = microbresp; /* Mg/ha/hr */
 		REAL(SoilResp)[i] = soilresp;
 		REAL(RootResp)[i] = rootresp;
+		REAL(soilTemp)[i] = soiltemperature;
 
 	}
 
@@ -890,6 +904,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SET_VECTOR_ELT(lists, 25, mRespVec);
 	SET_VECTOR_ELT(lists, 26, SoilResp);
 	SET_VECTOR_ELT(lists, 27, RootResp);
+	SET_VECTOR_ELT(lists, 28, soilTemp);
 
 	SET_STRING_ELT(names,0,mkChar("DayofYear"));
 	SET_STRING_ELT(names,1,mkChar("Hour"));
@@ -919,9 +934,10 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	SET_STRING_ELT(names,25,mkChar("mRespVec"));
 	SET_STRING_ELT(names,26,mkChar("SoilResp"));
 	SET_STRING_ELT(names,27,mkChar("RootResp"));
+	SET_STRING_ELT(names,28,mkChar("soilTemp"));
 
 	setAttrib(lists,R_NamesSymbol,names);
-	UNPROTECT(30);
+	UNPROTECT(31);
 	return(lists);
 
 }

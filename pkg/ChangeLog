@@ -1,3 +1,10 @@
+2015-11-23  Fernando Miguez  <femiguez@femiguez-dt>
+
+	* BioCro_0.267-7
+
+	Improvements to the MCMCc4photo function to allow the estimation of Rd
+	Included the calculation of soil temperature
+
 2015-01-17  Fernando Miguez  <femiguez@femiguez.agron.iastate.edu>
 
 	* BioCro_0.266-9

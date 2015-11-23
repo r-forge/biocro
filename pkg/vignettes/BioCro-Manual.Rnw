@@ -1052,6 +1052,17 @@ argument \code{iWatCont}. By default water moves from one layer to the
 next driven by soil water potential \code{hydrDist = TRUE} this can be
 turned off but it will likely not produce reasonable results.
 
+\subsection{Soil Temperature}
+
+Soil temperature can differ to a large extent from air
+temperature. Since there is a lag between air temperature and soil
+temperature a very simple model of air temperature can be developed by
+computing a running average of the last few hours of air
+temperature. One simple approach to model the soil temperature is
+implemented in the \texttt{stemp} function, which can be described as
+mostly statistical.
+
+
 \subsubsection{Soil Carbon: Century model}
 
 The modeling of soil carbon is based on the century model. In BioCro

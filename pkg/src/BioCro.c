@@ -23,6 +23,7 @@
 #include "AuxBioCro.h"
 #include "Century.h"
 #include "BioCro.h"
+#include "soiltemp.h"
 
 SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */ 
 	    SEXP DOY,                 /* Day of the year           2 */
@@ -150,6 +151,9 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	double lnb0 = REAL(LNB0)[0]; 
 	double lnb1 = REAL(LNB1)[0];
 	int lnfun = INTEGER(LNFUN)[0];
+
+        /* Soil temperature */
+	double soiltemperature;
 
 	/* Century */
 	double MinNitro = REAL(CENTCOEFS)[19];
@@ -454,6 +458,12 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 			Nfert = 0;
 		}                
 
+/* Here is the place to calculate soil temperature */
+		if(i > 48){
+			soiltemperature = stemp(*(pt_hr+i), &pt_temp[0], i);
+		}else{
+			soiltemperature = *(pt_temp+i);
+		} 
 
 		/* Here I will insert the Century model */
 

@@ -108,13 +108,14 @@ weach_imn2 <- function(data,
     ## This function is meant to be used with data extracted from  
     ## http://mesonet.agron.iastate.edu/agclimate/hist/hourly.php
  
-  if(dim(data)[2] != 7)
-    warning("data should have 7 columns")
+  if(dim(data)[2] != 16)
+    warning("data should have 16 columns")
 
-  if(dim(data)[1] != 8760)
-      warning("data should have 8760 rows \n missing data will be included")
+##  if(dim(data)[1] != 8760)
+##      warning("data should have 8760 rows \n missing data will be included")
 
-  clnms <- c('station','valid','tmpf','relh','solar','precip','speed')
+  clnms <- c('station','valid','tmpf','relh','solar','precip','speed','drct','et',
+             'soil04t','soil12t','soil24t','soil50t','soil12vwc','soil24vwc','soil50vwc')
 
   dtnms <- names(data)
 
@@ -145,19 +146,41 @@ weach_imn2 <- function(data,
   pp.units <- match.arg(pp.units)
 
   ## Collect the variables
-  temp <- data[,3]
-  RH <- data[,4]
-  solarR <- data[,5]
-  precip <- data[,6]
-  windS <- data[,7]
+    temp <- data[,3]
+    RH <- data[,4]
+    solarR <- data[,5]
+    precip <- data[,6]
+    windS <- data[,7]
+    drct <- data[,8]
+    et <- data[,9]
+    soil04t <- data[,10]
+    soil12t <- data[,11]
+    soil24t <- data[,12]
+    soil50t <- data[,13]
+    soil12vwc <- data[,14]
+    soil24vwc <- data[,15]
+    soil50vwc <- data[,16]
   
   ## Transform them in to needed input
 
-  temp <- ifelse(temp == -99, NA, temp)
+  temp <- ifelse(temp == na.chr, NA, temp)
+    soil04t <- ifelse(soil04t == na.chr, NA, soil04t)
+    soil12t <- ifelse(soil12t == na.chr, NA, soil12t)
+    soil24t <- ifelse(soil24t == na.chr, NA, soil24t)
+    soil50t <- ifelse(soil50t == na.chr, NA, soil50t)
   
   if(temp.units == "Fahrenheit"){
     temp <- (temp - 32) * (5/9)
+    soil04t <- (soil04t - 32) * (5/9)
+    soil12t <- (soil12t - 32) * (5/9)
+    soil24t <- (soil24t - 32) * (5/9)
+    soil50t <- (soil50t - 32) * (5/9)
   }
+
+    soil12vwc <- ifelse(soil12vwc == na.chr, NA, soil12vwc)
+    soil24vwc <- ifelse(soil24vwc == na.chr, NA, soil24vwc)
+    soil50vwc <- ifelse(soil50vwc == na.chr, NA, soil50vwc)
+    
   ## The solar radiation is given in W/m2, in the past it was in 
   ## kilo calories per hour per meter squared
   ## Convert from W/m2 to kcal h / m2 multiply by 0.86
@@ -165,7 +188,7 @@ weach_imn2 <- function(data,
   ## To convert from kilocalories to joules
   ## 1 kilocalorie = 4184 joules
   ## To convert to Mega Joules
-  solarR <- ifelse(solarR == -99, NA, solarR)
+  solarR <- ifelse(solarR == na.chr, NA, solarR)
   
   solarR <- solarR * 0.86
   solarR0 <- (solarR * 4184) * 1e-6 ## This is in MJ/hr/m2
@@ -191,7 +214,9 @@ weach_imn2 <- function(data,
 
   res <- data.frame(year = year, doy = doy,
                     hour = hour, solarR = solarR,
-                    temp = temp, RH = RH, windS = windS, precip = precip)
+                    temp = temp, RH = RH, windS = windS, precip = precip,
+                    soil04t = soil04t, soil12t = soil12t, soil24t = soil24t, soil50t = soil50t,
+                    soil12vwc = soil12vwc, soil24vwc = soil24vwc, soil50vwc = soil50vwc, et = et)
   
   ## The code below
   ## Filling in with missing data

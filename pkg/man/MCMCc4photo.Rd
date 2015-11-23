@@ -5,15 +5,14 @@
 
 \description{
 
-  This function implement Markov chain
-  Monte Carlo methods for the C4 photosynthesis model of Collatz et al.
- The chain is constructed
-  using a Gaussian random walk. This is definitely a beta version of this
-  function and more testing and improvements are needed. The value of
-  this function is in the possibility of examining the empirical
-  posterior distribution (i.e. vectors) of the vmax and alpha
-  parameters.  Notice that you will get different results each time you run it. 
- }
+  This function implement Markov chain Monte Carlo methods for the C4
+  photosynthesis model of Collatz et al.  The chain is constructed using
+  a Gaussian random walk. The value of this function is in the
+  possibility of examining the empirical posterior distribution
+  (i.e. vectors) of the vmax and alpha parameters.  Notice that you will
+  get different results each time you run it.
+
+}
 
  \usage{
 MCMCc4photo(data, niter = 20000, op.level=1, ivmax = 39, ialpha = 0.04, ikparm =
