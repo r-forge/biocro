@@ -1060,7 +1060,12 @@ temperature a very simple model of air temperature can be developed by
 computing a running average of the last few hours of air
 temperature. One simple approach to model the soil temperature is
 implemented in the \texttt{stemp} function, which can be described as
-mostly statistical.
+mostly empirical.
+
+\[ T_{soil} = \bar{T}_{48} - amp \times sin((hr - offset)/3.66) \]
+
+When the offset is zero (default) the 3.66 makes the term inside the
+\texttt{sin} function vary between 0 and $2\pi$ approximately.
 
 
 \subsubsection{Soil Carbon: Century model}
