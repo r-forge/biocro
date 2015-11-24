@@ -683,7 +683,8 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 			RhizomeLitter -= RhizomeLitter_d;
 
 			centS = Century(&LeafLitter_d,&StemLitter_d,&RootLitter_d,&RhizomeLitter_d,
-					waterCont,*(pt_temp+i),centTimestep,SCCs,WaterS.runoff,
+					waterCont,soiltemperature, /* Using the calculated soil temperature instead */
+					centTimestep,SCCs,WaterS.runoff,
 					Nfert, /* N fertilizer*/
 					MinNitro, /* initial Mineral nitrogen */
 					*(pt_precip+i), /* precipitation */
