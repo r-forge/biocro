@@ -49,10 +49,11 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	      SEXP SOILDEPTHS,            /* Soil depths                      20 */
 	      SEXP CWS,                    /* Current water status             21 */
 	      SEXP RESPCOEFS,              /* Respiration coefficients         22 */
-	      SEXP SENEP,                   /* Maize senescence parameteres     23 */
-	      SEXP CENTCOEFS,              /* Century coefficients              24 */
-              SEXP CENTTIMESTEP,           /* Century timestep                   25 */
-              SEXP CENTKS                  /* Century decomp rates               26 */
+	      SEXP SOILTACOEF,              /* Soil T amp coefficients         23 */
+	      SEXP SENEP,                   /* Maize senescence parameteres     24 */
+	      SEXP CENTCOEFS,              /* Century coefficients              25 */
+              SEXP CENTTIMESTEP,           /* Century timestep                   26 */
+              SEXP CENTKS                  /* Century decomp rates               27 */
 	      )
 
 {
@@ -153,6 +154,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	double transpRes; /* Resistance to transpiration from soil to leaf */
 	double leafPotTh; /* Leaf water potential threshold */
 	double smthresh; /* soil moisture threshold */
+	double soiltacoef; /* soil amplitude coefficient */
 
 /* Variables for root respiration */
         double Yg_canopy = REAL(RESPCOEFS)[0];
@@ -276,6 +278,10 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 	rsec = REAL(SOILP)[9];
 	rsdf = REAL(SOILP)[10];
 	smthresh = REAL(SOILP)[11];
+
+/* Soil temperature parameters */
+
+	soiltacoef = REAL(SOILTACOEF)[0];
 
 /* Extracting soil parameters 2 */
 	soilType = INTEGER(SOILP2)[0];
@@ -662,7 +668,7 @@ SEXP maizeGro(SEXP DOY,                   /* Day of the year                   1
 
 /* Here is the place to calculate soil temperature */
 		if(i > 48){
-			soiltemperature = stemp(*(pt_hr+i),&pt_temp[0],i);
+			soiltemperature = stemp(*(pt_hr+i),&pt_temp[0],i, soiltacoef);
 		}else{
 			soiltemperature = *(pt_temp+i);
 		} 

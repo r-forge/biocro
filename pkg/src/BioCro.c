@@ -460,7 +460,7 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 
 /* Here is the place to calculate soil temperature */
 		if(i > 48){
-			soiltemperature = stemp(*(pt_hr+i), &pt_temp[0], i);
+			soiltemperature = stemp(*(pt_hr+i), &pt_temp[0], i, 8.0);
 		}else{
 			soiltemperature = *(pt_temp+i);
 		} 

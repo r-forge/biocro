@@ -158,10 +158,11 @@ MaizeGro <- function(WetDat, plant.day=NULL,
                  as.double(soilP$soilDepths), ## Soil depths                       20
                  as.double(soilP$iWatCont), ## initial water status                 21
                  as.double(soilP$respcoef), ## respiration coefs                    22
-                 as.double(seneP), ## senescence parameters                         23
-                 as.double(centCoefs), ## Century coefficients                      24
-                 as.double(centTimestep), ## Century timestep                      25
-                 as.double(centuryP$Ks) ## Century rate parameters                  26
+                 as.double(soilP$acoef), ## soilT coef                              23
+                 as.double(seneP), ## senescence parameters                         24
+                 as.double(centCoefs), ## Century coefficients                      25
+                 as.double(centTimestep), ## Century timestep                      26
+                 as.double(centuryP$Ks) ## Century rate parameters                  27
                  )
 
     ## Transform the phenology

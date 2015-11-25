@@ -254,7 +254,7 @@ soilParms <- function(FieldC=NULL,WiltP=NULL,phi1=0.01,phi2=10,soilDepth=2,iWatC
                       wsFun=c("linear","logistic","exp","none","lwp","thresh"),
                       scsf = 1, transpRes = 5e6, leafPotTh = -800,
                       rfl=0.2, rsec=0.3, rsdf=0.44, smthresh=0.3, lrt=0.3, lrf=0,
-                      respcoef=c(0.512, 0.75, 0.0005, 0.0042)){
+                      respcoef=c(0.512, 0.75, 0.0005, 0.0042), acoef=8){
 
   if(soilLayers < 1 || soilLayers > 50)
     stop("soilLayers must be an integer larger than 0 and smaller than 50")
@@ -297,7 +297,7 @@ soilParms <- function(FieldC=NULL,WiltP=NULL,phi1=0.01,phi2=10,soilDepth=2,iWatC
        soilType=soilType,soilLayers=soilLayers,soilDepths=soilDepths, wsFun=wsFun,
        scsf = scsf, transpRes = transpRes, leafPotTh = leafPotTh,
        hydrDist=hydrDist, rfl=rfl, rsec=rsec, rsdf=rsdf, smthresh=smthresh,
-       lrt=lrt, lrf=lrf, respcoef=respcoef)
+       lrt=lrt, lrf=lrf, respcoef=respcoef, acoef=acoef)
 }
 
 nitroParms <- function(iLeafN=2, kLN=0.5, Vmax.b1=0, alpha.b1=0,

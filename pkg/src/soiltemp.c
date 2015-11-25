@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-double stemp(int hr, double *atemp, int idx){
+double stemp(int hr, double *atemp, int idx, double acoef){
 
 	int lag = 48;
 	int i = idx - lag;
@@ -11,7 +11,7 @@ double stemp(int hr, double *atemp, int idx){
 	double stmpm = 0.0, stmpmax = -60.0, stmpmin = 60.0, amp = 0.0;
 	double ans;
 	double hour = hr;
-	double acoef = 8.0;
+	/* double acoef = 8.0; */
 	double offset = 0.0;
 	double bcoef = 3.66;
 
