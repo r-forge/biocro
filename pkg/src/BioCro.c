@@ -131,6 +131,8 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	for(i2=0;i2<soillayers;i2++){
 		cwsVec[i2] = REAL(CWS)[i2];
 	}
+	if(soillayers > 50) error("number of soil layers should be less than 50");
+
 	double cwsVecSum = 0.0;
 	/* Some soil related empirical coefficients */
 	double rfl = REAL(SECS)[0];  /* root factor lambda */
@@ -329,6 +331,8 @@ SEXP MisGro(SEXP LAT,                 /* Latitude                  1 */
 	double hf = REAL(CHILHF)[1];
         double leafwidth = REAL(CHILHF)[2];
         int eteq = REAL(CHILHF)[3];
+
+	if(nlayers > 50) error("number of layers should be less than 50");
 
 	/* Creation of pointers outside the loop */
 	sti = &newLeafcol[0]; /* This creates sti to be a pointer to the position 0

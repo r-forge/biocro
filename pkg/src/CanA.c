@@ -77,6 +77,7 @@ SEXP CanA(SEXP Lai,SEXP Doy,SEXP HR,SEXP SOLAR,SEXP TEMP,
   int DOY = INTEGER(Doy)[0];
   int hr = INTEGER(HR)[0];
   int nlayers = INTEGER(NLAYERS)[0];
+  if(nlayers > 50) error("number of layers should be less than 50");
 
   /* REALS */
   double LAI = REAL(Lai)[0];
